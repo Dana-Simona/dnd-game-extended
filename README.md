@@ -22,7 +22,8 @@ A full-stack, turn-based dungeon crawler that transforms a Java OOP terminal ass
 
 ---
 
-🎮 Controls
+## 🎮 Controls
+
 W / A / S / D: Move
 
 E: Cast Class Ability
