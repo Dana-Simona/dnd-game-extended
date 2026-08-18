@@ -1,64 +1,76 @@
 package game;
 
 import game.cell.Position;
-import game.occupant.unit.player.Player;
-import game.occupant.unit.player.Warrior;
-import game.occupant.unit.player.Mage;
-import game.occupant.unit.player.Rogue;
-import game.occupant.unit.player.Hunter;
-
+import game.occupant.unit.player.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Game {
+
     private Player chosenPlayer;
     private List<File> levels;
     private Integer currentLevelIndex;
     private GameBoard currentGameBoard;
     private final MessageCallback messageCallback;
-    // REMOVED: the unused, uninitialized boardCallback field that was causing the leak
 
     public Game(MessageCallback callback) {
         this.messageCallback = callback;
         loadAllFiles();
         this.currentLevelIndex = 0;
-        startGame();
+        // Default to first character (Jon Snow) or let React select
+        selectPlayer(0);
     }
 
-    private void loadAllFiles() {
-        this.levels = new ArrayList<>();
-        File dir = new File("src/game/levels_dir");
-        if (dir.exists() && dir.isDirectory()) {
-            File[] files = dir.listFiles();
-            if (files != null) {
-                java.util.Arrays.sort(files, Comparator.comparing(File::getName));
-                for (File f : files) {
-                    if (f.isFile() && f.getName().endsWith(".txt")) {
-                        this.levels.add(f);
-                    }
+private void loadAllFiles() {
+    this.levels = new ArrayList<>();
+
+    // 1. Locate levels_dir via ClassLoader (works regardless of VS Code execution directory)
+    java.net.URL resource = getClass().getClassLoader().getResource("game/levels_dir");
+    File dir = null;
+
+    if (resource != null) {
+        try {
+            dir = new File(resource.toURI());
+        } catch (Exception e) {
+            dir = new File(resource.getPath());
+        }
+    }
+
+    // 2. Fallback to file search if ClassLoader returns null
+    if (dir == null || !dir.exists()) {
+        String[] candidatePaths = {
+            "backend/src/game/levels_dir",
+            "src/game/levels_dir"
+        };
+        for (String path : candidatePaths) {
+            File check = new File(path);
+            if (check.exists() && check.isDirectory()) {
+                dir = check;
+                break;
+            }
+        }
+    }
+
+    // 3. Load files
+    if (dir != null && dir.exists() && dir.isDirectory()) {
+        File[] files = dir.listFiles();
+        if (files != null) {
+            Arrays.sort(files, Comparator.comparing(File::getName));
+            for (File f : files) {
+                if (f.isFile() && f.getName().endsWith(".txt")) {
+                    this.levels.add(f);
+                    System.out.println("Loaded level file: " + f.getName());
                 }
             }
         }
     }
 
-    private void parseBoard() {
-        if (!levels.isEmpty()) {
-            File currentFile = levels.get(currentLevelIndex);
-            LevelParser levelParser = new LevelParser(chosenPlayer, messageCallback);
-            this.currentGameBoard = levelParser.parseLevel(currentFile);
-        } else {
-            throw new IllegalArgumentException("couldn't load files");
-        }
+    if (this.levels.isEmpty()) {
+        System.err.println("ERROR: Could not load level files!");
     }
+}
 
-    private void sendMessage(String message) {
-        messageCallback.send(message);
-    }
-
-    private List<Player> loadAllPlayers() {
+    public List<Player> getAvailablePlayers() {
         List<Player> availablePlayers = new ArrayList<>();
         availablePlayers.add(new Warrior("Jon Snow", 300, 30, 4, 3, new Position(0, 0), messageCallback, null));
         availablePlayers.add(new Warrior("The Hound", 400, 20, 6, 5, new Position(0, 0), messageCallback, null));
@@ -67,102 +79,89 @@ public class Game {
         availablePlayers.add(new Rogue("Arya Stark", 150, 40, 2, new Position(0, 0), 20, messageCallback, null));
         availablePlayers.add(new Rogue("Bronn", 250, 35, 3, new Position(0, 0), 50, messageCallback, null));
         availablePlayers.add(new Hunter("Ygritte", 220, 30, 2, new Position(0, 0), 6, messageCallback, null));
-
-        for (int i = 0; i < availablePlayers.size(); i++) {
-            sendMessage((i + 1) + ". " + availablePlayers.get(i).description());
-        }
         return availablePlayers;
     }
 
-    private void choosePlayer() {
-        List<Player> availablePlayers = loadAllPlayers();
-        Scanner scanner = new Scanner(System.in);
-        int selection = Integer.parseInt(scanner.nextLine());
-        int characterIndex = selection - 1;
-
-        if (characterIndex < 0 || characterIndex >= availablePlayers.size()) {
-            sendMessage("invalid input, defaulting to " + availablePlayers.getFirst().getName());
-            this.chosenPlayer = availablePlayers.getFirst();
+    public void selectPlayer(int index) {
+        List<Player> players = getAvailablePlayers();
+        if (index >= 0 && index < players.size()) {
+            this.chosenPlayer = players.get(index);
         } else {
-            this.chosenPlayer = availablePlayers.get(characterIndex);
+            this.chosenPlayer = players.get(0);
         }
-        sendMessage(chosenPlayer.getName());
         parseBoard();
     }
 
-    private void nextLevel() {
-        currentLevelIndex++;
-        sendMessage("NEXT LEVEL!");
-        if (currentLevelIndex < levels.size()) {
-            parseBoard();
-        } else {
-            sendMessage("You won!");
+    private void parseBoard() {
+        if (!levels.isEmpty() && currentLevelIndex < levels.size()) {
+            File currentFile = levels.get(currentLevelIndex);
+            LevelParser levelParser = new LevelParser(chosenPlayer, messageCallback);
+            this.currentGameBoard = levelParser.parseLevel(currentFile);
         }
     }
 
-    private void startGame() {
-        choosePlayer();
-        gameTick();
-    }
-
-    private void gameTick() {
-        Scanner scanner = new Scanner(System.in);
-        while (currentLevelIndex < levels.size() && !chosenPlayer.isDead()) {
-            sendMessage(currentGameBoard.toString());
-            sendMessage(chosenPlayer.description());
-            if (scanner.hasNextLine()) {
-                String input = scanner.nextLine();
-                if (!input.isEmpty()) {
-                    char selection = input.charAt(0);
-                    playerInput(selection);
-                }
-            }
-        }
-        if (chosenPlayer.isDead()) {
-            loseGame();
-        }
-    }
-
-    private void loseGame() {
-        sendMessage(chosenPlayer.description());
-        chosenPlayer.onDeath();
-        sendMessage(currentGameBoard.toString());
-        sendMessage("Game Over");
-    }
-
-    public void playerInput(char c) {
-        if (chosenPlayer == null || currentGameBoard == null) {
+    // Called whenever React sends a keypress
+    public void processTurn(char input) {
+        if (chosenPlayer == null || currentGameBoard == null || chosenPlayer.isDead()) {
             return;
         }
 
+        playerInput(input);
+
+        if (chosenPlayer.isDead()) {
+            chosenPlayer.onDeath();
+            messageCallback.send("Game Over!");
+        }
+    }
+
+    // Helper for React to fetch current grid array
+    public String[] getBoardAsLines() {
+        if (currentGameBoard == null) {
+            return new String[0];
+        }
+        return currentGameBoard.toString().split("\n");
+    }
+
+    public Player getChosenPlayer() {
+        return chosenPlayer;
+    }
+
+    private void playerInput(char c) {
         Position currentPos = chosenPlayer.getPosition();
         Position targetPos = null;
         boolean validAction = true;
 
         switch (c) {
-            case 'd' -> targetPos = new Position(currentPos.getX() + 1, currentPos.getY());
-            case 'w' -> targetPos = new Position(currentPos.getX(), currentPos.getY() - 1);
-            case 's' -> targetPos = new Position(currentPos.getX(), currentPos.getY() + 1);
-            case 'a' -> targetPos = new Position(currentPos.getX() - 1, currentPos.getY());
-            case 'e' -> chosenPlayer.abilityCast();
-            case 'p' -> {
-                // Passing turn / doing nothing
+            case 'd' ->
+                targetPos = new Position(currentPos.getX() + 1, currentPos.getY());
+            case 'w' ->
+                targetPos = new Position(currentPos.getX(), currentPos.getY() - 1);
+            case 's' ->
+                targetPos = new Position(currentPos.getX(), currentPos.getY() + 1);
+            case 'a' ->
+                targetPos = new Position(currentPos.getX() - 1, currentPos.getY());
+            case 'e' ->
+                chosenPlayer.abilityCast();
+            case 'q', 'p' -> {
             }
-            default -> {
-                sendMessage("Invalid input!");
+            default ->
                 validAction = false;
-            }
         }
 
         if (validAction) {
             if (targetPos != null) {
                 chosenPlayer.requestMove(targetPos);
             }
-
             currentGameBoard.tickAll();
 
             if (currentGameBoard.isLevelComplete()) {
-                nextLevel();
+                currentLevelIndex++;
+                messageCallback.send("NEXT LEVEL!");
+                if (currentLevelIndex < levels.size()) {
+                    parseBoard();
+                } else {
+                    messageCallback.send("You won!");
+                }
             }
         }
     }
