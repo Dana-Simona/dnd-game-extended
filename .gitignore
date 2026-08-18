@@ -1,0 +1,42 @@
+# ==========================================
+# JDK & Heavy Binaries
+# ==========================================
+backend/oracleJdk-26/
+*.jar
+*.war
+*.ear
+
+# ==========================================
+# Java / Backend Build Output & IDEs
+# ==========================================
+backend/bin/
+backend/out/
+backend/target/
+backend/.idea/
+*.class
+
+# IDE & OS Files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# React / Node / Frontend
+# ==========================================
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/build/
+frontend/.vite/
+
+# Frontend Logs & Local Envs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local

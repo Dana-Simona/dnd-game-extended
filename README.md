@@ -35,7 +35,9 @@ Q: Skip Turn
 ## 🚀 How to Run Locally
 
 ### 1. Start the Java Backend
+run the MainServer that's located in "backend/src/MainServer.java"
+then in terminal run:
 ```bash
-cd backend
-javac GameServer.java
-java GameServer
+cd frontend
+npm i
+npm run dev
