@@ -17,14 +17,12 @@ public class Game {
         this.messageCallback = callback;
         loadAllFiles();
         this.currentLevelIndex = 0;
-        // Default to first character (Jon Snow) or let React select
         selectPlayer(0);
     }
 
 private void loadAllFiles() {
     this.levels = new ArrayList<>();
 
-    // 1. Locate levels_dir via ClassLoader (works regardless of VS Code execution directory)
     java.net.URL resource = getClass().getClassLoader().getResource("game/levels_dir");
     File dir = null;
 
@@ -36,7 +34,6 @@ private void loadAllFiles() {
         }
     }
 
-    // 2. Fallback to file search if ClassLoader returns null
     if (dir == null || !dir.exists()) {
         String[] candidatePaths = {
             "backend/src/game/levels_dir",
@@ -100,7 +97,6 @@ private void loadAllFiles() {
         }
     }
 
-    // Called whenever React sends a keypress
     public void processTurn(char input) {
         if (chosenPlayer == null || currentGameBoard == null || chosenPlayer.isDead()) {
             return;
@@ -114,7 +110,6 @@ private void loadAllFiles() {
         }
     }
 
-    // Helper for React to fetch current grid array
     public String[] getBoardAsLines() {
         if (currentGameBoard == null) {
             return new String[0];

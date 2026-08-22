@@ -1,36 +1,13 @@
 import React from 'react';
-import Sprite from '../utils/Sprite';
-import idleDownImg from '../assets/The Female Adventurer - Free/Idle/Idle_Down.png';
-import {
-	ActionButton,
-	DisplayContainer,
-	SpriteScaler,
-} from './CharacterSelectionStyles';
+import { ArrowButton, DisplayContainer } from './CharacterSelectionStyles';
+import CharacterDisplay from './characterDisplay/CharacterDisplay';
 
 const CharacterSelection: React.FC = () => {
-	const actions = {
-		idle: {
-			imagePath: idleDownImg,
-			frameCount: 8,
-			width: 48,
-			height: 64,
-		},
-	};
-
-	const current = actions.idle;
-
 	return (
 		<DisplayContainer>
-			Character selection
-			<SpriteScaler>
-				<Sprite
-					imagePath={current.imagePath}
-					width={current.width}
-					height={current.height}
-					frameCount={current.frameCount}
-					fps={4}
-				/>
-			</SpriteScaler>
+			<ArrowButton>&lsaquo;</ArrowButton>
+			<CharacterDisplay />
+			<ArrowButton>&rsaquo;</ArrowButton>
 		</DisplayContainer>
 	);
 };
