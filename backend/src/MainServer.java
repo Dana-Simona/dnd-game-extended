@@ -12,13 +12,11 @@ public class MainServer {
     private static Game game;
 
     public static void main(String[] args) throws IOException {
-        // Initialize game engine with log output
         MessageCallback callback = msg -> System.out.println("[GAME LOG]: " + msg);
         game = new Game(callback);
 
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
-        // GET /api/board -> Returns current grid array
         server.createContext("/api/board", exchange -> {
             addCorsHeaders(exchange);
             if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
@@ -26,7 +24,6 @@ public class MainServer {
             }
         });
 
-        // POST /api/action -> Receives player key, ticks engine, returns new grid
         server.createContext("/api/action", exchange -> {
             addCorsHeaders(exchange);
             if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {

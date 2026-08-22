@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-
+import { Container, Board, Controls } from './AppStyles';
 interface BoardData {
 	grid: string[];
 }
@@ -7,7 +7,6 @@ interface BoardData {
 export default function App() {
 	const [board, setBoard] = useState<string[]>([]);
 
-	// Fetch initial board state
 	const fetchBoard = async () => {
 		try {
 			const res = await fetch('http://localhost:8080/api/board');
@@ -18,7 +17,6 @@ export default function App() {
 		}
 	};
 
-	// Send action to Java backend on key press
 	const handleKeyPress = async (key: string) => {
 		const validKeys = ['w', 'a', 's', 'd', 'e', 'q'];
 		const lowerKey = key.toLowerCase();
@@ -41,51 +39,22 @@ export default function App() {
 	useEffect(() => {
 		fetchBoard();
 
-		// Attach keydown listener for W/A/S/D/E/Q
 		const onKeyDown = (e: KeyboardEvent) => handleKeyPress(e.key);
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, []);
 
 	return (
-		<div style={styles.container}>
+		<Container>
 			<h1>Dungeon Crawler</h1>
 
-			{/* Map Display */}
-			<pre style={styles.board}>
+			<Board>
 				{board.length > 0 ? board.join('\n') : 'Loading board...'}
-			</pre>
+			</Board>
 
-			{/* On-screen controls for testing */}
-			<div style={styles.controls}>
+			<Controls>
 				<p>Controls: WASD to Move | E to Cast Ability | Q to Pass</p>
-			</div>
-		</div>
+			</Controls>
+		</Container>
 	);
 }
-
-const styles: Record<string, React.CSSProperties> = {
-	container: {
-		backgroundColor: '#121212',
-		color: '#00ffcc',
-		minHeight: '100vh',
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'center',
-		justifyContent: 'center',
-		fontFamily: 'monospace',
-	},
-	board: {
-		backgroundColor: '#000',
-		padding: '20px',
-		borderRadius: '8px',
-		fontSize: '20px',
-		lineHeight: '1.2',
-		letterSpacing: '3px',
-		boxShadow: '0 0 15px rgba(0,255,204,0.2)',
-	},
-	controls: {
-		marginTop: '15px',
-		color: '#aaa',
-	},
-};
