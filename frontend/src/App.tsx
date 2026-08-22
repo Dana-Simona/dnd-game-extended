@@ -1,60 +1,40 @@
-import { useEffect, useState } from 'react';
-import { Container, Board, Controls } from './AppStyles';
-interface BoardData {
-	grid: string[];
-}
+import { Route, Routes } from 'react-router-dom';
+import Game from './game/Game';
+import MainMenu from './mainMenu/MainMenu';
+import NotFound from './notFound/NotFound';
+import { ROUTES } from './constants/routes';
+import LevelSelection from './levelSelection/LevelSelection';
+import CharacterSelection from './characterSelection/CharacterSelection';
 
-export default function App() {
-	const [board, setBoard] = useState<string[]>([]);
-
-	const fetchBoard = async () => {
-		try {
-			const res = await fetch('http://localhost:8080/api/board');
-			const data: BoardData = await res.json();
-			setBoard(data.grid);
-		} catch (err) {
-			console.error('Failed to connect to Java backend:', err);
-		}
-	};
-
-	const handleKeyPress = async (key: string) => {
-		const validKeys = ['w', 'a', 's', 'd', 'e', 'q'];
-		const lowerKey = key.toLowerCase();
-
-		if (!validKeys.includes(lowerKey)) return;
-
-		try {
-			const res = await fetch('http://localhost:8080/api/action', {
-				method: 'POST',
-				headers: { 'Content-Type': 'text/plain' },
-				body: lowerKey,
-			});
-			const data: BoardData = await res.json();
-			setBoard(data.grid);
-		} catch (err) {
-			console.error('Failed to send move:', err);
-		}
-	};
-
-	useEffect(() => {
-		fetchBoard();
-
-		const onKeyDown = (e: KeyboardEvent) => handleKeyPress(e.key);
-		window.addEventListener('keydown', onKeyDown);
-		return () => window.removeEventListener('keydown', onKeyDown);
-	}, []);
-
+const App: React.FC = () => {
 	return (
-		<Container>
-			<h1>Dungeon Crawler</h1>
+		<Routes>
+			<Route
+				path={ROUTES.MAIN_MENU}
+				element={<MainMenu />}
+			/>
 
-			<Board>
-				{board.length > 0 ? board.join('\n') : 'Loading board...'}
-			</Board>
+			<Route
+				path={ROUTES.CHARACTER_SELECTION}
+				element={<CharacterSelection />}
+			/>
 
-			<Controls>
-				<p>Controls: WASD to Move | E to Cast Ability | Q to Pass</p>
-			</Controls>
-		</Container>
+			<Route
+				path={ROUTES.LEVEL_SELECTION}
+				element={<LevelSelection />}
+			/>
+
+			<Route
+				path={ROUTES.GAME}
+				element={<Game />}
+			/>
+
+			<Route
+				path='*'
+				element={<NotFound />}
+			/>
+		</Routes>
 	);
-}
+};
+
+export default App;
