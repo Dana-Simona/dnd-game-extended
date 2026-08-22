@@ -1,12 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Title, MenuBox, MenuButton } from './MainMenuStyles';
+import { ROUTES } from '../constants/routes';
 
 const MainMenu: React.FC = () => {
 	const navigate = useNavigate();
 
 	const startGame = () => {
-		navigate('/Game');
+		navigate(ROUTES.CHARACTER_SELECTION);
 	};
 
 	return (
