@@ -4,16 +4,16 @@ import game.BoardCallback;
 import game.MessageCallback;
 import game.cell.Position;
 import game.occupant.unit.enemy.Enemy;
-
 import java.util.List;
 
 public class Rogue extends Player {
+
     private Integer currentEnergy;
     private final Integer cost;
     private final Integer maxEnergy = 100;
 
     public Rogue(String name, Integer health, Integer attack, Integer defense, Position position,
-                 Integer energyCost, MessageCallback callback, BoardCallback boardCallback) {
+            Integer energyCost, MessageCallback callback, BoardCallback boardCallback) {
         super(name, health, attack, defense, position, callback, boardCallback);
         currentEnergy = maxEnergy;
         cost = energyCost;
@@ -51,13 +51,14 @@ public class Rogue extends Player {
      * <p>
      * The rogue only casts the ability if they have enough energy.
      *
-     * @throws IllegalArgumentException If the game board is null or if it's the incorrect board.
+     * @throws IllegalArgumentException If the game board is null or if it's the
+     * incorrect board.
      */
     @Override
     public void abilityCast() {
         if (currentEnergy < cost) {
-            sendMessage(getName() + " tried to cast Fan of Knives, but there was not enough energy: " +
-                    currentEnergy + "/" + cost + ".");
+            sendMessage(getName() + " tried to cast Fan of Knives, but there was not enough energy: "
+                    + currentEnergy + "/" + cost + ".");
         } else {
             fanOfKnives();
             currentEnergy -= cost;
@@ -70,6 +71,10 @@ public class Rogue extends Player {
 
     public Integer getMaxEnergy() {
         return maxEnergy;
+    }
+
+    public Integer getEnergyCost() {
+        return cost;
     }
 
     @Override

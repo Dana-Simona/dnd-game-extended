@@ -20,52 +20,29 @@ public class Game {
         selectPlayer(0);
     }
 
-private void loadAllFiles() {
-    this.levels = new ArrayList<>();
+    private void loadAllFiles() {
+        this.levels = new ArrayList<>();
 
-    java.net.URL resource = getClass().getClassLoader().getResource("game/levels_dir");
-    File dir = null;
-
-    if (resource != null) {
-        try {
-            dir = new File(resource.toURI());
-        } catch (Exception e) {
-            dir = new File(resource.getPath());
+        File dir = new File("src/game/levels_dir");
+        if (!dir.exists()) {
+            dir = new File("backend/src/game/levels_dir");
         }
-    }
 
-    if (dir == null || !dir.exists()) {
-        String[] candidatePaths = {
-            "backend/src/game/levels_dir",
-            "src/game/levels_dir"
-        };
-        for (String path : candidatePaths) {
-            File check = new File(path);
-            if (check.exists() && check.isDirectory()) {
-                dir = check;
-                break;
-            }
-        }
-    }
-
-    // 3. Load files
-    if (dir != null && dir.exists() && dir.isDirectory()) {
-        File[] files = dir.listFiles();
-        if (files != null) {
-            Arrays.sort(files, Comparator.comparing(File::getName));
-            for (File f : files) {
-                if (f.isFile() && f.getName().endsWith(".txt")) {
-                    this.levels.add(f);
-                    System.out.println("Loaded level file: " + f.getName());
+        if (dir.exists() && dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                Arrays.sort(files, Comparator.comparing(File::getName));
+                for (File f : files) {
+                    if (f.isFile() && f.getName().endsWith(".txt")) {
+                        this.levels.add(f);
+                        System.out.println("Loaded level file: " + f.getName());
+                    }
                 }
             }
+        } else {
+            System.err.println("WARNING: Could not find levels directory at " + dir.getAbsolutePath());
         }
     }
-
-    if (this.levels.isEmpty()) {
-        System.err.println("ERROR: Could not load level files!");
-    }
-}
 
     public List<Player> getAvailablePlayers() {
         List<Player> availablePlayers = new ArrayList<>();

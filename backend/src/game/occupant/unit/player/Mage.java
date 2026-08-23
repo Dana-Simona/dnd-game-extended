@@ -4,10 +4,10 @@ import game.BoardCallback;
 import game.MessageCallback;
 import game.cell.Position;
 import game.occupant.unit.enemy.Enemy;
-
 import java.util.List;
 
 public class Mage extends Player {
+
     private Integer spellPower;
     private Integer manaPool;
     private Integer currentMana;
@@ -15,8 +15,8 @@ public class Mage extends Player {
     private final Integer hitsCount;
     private final Integer abilityRange;
 
-    public Mage(String name, Integer health, Integer attack, Integer defense, Position position, MessageCallback callback
-            , Integer manaPool, Integer manaCost, Integer spellPower, Integer hitsCount, Integer abilityRange, BoardCallback boardCallback) {
+    public Mage(String name, Integer health, Integer attack, Integer defense, Position position, MessageCallback callback,
+            Integer manaPool, Integer manaCost, Integer spellPower, Integer hitsCount, Integer abilityRange, BoardCallback boardCallback) {
         super(name, health, attack, defense, position, callback, boardCallback);
         this.manaPool = manaPool;
         this.currentMana = this.manaPool / 4;
@@ -67,6 +67,18 @@ public class Mage extends Player {
 
     public Integer getCurrentMana() {
         return currentMana;
+    }
+
+    public Integer getManaCost() {
+        return manaCost;
+    }
+
+    public Integer getHitCount() {
+        return hitsCount;
+    }
+
+    public Integer getAbilityRange() {
+        return abilityRange;
     }
 
     @Override

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Container, Board, Controls } from './GameStyles';
-import { MenuButton } from '../mainMenu/MainMenuStyles';
+import Button from '../utils/button/Button';
 interface BoardData {
 	grid: string[];
 }
@@ -56,7 +56,7 @@ const Game: React.FC = () => {
 			<Controls>
 				<p>Controls: WASD to Move | E to Cast Ability | Q to Pass</p>
 			</Controls>
-			<MenuButton
+			<Button
 				//TODO: change URL to main menu
 				style={{
 					marginTop: '20px',
@@ -65,7 +65,7 @@ const Game: React.FC = () => {
 				}}
 			>
 				Back to Menu
-			</MenuButton>
+			</Button>
 		</Container>
 	);
 };

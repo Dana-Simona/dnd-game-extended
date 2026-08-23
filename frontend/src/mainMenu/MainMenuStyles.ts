@@ -15,30 +15,6 @@ export const MenuBox = styled.div`
 	width: 250px;
 `;
 
-export const MenuButton = styled.button`
-	background-color: #000;
-	color: #00ffcc;
-	border: 2px solid #00ffcc;
-	padding: 12px 20px;
-	font-family: monospace;
-	font-size: 1.1rem;
-	cursor: pointer;
-	border-radius: 4px;
-	transition: all 0.2s ease-in-out;
-	box-shadow: 0 0 8px rgba(0, 255, 204, 0.1);
-
-	&:hover {
-		background-color: #00ffcc;
-		color: #121212;
-		box-shadow: 0 0 15px rgba(0, 255, 204, 0.6);
-		transform: translateY(-2px);
-	}
-
-	&:active {
-		transform: translateY(0);
-	}
-`;
-
 export const Container = styled.div`
 	background-color: #121212;
 	color: #00ffcc;

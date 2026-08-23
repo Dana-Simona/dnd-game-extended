@@ -4,7 +4,7 @@ import MainMenu from './mainMenu/MainMenu';
 import NotFound from './notFound/NotFound';
 import { ROUTES } from './constants/routes';
 import LevelSelection from './levelSelection/LevelSelection';
-import CharacterSelection from './characterSelection/CharacterSelection';
+import ClassSelection from './classSelection/ClassSelection';
 
 const App: React.FC = () => {
 	return (
@@ -16,7 +16,7 @@ const App: React.FC = () => {
 
 			<Route
 				path={ROUTES.CHARACTER_SELECTION}
-				element={<CharacterSelection />}
+				element={<ClassSelection />}
 			/>
 
 			<Route

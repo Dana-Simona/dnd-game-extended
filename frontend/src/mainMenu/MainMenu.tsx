@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Title, MenuBox, MenuButton } from './MainMenuStyles';
+import { Container, Title, MenuBox } from './MainMenuStyles';
 import { ROUTES } from '../constants/routes';
+import Button from '../utils/button/Button';
 
 const MainMenu: React.FC = () => {
 	const navigate = useNavigate();
@@ -14,8 +15,8 @@ const MainMenu: React.FC = () => {
 		<Container>
 			<Title>Dungeon.exe</Title>
 			<MenuBox>
-				<MenuButton onClick={startGame}> Start Game </MenuButton>
-				<MenuButton
+				<Button onClick={startGame}> Start Game </Button>
+				<Button
 					onClick={() =>
 						alert(
 							'WASD to move, E for ability, Q to skip your turn.',
@@ -23,7 +24,7 @@ const MainMenu: React.FC = () => {
 					}
 				>
 					Controls
-				</MenuButton>
+				</Button>
 			</MenuBox>
 		</Container>
 	);

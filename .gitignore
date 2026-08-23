@@ -30,6 +30,14 @@ frontend/dist/
 frontend/dist-ssr/
 frontend/build/
 frontend/.vite/
+# ==========================================
+# React / Node / Frontend
+# ==========================================
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/build/
+**/.vite/
 
 # Frontend Logs & Local Envs
 *.log
