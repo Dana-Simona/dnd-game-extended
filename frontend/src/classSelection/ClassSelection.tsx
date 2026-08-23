@@ -7,34 +7,60 @@ import idleDownImg from '../assets/The Female Adventurer - Free/Idle/Idle_Down.p
 import idleUpImg from '../assets/The Female Adventurer - Free/Idle/Idle_Right_Up.png';
 import idleRightImg from '../assets/The Female Adventurer - Free/Idle/Idle_Right_Down.png';
 import idleLeftImg from '../assets/The Female Adventurer - Free/Idle/Idle_Left_Down.png';
+import { useNavigate } from 'react-router-dom';
+import { ClassTypes } from '../constants/classTypes';
+import { ButtonContainer } from './characterSelection/CharacterSelectionStyles';
+import Button from '../utils/button/Button';
 
 const ClassSelection: React.FC = () => {
+	const navigate = useNavigate();
+
 	const characterClasses: CharacterDisplayOptions[] = [
 		{
-			title: 'warrior',
+			title: ClassTypes.WARRIOR,
 			imagePath: idleDownImg,
-			onConfirm: () => console.log('aaa'),
+			onConfirm: () => {
+				navigate(ClassTypes.WARRIOR);
+			},
 		},
 		{
-			title: 'mage',
+			title: ClassTypes.MAGE,
 			imagePath: idleRightImg,
-			onConfirm: () => console.log('aaa'),
+			onConfirm: () => {
+				navigate(ClassTypes.MAGE);
+			},
 		},
 		{
-			title: 'rogue',
+			title: ClassTypes.ROGUE,
 			imagePath: idleUpImg,
-			onConfirm: () => console.log('aaa'),
+			onConfirm: () => {
+				navigate(ClassTypes.ROGUE);
+			},
 		},
 		{
-			title: 'hunter',
+			title: ClassTypes.HUNTER,
 			imagePath: idleLeftImg,
-			onConfirm: () => console.log('aaa'),
+			onConfirm: () => {
+				navigate(ClassTypes.HUNTER);
+			},
 		},
 	];
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
+	const onBackClick = () => {
+		navigate('..', { relative: 'path' });
+	};
+
 	return (
 		<Container>
+			<ButtonContainer>
+				<Button
+					variant='Secondary'
+					onClick={onBackClick}
+				>
+					Back
+				</Button>
+			</ButtonContainer>
 			<CharacterDisplay
 				options={characterClasses}
 				setSelectedIndex={setSelectedIndex}

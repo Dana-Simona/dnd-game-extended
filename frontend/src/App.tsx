@@ -5,6 +5,7 @@ import NotFound from './notFound/NotFound';
 import { ROUTES } from './constants/routes';
 import LevelSelection from './levelSelection/LevelSelection';
 import ClassSelection from './classSelection/ClassSelection';
+import CharacterSelection from './classSelection/characterSelection/CharacterSelection';
 
 const App: React.FC = () => {
 	return (
@@ -17,6 +18,11 @@ const App: React.FC = () => {
 			<Route
 				path={ROUTES.CHARACTER_SELECTION}
 				element={<ClassSelection />}
+			/>
+
+			<Route
+				path={`${ROUTES.CHARACTER_SELECTION}/:classType?`}
+				element={<CharacterSelection />}
 			/>
 
 			<Route

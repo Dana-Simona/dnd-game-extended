@@ -31,33 +31,81 @@ interface Props<T extends CharacterDisplayOptions> {
 }
 
 const characterVariants: Variants = {
+	// 1. Initial Page Load (mounts from left, enlarged, blurred, unblurs and shrinks to center)
+	initial: {
+		x: -250,
+		opacity: 0,
+		scale: 1.8,
+		filter: 'blur(8px)',
+	},
+	// 2. Standard Carousel Sliding Enter
 	enter: (direction: number) => ({
 		x: direction > 0 ? 250 : -250,
 		opacity: 0,
+		scale: 1,
+		filter: 'blur(0px)',
 	}),
 	center: {
 		x: 0,
 		opacity: 1,
+		scale: 1,
+		filter: 'blur(0px)',
 	},
+	// 3. Standard Carousel Sliding Exit
 	exit: (direction: number) => ({
 		x: direction > 0 ? -250 : 250,
 		opacity: 0,
+		scale: 1,
+		filter: 'blur(0px)',
 	}),
+	// 4. Confirm Selection Animation (moves right, grows, blurs out)
+	confirm: {
+		x: 250,
+		scale: 1.8,
+		opacity: 0,
+		filter: 'blur(8px)',
+		transition: {
+			duration: 0.5,
+			ease: [0.4, 0, 0.2, 1],
+		},
+	},
 };
 
 const titleVariants: Variants = {
+	initial: {
+		x: -100,
+		opacity: 0,
+		scale: 1.4,
+		filter: 'blur(4px)',
+	},
 	enter: (direction: number) => ({
 		x: direction > 0 ? 100 : -100,
 		opacity: 0,
+		scale: 1,
+		filter: 'blur(0px)',
 	}),
 	center: {
 		x: 0,
 		opacity: 1,
+		scale: 1,
+		filter: 'blur(0px)',
 	},
 	exit: (direction: number) => ({
 		x: direction > 0 ? -100 : 100,
 		opacity: 0,
+		scale: 1,
+		filter: 'blur(0px)',
 	}),
+	confirm: {
+		x: 100,
+		scale: 1.4,
+		opacity: 0,
+		filter: 'blur(4px)',
+		transition: {
+			duration: 0.4,
+			ease: [0.4, 0, 0.2, 1],
+		},
+	},
 };
 
 const AnimatedTitle = motion(Title);
@@ -68,10 +116,15 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 	selectedIndex,
 }: Props<T>) => {
 	const [direction, setDirection] = useState<number>(1);
+	const [isConfirming, setIsConfirming] = useState<boolean>(false);
+	// Track if this is the very first page render
+	const [isInitialMount, setIsInitialMount] = useState<boolean>(true);
 
 	if (!options || options.length === 0) return null;
 
 	const handleNext = () => {
+		if (isConfirming) return;
+		if (isInitialMount) setIsInitialMount(false);
 		setDirection(1);
 		setSelectedIndex(
 			(prev) => (prev + 1 + options.length) % options.length,
@@ -79,10 +132,21 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 	};
 
 	const handlePrev = () => {
+		if (isConfirming) return;
+		if (isInitialMount) setIsInitialMount(false);
 		setDirection(-1);
 		setSelectedIndex(
 			(prev) => (prev - 1 + options.length) % options.length,
 		);
+	};
+
+	const handleConfirm = () => {
+		if (isConfirming) return;
+		setIsConfirming(true);
+
+		setTimeout(() => {
+			options[selectedIndex].onConfirm();
+		}, 500);
 	};
 
 	const currentOption = options[selectedIndex];
@@ -90,14 +154,18 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 	return (
 		<PageContainer>
 			<MainContainer>
-				<ArrowButton onClick={handlePrev}>&lsaquo;</ArrowButton>
+				<ArrowButton
+					onClick={handlePrev}
+					disabled={isConfirming}
+				>
+					&lsaquo;
+				</ArrowButton>
 
 				<DisplayContainer>
 					<BackgroundAmbiance>
 						<FloorLine />
 
 						<AnimatePresence
-							initial={false}
 							custom={direction}
 							mode='wait'
 						>
@@ -105,8 +173,12 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 								<AnimatedTitle
 									custom={direction}
 									variants={titleVariants}
-									initial='enter'
-									animate='center'
+									initial={
+										isInitialMount ? 'initial' : 'enter'
+									}
+									animate={
+										isConfirming ? 'confirm' : 'center'
+									}
 									exit='exit'
 									transition={{
 										x: {
@@ -114,6 +186,8 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 											stiffness: 250,
 											damping: 25,
 										},
+										scale: { duration: 0.4 },
+										filter: { duration: 0.4 },
 										opacity: { duration: 0.25 },
 									}}
 								>
@@ -123,8 +197,12 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 								<motion.div
 									custom={direction}
 									variants={characterVariants}
-									initial='enter'
-									animate='center'
+									initial={
+										isInitialMount ? 'initial' : 'enter'
+									}
+									animate={
+										isConfirming ? 'confirm' : 'center'
+									}
 									exit='exit'
 									transition={{
 										x: {
@@ -132,6 +210,8 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 											stiffness: 300,
 											damping: 30,
 										},
+										scale: { duration: 0.4 },
+										filter: { duration: 0.4 },
 										opacity: { duration: 0.2 },
 									}}
 								>
@@ -168,9 +248,19 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 					</BackgroundAmbiance>
 				</DisplayContainer>
 
-				<ArrowButton onClick={handleNext}>&rsaquo;</ArrowButton>
+				<ArrowButton
+					onClick={handleNext}
+					disabled={isConfirming}
+				>
+					&rsaquo;
+				</ArrowButton>
 			</MainContainer>
-			<Button>{CONFIRM}</Button>
+			<Button
+				onClick={handleConfirm}
+				disabled={isConfirming}
+			>
+				{CONFIRM}
+			</Button>
 		</PageContainer>
 	);
 };
