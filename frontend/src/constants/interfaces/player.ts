@@ -4,17 +4,18 @@ export interface Player {
 	attack: number;
 	defense: number;
 	level: number;
+	health: number;
 	currentHealth: number;
 }
 
 export interface Warrior extends Player {
 	cooldown: number;
-    currentCooldown: number;
+	currentCooldown: number;
 }
 
 export interface Mage extends Player {
 	manaPool: number;
-    currentMana: number;
+	currentMana: number;
 	manaCost: number;
 	spellPower: number;
 	hitCount: number;
@@ -28,3 +29,6 @@ export interface Rogue extends Player {
 export interface Hunter extends Player {
 	range: number;
 }
+
+export type PlayerData = Warrior | Mage | Rogue | Hunter;
+export type AllPlayerData = Warrior & Mage & Rogue & Hunter;

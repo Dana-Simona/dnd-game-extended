@@ -5,17 +5,11 @@ import idleRightImg from '../../assets/The Female Adventurer - Free/Idle/Idle_Ri
 import CharacterDisplay, {
 	type CharacterDisplayOptions,
 } from './characterDisplay/CharacterDisplay';
-import type {
-	Hunter,
-	Mage,
-	Rogue,
-	Warrior,
-} from '../../constants/interfaces/player';
+import type { AllPlayerData } from '../../constants/interfaces/player';
 import Button from '../../utils/button/Button';
+import Stats from './Stats/Stats';
 
-type PlayerData = Warrior | Mage | Rogue | Hunter;
-
-export type Character = PlayerData & CharacterDisplayOptions;
+export type Character = AllPlayerData & CharacterDisplayOptions;
 
 export const CharacterSelection: React.FC = () => {
 	const { classType } = useParams<{ classType?: string }>();
@@ -37,7 +31,7 @@ export const CharacterSelection: React.FC = () => {
 	useEffect(() => {
 		fetch('http://localhost:8080/api/players')
 			.then((res) => res.json())
-			.then((data: PlayerData[]) => {
+			.then((data: AllPlayerData[]) => {
 				const enrichedCharacters: Character[] = data.map(
 					(player, index) => {
 						return {
@@ -50,6 +44,22 @@ export const CharacterSelection: React.FC = () => {
 							// 	import.meta.url,
 							// ).href,
 							onConfirm: () => handleConfirmSelection(index),
+							description: (
+								<Stats
+									data={{
+										health: player.health,
+										defense: player.defense,
+										attack: player.attack,
+										cooldown: player.cooldown,
+										manaPool: player.manaPool,
+										manaCost: player.manaCost,
+										spellPower: player.spellPower,
+										hitCount: player.hitCount,
+										range: player.range,
+										cost: player.cost,
+									}}
+								/>
+							),
 						};
 					},
 				);

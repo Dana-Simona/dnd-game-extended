@@ -86,12 +86,12 @@ public class MainServer {
                 }
             });
 
-            server.setExecutor(null); // default executor
+            server.setExecutor(null);
             server.start();
-            System.out.println("✅ Java Game Server successfully started on http://localhost:8080");
+            System.out.println("Java Game Server successfully started on http://localhost:8080");
 
         } catch (Exception e) {
-            System.err.println("❌ Server failed to start:");
+            System.err.println("Server failed to start:");
             e.printStackTrace();
         }
     }

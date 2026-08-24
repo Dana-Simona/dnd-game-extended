@@ -22,6 +22,7 @@ export interface CharacterDisplayOptions {
 	title: string;
 	imagePath: string;
 	onConfirm: () => void;
+	description?: React.ReactElement;
 }
 
 interface Props<T extends CharacterDisplayOptions> {
@@ -31,14 +32,12 @@ interface Props<T extends CharacterDisplayOptions> {
 }
 
 const characterVariants: Variants = {
-	// 1. Initial Page Load (mounts from left, enlarged, blurred, unblurs and shrinks to center)
 	initial: {
 		x: -250,
 		opacity: 0,
 		scale: 1.8,
 		filter: 'blur(8px)',
 	},
-	// 2. Standard Carousel Sliding Enter
 	enter: (direction: number) => ({
 		x: direction > 0 ? 250 : -250,
 		opacity: 0,
@@ -51,14 +50,12 @@ const characterVariants: Variants = {
 		scale: 1,
 		filter: 'blur(0px)',
 	},
-	// 3. Standard Carousel Sliding Exit
 	exit: (direction: number) => ({
 		x: direction > 0 ? -250 : 250,
 		opacity: 0,
 		scale: 1,
 		filter: 'blur(0px)',
 	}),
-	// 4. Confirm Selection Animation (moves right, grows, blurs out)
 	confirm: {
 		x: 250,
 		scale: 1.8,
@@ -117,7 +114,6 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 }: Props<T>) => {
 	const [direction, setDirection] = useState<number>(1);
 	const [isConfirming, setIsConfirming] = useState<boolean>(false);
-	// Track if this is the very first page render
 	const [isInitialMount, setIsInitialMount] = useState<boolean>(true);
 
 	if (!options || options.length === 0) return null;
@@ -242,6 +238,7 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 											</Reflection>
 										</CharacterWrapper>
 									</SpriteScaler>
+									{options[selectedIndex].description}
 								</motion.div>
 							</React.Fragment>
 						</AnimatePresence>

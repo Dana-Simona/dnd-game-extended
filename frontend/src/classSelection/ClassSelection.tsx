@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Button from '../utils/button/Button';
 import CharacterDisplay, {
 	type CharacterDisplayOptions,
 } from './characterSelection/characterDisplay/CharacterDisplay';
@@ -7,10 +9,9 @@ import idleDownImg from '../assets/The Female Adventurer - Free/Idle/Idle_Down.p
 import idleUpImg from '../assets/The Female Adventurer - Free/Idle/Idle_Right_Up.png';
 import idleRightImg from '../assets/The Female Adventurer - Free/Idle/Idle_Right_Down.png';
 import idleLeftImg from '../assets/The Female Adventurer - Free/Idle/Idle_Left_Down.png';
-import { useNavigate } from 'react-router-dom';
-import { ClassTypes } from '../constants/classTypes';
+import { ClassAbilityDescription, ClassTypes } from '../constants/classTypes';
 import { ButtonContainer } from './characterSelection/CharacterSelectionStyles';
-import Button from '../utils/button/Button';
+import AbilityDescription from './abilityDescription/AbilityDescription';
 
 const ClassSelection: React.FC = () => {
 	const navigate = useNavigate();
@@ -22,6 +23,11 @@ const ClassSelection: React.FC = () => {
 			onConfirm: () => {
 				navigate(ClassTypes.WARRIOR);
 			},
+			description: (
+				<AbilityDescription
+					description={ClassAbilityDescription.WARRIOR}
+				/>
+			),
 		},
 		{
 			title: ClassTypes.MAGE,
@@ -29,6 +35,11 @@ const ClassSelection: React.FC = () => {
 			onConfirm: () => {
 				navigate(ClassTypes.MAGE);
 			},
+			description: (
+				<AbilityDescription
+					description={ClassAbilityDescription.MAGE}
+				/>
+			),
 		},
 		{
 			title: ClassTypes.ROGUE,
@@ -36,6 +47,11 @@ const ClassSelection: React.FC = () => {
 			onConfirm: () => {
 				navigate(ClassTypes.ROGUE);
 			},
+			description: (
+				<AbilityDescription
+					description={ClassAbilityDescription.ROGUE}
+				/>
+			),
 		},
 		{
 			title: ClassTypes.HUNTER,
@@ -43,6 +59,11 @@ const ClassSelection: React.FC = () => {
 			onConfirm: () => {
 				navigate(ClassTypes.HUNTER);
 			},
+			description: (
+				<AbilityDescription
+					description={ClassAbilityDescription.HUNTER}
+				/>
+			),
 		},
 	];
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
