@@ -1,6 +1,7 @@
 import { useEffect, useRef, type RefObject } from 'react';
 import { useAnimationControls } from 'framer-motion';
 import overlayImgPath from '../../assets/levelThumbnails/overlay1.jpg';
+import bgAmbianceSound from '../../assets/audio/menu/tv_static/tv_static.mp3';
 
 type AnimationControls = ReturnType<typeof useAnimationControls>;
 type MediaElement = HTMLImageElement | HTMLVideoElement;
@@ -162,7 +163,27 @@ export const useLevelOptions = (imagePath: string): UseLevelOptionsReturn => {
 	const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
 	const controls = useAnimationControls();
 
-	//flicker animation
+	// Ambient loop audio setup
+	const bgAudioRef = useRef<HTMLAudioElement | null>(null);
+
+	useEffect(() => {
+		if (typeof Audio !== 'undefined') {
+			const audio = new Audio(bgAmbianceSound);
+			audio.loop = true;
+			audio.volume = 0.05;
+			audio.play().catch(() => {});
+			bgAudioRef.current = audio;
+		}
+
+		return () => {
+			if (bgAudioRef.current) {
+				bgAudioRef.current.pause();
+				bgAudioRef.current = null;
+			}
+		};
+	}, []);
+
+	// flicker animation
 	useEffect(() => {
 		let timeoutId: ReturnType<typeof setTimeout>;
 		let isMounted = true;
@@ -193,7 +214,7 @@ export const useLevelOptions = (imagePath: string): UseLevelOptionsReturn => {
 		};
 	}, [controls]);
 
-	//dim animation
+	// dim animation
 	useEffect(() => {
 		let timeoutId: ReturnType<typeof setTimeout>;
 		let isMounted = true;
@@ -218,7 +239,7 @@ export const useLevelOptions = (imagePath: string): UseLevelOptionsReturn => {
 		};
 	}, [controls]);
 
-	//fisheye distort
+	// fisheye distort
 	useEffect(() => {
 		const baseCanvas = baseCanvasRef.current;
 		const overlayCanvas = overlayCanvasRef.current;

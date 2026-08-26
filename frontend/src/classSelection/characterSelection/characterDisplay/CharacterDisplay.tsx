@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import Sprite from '../../../utils/sprite/Sprite';
 import Button from '../../../utils/button/Button';
+import clickSoundFile from '../../../assets/audio/menu/page_transition.mp3';
+import useSound from '../../../utils/useSound/useSound';
 import {
 	ArrowButton,
 	BackgroundAmbiance,
@@ -116,10 +118,13 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 	const [isConfirming, setIsConfirming] = useState<boolean>(false);
 	const [isInitialMount, setIsInitialMount] = useState<boolean>(true);
 
+	const playClickSound = useSound(clickSoundFile);
+
 	if (!options || options.length === 0) return null;
 
 	const handleNext = () => {
 		if (isConfirming) return;
+		playClickSound();
 		if (isInitialMount) setIsInitialMount(false);
 		setDirection(1);
 		setSelectedIndex(
@@ -129,6 +134,7 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 
 	const handlePrev = () => {
 		if (isConfirming) return;
+		playClickSound();
 		if (isInitialMount) setIsInitialMount(false);
 		setDirection(-1);
 		setSelectedIndex(

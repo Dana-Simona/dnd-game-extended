@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Container, Board, Controls } from './GameStyles';
 import Button from '../utils/button/Button';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../constants/routes';
+import { Container, Board, Controls } from './GameStyles';
 interface BoardData {
 	grid: string[];
 }
 
 const Game: React.FC = () => {
+	const navigate = useNavigate();
 	const [board, setBoard] = useState<string[]>([]);
 
 	const fetchBoard = async () => {
@@ -45,6 +48,10 @@ const Game: React.FC = () => {
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, []);
 
+	const handleClick = () => {
+		navigate(ROUTES.MAIN_MENU);
+	};
+
 	return (
 		<Container>
 			<h1>Dungeon Crawler</h1>
@@ -57,7 +64,7 @@ const Game: React.FC = () => {
 				<p>Controls: WASD to Move | E to Cast Ability | Q to Pass</p>
 			</Controls>
 			<Button
-				//TODO: change URL to main menu
+				onClick={handleClick}
 				style={{
 					marginTop: '20px',
 					padding: '8px 16px',
