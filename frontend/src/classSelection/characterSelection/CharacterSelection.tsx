@@ -8,23 +8,34 @@ import CharacterDisplay, {
 import type { AllPlayerData } from '../../constants/interfaces/player';
 import Button from '../../utils/button/Button';
 import Stats from './Stats/Stats';
+import { useCharacter } from '../../utils/characterContext/CharacterContext';
 
 export type Character = AllPlayerData & CharacterDisplayOptions;
 
 export const CharacterSelection: React.FC = () => {
 	const { classType } = useParams<{ classType?: string }>();
 	const navigate = useNavigate();
+	const { selectCharacter } = useCharacter();
 
 	const [characters, setCharacters] = useState<Character[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 
-	const handleConfirmSelection = (playerIndex: number) => {
+	const handleConfirmSelection = (
+		player: AllPlayerData,
+		playerIndex: number,
+	) => {
 		fetch('http://localhost:8080/api/select-player', {
 			method: 'POST',
 			headers: { 'Content-Type': 'text/plain' },
 			body: playerIndex.toString(),
 		})
-			.then(() => navigate('/levelSelection'))
+			.then((res) => {
+				if (!res.ok)
+					throw new Error('Failed to select player on server');
+
+				selectCharacter(player);
+				navigate('/levelSelection');
+			})
 			.catch((err) => console.error('Error selecting player:', err));
 	};
 
@@ -43,7 +54,8 @@ export const CharacterSelection: React.FC = () => {
 							// 	`../../assets/player/${player.class.toLowerCase()}/${player.name.toLowerCase()}/idle.png`,
 							// 	import.meta.url,
 							// ).href,
-							onConfirm: () => handleConfirmSelection(index),
+							onConfirm: () =>
+								handleConfirmSelection(player, index),
 							description: (
 								<Stats
 									data={{

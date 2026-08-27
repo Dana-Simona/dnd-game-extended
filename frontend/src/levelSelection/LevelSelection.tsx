@@ -22,7 +22,6 @@ const LEVELS = [1, 2, 3, 4, 5, 6].map((num) => {
 	const path = `/src/assets/levelThumbnails/level${num}.jpg`;
 	return {
 		id: num,
-		title: `Level ${num}`,
 		imagePath: levelImages[path]?.default || '',
 	};
 });
@@ -33,6 +32,7 @@ const LevelSelection: React.FC = () => {
 	const onBackClick = () => {
 		navigate(ROUTES.CHARACTER_SELECTION);
 	};
+
 	return (
 		<Container>
 			<ButtonContainer>
@@ -50,7 +50,7 @@ const LevelSelection: React.FC = () => {
 					<LevelOption
 						key={level.id}
 						imagePath={level.imagePath}
-						levelName={level.title}
+						levelNum={level.id}
 					/>
 				))}
 				<CharacterWrapper>

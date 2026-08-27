@@ -2,13 +2,11 @@ package game;
 
 import game.cell.Position;
 import game.occupant.unit.player.*;
-import java.io.File;
 import java.util.*;
 
 public class Game {
-
     private Player chosenPlayer;
-    private List<File> levels;
+    private List<String> levels;
     private Integer currentLevelIndex;
     private GameBoard currentGameBoard;
     private final MessageCallback messageCallback;
@@ -23,25 +21,19 @@ public class Game {
     private void loadAllFiles() {
         this.levels = new ArrayList<>();
 
-        File dir = new File("src/game/levels_dir");
-        if (!dir.exists()) {
-            dir = new File("backend/src/game/levels_dir");
+        int levelNumber = 1;
+        while (true) {
+            String resourcePath = "/game/levels_dir/level" + levelNumber + ".txt";
+            if (getClass().getResource(resourcePath) != null) {
+                this.levels.add(resourcePath);
+                System.out.println("Loaded level resource: " + resourcePath);
+                levelNumber++;
+            } else {
+                break;
+            }
         }
 
-        if (dir.exists() && dir.isDirectory()) {
-            File[] files = dir.listFiles();
-            if (files != null) {
-                Arrays.sort(files, Comparator.comparing(File::getName));
-                for (File f : files) {
-                    if (f.isFile() && f.getName().endsWith(".txt")) {
-                        this.levels.add(f);
-                        System.out.println("Loaded level file: " + f.getName());
-                    }
-                }
-            }
-        } else {
-            System.err.println("WARNING: Could not find levels directory at " + dir.getAbsolutePath());
-        }
+        System.out.println("Total levels loaded: " + this.levels.size());
     }
 
     public List<Player> getAvailablePlayers() {
@@ -56,6 +48,13 @@ public class Game {
         return availablePlayers;
     }
 
+    public void selectLevel(int levelIndex) {
+        if (levelIndex >= 0 && levelIndex < levels.size()) {
+            this.currentLevelIndex = levelIndex;
+            parseBoard();
+        }
+    }
+
     public void selectPlayer(int index) {
         List<Player> players = getAvailablePlayers();
         if (index >= 0 && index < players.size()) {
@@ -68,9 +67,9 @@ public class Game {
 
     private void parseBoard() {
         if (!levels.isEmpty() && currentLevelIndex < levels.size()) {
-            File currentFile = levels.get(currentLevelIndex);
+            String resourcePath = levels.get(currentLevelIndex);
             LevelParser levelParser = new LevelParser(chosenPlayer, messageCallback);
-            this.currentGameBoard = levelParser.parseLevel(currentFile);
+            this.currentGameBoard = levelParser.parseLevelFromResource(resourcePath);
         }
     }
 

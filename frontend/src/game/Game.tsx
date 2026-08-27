@@ -1,25 +1,48 @@
 import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../utils/button/Button';
-import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
 import { Container, Board, Controls } from './GameStyles';
+import { useCharacter } from '../utils/characterContext/CharacterContext';
+
 interface BoardData {
 	grid: string[];
 }
 
 const Game: React.FC = () => {
 	const navigate = useNavigate();
+	const { level } = useParams<{ level: string }>();
+	const { character } = useCharacter();
 	const [board, setBoard] = useState<string[]>([]);
 
-	const fetchBoard = async () => {
-		try {
-			const res = await fetch('http://localhost:8080/api/board');
-			const data: BoardData = await res.json();
-			setBoard(data.grid);
-		} catch (err) {
-			console.error('Failed to connect to Java backend:', err);
+	useEffect(() => {
+		if (!character) {
+			navigate(ROUTES.CHARACTER_SELECTION);
+			return;
 		}
-	};
+
+		const initializeLevel = async () => {
+			const levelIndex = level ? parseInt(level, 10) : 0;
+
+			try {
+				const res = await fetch(
+					'http://localhost:8080/api/select-level',
+					{
+						method: 'POST',
+						headers: { 'Content-Type': 'text/plain' },
+						body: levelIndex.toString(),
+					},
+				);
+				const data: BoardData = await res.json();
+				console.log(data);
+				setBoard(data.grid);
+			} catch (err) {
+				console.error('Failed to load level from backend:', err);
+			}
+		};
+
+		initializeLevel();
+	}, [level, character, navigate]);
 
 	const handleKeyPress = async (key: string) => {
 		const validKeys = ['w', 'a', 's', 'd', 'e', 'q'];
@@ -41,8 +64,6 @@ const Game: React.FC = () => {
 	};
 
 	useEffect(() => {
-		fetchBoard();
-
 		const onKeyDown = (e: KeyboardEvent) => handleKeyPress(e.key);
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
@@ -54,7 +75,12 @@ const Game: React.FC = () => {
 
 	return (
 		<Container>
-			<h1>Dungeon Crawler</h1>
+			<h1>Level {level ?? '0'}</h1>
+			{character && (
+				<h2>
+					Playing as: {character.name} ({character.class})
+				</h2>
+			)}
 
 			<Board>
 				{board.length > 0 ? board.join('\n') : 'Loading board...'}

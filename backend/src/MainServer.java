@@ -57,6 +57,26 @@ public class MainServer {
                 }
             });
 
+            server.createContext("/api/select-level", exchange -> {
+                addCorsHeaders(exchange);
+                if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                    exchange.sendResponseHeaders(204, -1);
+                    return;
+                }
+                if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                    InputStream is = exchange.getRequestBody();
+                    String indexStr = new String(is.readAllBytes()).trim();
+
+                    try {
+                        int levelIndex = Integer.parseInt(indexStr);
+                        game.selectLevel(levelIndex);
+                        sendJsonResponse(exchange, getBoardJson());
+                    } catch (NumberFormatException e) {
+                        sendJsonResponse(exchange, "{\"status\": \"error\", \"message\": \"Invalid level index\"}");
+                    }
+                }
+            });
+
             server.createContext("/api/board", exchange -> {
                 addCorsHeaders(exchange);
                 if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {

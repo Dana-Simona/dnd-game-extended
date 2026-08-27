@@ -6,40 +6,43 @@ import { ROUTES } from './constants/routes';
 import LevelSelection from './levelSelection/LevelSelection';
 import ClassSelection from './classSelection/ClassSelection';
 import CharacterSelection from './classSelection/characterSelection/CharacterSelection';
+import { CharacterProvider } from './utils/characterContext/CharacterContext';
 
 const App: React.FC = () => {
 	return (
-		<Routes>
-			<Route
-				path={ROUTES.MAIN_MENU}
-				element={<MainMenu />}
-			/>
+		<CharacterProvider>
+			<Routes>
+				<Route
+					path={ROUTES.MAIN_MENU}
+					element={<MainMenu />}
+				/>
 
-			<Route
-				path={ROUTES.CHARACTER_SELECTION}
-				element={<ClassSelection />}
-			/>
+				<Route
+					path={ROUTES.CHARACTER_SELECTION}
+					element={<ClassSelection />}
+				/>
 
-			<Route
-				path={`${ROUTES.CHARACTER_SELECTION}/:classType?`}
-				element={<CharacterSelection />}
-			/>
+				<Route
+					path={`${ROUTES.CHARACTER_SELECTION}/:classType?`}
+					element={<CharacterSelection />}
+				/>
 
-			<Route
-				path={ROUTES.LEVEL_SELECTION}
-				element={<LevelSelection />}
-			/>
+				<Route
+					path={ROUTES.LEVEL_SELECTION}
+					element={<LevelSelection />}
+				/>
 
-			<Route
-				path={ROUTES.GAME}
-				element={<Game />}
-			/>
+				<Route
+					path={`${ROUTES.GAME}/:level?`}
+					element={<Game />}
+				/>
 
-			<Route
-				path='*'
-				element={<NotFound />}
-			/>
-		</Routes>
+				<Route
+					path='*'
+					element={<NotFound />}
+				/>
+			</Routes>
+		</CharacterProvider>
 	);
 };
 

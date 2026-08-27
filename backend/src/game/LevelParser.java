@@ -9,15 +9,17 @@ import game.occupant.unit.enemy.Trap;
 import game.occupant.unit.enemy.monster.Boss;
 import game.occupant.unit.enemy.monster.Monster;
 import game.occupant.unit.player.Player;
-
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-
 import static java.util.Map.entry;
+import java.util.function.Function;
 
 public class LevelParser {
     private MessageCallback callback;
@@ -38,7 +40,6 @@ public class LevelParser {
                     player.setMovementManager(movementManager);
                     return new Floor(player);
                 }),
-
                 monster('s', "Gold Cloak", 80, 8, 3, 3, 25),
                 monster('k', "Knight", 200, 14, 8, 4, 50),
                 monster('q', "Queen's Guard", 400, 20, 15, 5, 100),
@@ -46,11 +47,9 @@ public class LevelParser {
                 monster('b', "Bear", 1000, 75, 30, 4, 250),
                 monster('g', "Giant", 1500, 100, 40, 5, 500),
                 monster('w', "White Walker", 2000, 150, 50, 6, 1000),
-
                 boss('M', "The Mountain", 1000, 60, 25, 6, 500, 5),
                 boss('C', "Queen Cersei", 100, 10, 10, 1, 1000, 8),
                 boss('K', "Night's King", 5000, 300, 150, 8, 5000, 3),
-
                 trap('B', "Bonus Trap", 1, 1, 1, 250, 1, 5),
                 trap('Q', "Queen's Trap", 250, 50, 10, 100, 3, 7),
                 trap('D', "Death Trap", 500, 100, 20, 250, 1, 10)
@@ -58,7 +57,7 @@ public class LevelParser {
     }
 
     private Map.Entry<Character, Function<Position, Cell>> monster(char character, String name, int health, int attack,
-                                                                   int defense, int vision, int xp) {
+            int defense, int vision, int xp) {
         return entry(character, (p) -> {
             Unit activeUnit = new Monster(character, name, health, attack, defense, vision, xp, p, this.callback, this.boardCallback);
             MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit);
@@ -68,7 +67,7 @@ public class LevelParser {
     }
 
     private Map.Entry<Character, Function<Position, Cell>> boss(char character, String name, int health, int attack, int defense,
-                                                                int vision, int xp, int freq) {
+            int vision, int xp, int freq) {
         return entry(character, (p) -> {
             Unit activeUnit = new Boss(character, name, health, attack, defense, vision, xp, freq, p, this.callback, this.boardCallback);
             MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit);
@@ -78,7 +77,7 @@ public class LevelParser {
     }
 
     private Map.Entry<Character, Function<Position, Cell>> trap(char character, String name, int health, int attack,
-                                                                int defense, int xp, int visibilityTime, int invisibilityTime) {
+            int defense, int xp, int visibilityTime, int invisibilityTime) {
         return entry(character, (p) -> {
             Unit activeUnit = new Trap(character, name, health, attack, defense, xp, visibilityTime, invisibilityTime, p, this.callback, this.boardCallback);
             MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit);
@@ -122,10 +121,26 @@ public class LevelParser {
 
     private Cell parseCharacterToCell(char character, Position position) {
         Function<Position, Cell> cellBuilder = cellFactory.get(character);
-        if (cellBuilder == null)
+        if (cellBuilder == null) {
             throw new IllegalArgumentException("the character " + character + " doesn't exist in the game");
+        }
         Cell cell = cellBuilder.apply(position);
         cell.setPosition(position);
         return cell;
+    }
+
+    public GameBoard parseLevelFromResource(String resourcePath) {
+        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                throw new IllegalArgumentException("Resource not found on classpath: " + resourcePath);
+            }
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                List<String> lines = reader.lines().toList();
+                return parseLinesToBoard(lines);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Couldn't read level resource: " + resourcePath, e);
+        }
     }
 }

@@ -17,10 +17,10 @@ const MotionBaseCanvas = motion(BaseCanvas);
 
 interface Props {
 	imagePath: string;
-	levelName: string;
+	levelNum: number;
 }
 
-const LevelOption: React.FC<Props> = ({ imagePath, levelName }) => {
+const LevelOption: React.FC<Props> = ({ imagePath, levelNum }) => {
 	const navigate = useNavigate();
 	const { baseCanvasRef, overlayCanvasRef, controls } =
 		useLevelOptions(imagePath);
@@ -30,7 +30,7 @@ const LevelOption: React.FC<Props> = ({ imagePath, levelName }) => {
 
 	const handleClick = () => {
 		playClickSound();
-		navigate(ROUTES.GAME);
+		navigate(ROUTES.GAME + '/' + levelNum);
 	};
 
 	return (
@@ -43,7 +43,7 @@ const LevelOption: React.FC<Props> = ({ imagePath, levelName }) => {
 				animate={controls}
 			/>
 			<OverlayCanvas ref={overlayCanvasRef} />
-			<OverlayLabel>{levelName}</OverlayLabel>
+			<OverlayLabel>Level {levelNum}</OverlayLabel>
 		</Card>
 	);
 };
