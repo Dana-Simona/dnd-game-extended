@@ -5,6 +5,7 @@ import game.occupant.unit.player.*;
 import java.util.*;
 
 public class Game {
+
     private Player chosenPlayer;
     private List<String> levels;
     private Integer currentLevelIndex;
@@ -50,7 +51,7 @@ public class Game {
 
     public void selectLevel(int levelIndex) {
         if (levelIndex >= 0 && levelIndex < levels.size()) {
-            this.currentLevelIndex = levelIndex;
+            this.currentLevelIndex = levelIndex - 1;
             parseBoard();
         }
     }
