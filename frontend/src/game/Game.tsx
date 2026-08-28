@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Button from '../utils/button/Button';
 import Tile from '../utils/tileMapping/Tile';
 import { ROUTES } from '../constants/routes';
-import { Container, Board, Controls } from './GameStyles';
+import { Container, Board, BoardRow, Controls, BackButton } from './GameStyles';
 import { useCharacter } from '../utils/characterContext/CharacterContext';
 
 interface BoardData {
@@ -85,11 +84,7 @@ const Game: React.FC = () => {
 			<Board>
 				{board.length > 0 ? (
 					board.map((row, rowIndex) => (
-						<div
-							key={rowIndex}
-							className='board-row'
-							style={{ display: 'flex' }}
-						>
+						<BoardRow key={rowIndex}>
 							{row.split('').map((char, colIndex) => (
 								<Tile
 									key={`${rowIndex}-${colIndex}`}
@@ -98,7 +93,7 @@ const Game: React.FC = () => {
 									y={rowIndex}
 								/>
 							))}
-						</div>
+						</BoardRow>
 					))
 				) : (
 					<p>Loading board...</p>
@@ -108,16 +103,7 @@ const Game: React.FC = () => {
 			<Controls>
 				<p>Controls: WASD to Move | E to Cast Ability | Q to Pass</p>
 			</Controls>
-			<Button
-				onClick={handleClick}
-				style={{
-					marginTop: '20px',
-					padding: '8px 16px',
-					fontSize: '0.9rem',
-				}}
-			>
-				Back to Menu
-			</Button>
+			<BackButton onClick={handleClick}>Back to Menu</BackButton>
 		</Container>
 	);
 };

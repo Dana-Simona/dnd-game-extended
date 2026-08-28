@@ -1,5 +1,7 @@
+import React from 'react';
 import Sprite from '../sprite/Sprite';
 import { getTileConfig } from './tileMapping';
+import { SpriteTileWrapper, StaticTile } from './TileStyles';
 
 interface TileProps {
 	char: string;
@@ -13,9 +15,9 @@ const Tile: React.FC<TileProps> = ({ char, x = 0, y = 0 }) => {
 	if (config.type === 'sprite') {
 		const { type, ...spriteProps } = config;
 		return (
-			<div style={{ width: 32, height: 32, position: 'relative' }}>
+			<SpriteTileWrapper>
 				<Sprite {...spriteProps} />
-			</div>
+			</SpriteTileWrapper>
 		);
 	}
 
@@ -24,16 +26,10 @@ const Tile: React.FC<TileProps> = ({ char, x = 0, y = 0 }) => {
 	const posY = (config.tileY || 0) * tileSize;
 
 	return (
-		<div
-			style={{
-				width: 32,
-				height: 32,
-				backgroundColor: '#717520',
-				backgroundImage: `url(${config.imagePath})`,
-				backgroundPosition: `-${posX}px -${posY}px`,
-				backgroundRepeat: 'no-repeat',
-				imageRendering: 'pixelated',
-			}}
+		<StaticTile
+			$imagePath={config.imagePath}
+			$posX={posX}
+			$posY={posY}
 		/>
 	);
 };
