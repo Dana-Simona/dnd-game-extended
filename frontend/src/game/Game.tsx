@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../utils/button/Button';
+import Tile from '../utils/tileMapping/Tile';
 import { ROUTES } from '../constants/routes';
 import { Container, Board, Controls } from './GameStyles';
 import { useCharacter } from '../utils/characterContext/CharacterContext';
@@ -34,7 +35,6 @@ const Game: React.FC = () => {
 					},
 				);
 				const data: BoardData = await res.json();
-				console.log(data);
 				setBoard(data.grid);
 			} catch (err) {
 				console.error('Failed to load level from backend:', err);
@@ -83,7 +83,26 @@ const Game: React.FC = () => {
 			)}
 
 			<Board>
-				{board.length > 0 ? board.join('\n') : 'Loading board...'}
+				{board.length > 0 ? (
+					board.map((row, rowIndex) => (
+						<div
+							key={rowIndex}
+							className='board-row'
+							style={{ display: 'flex' }}
+						>
+							{row.split('').map((char, colIndex) => (
+								<Tile
+									key={`${rowIndex}-${colIndex}`}
+									char={char}
+									x={colIndex}
+									y={rowIndex}
+								/>
+							))}
+						</div>
+					))
+				) : (
+					<p>Loading board...</p>
+				)}
 			</Board>
 
 			<Controls>

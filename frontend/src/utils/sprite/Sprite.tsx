@@ -1,7 +1,7 @@
 import React from 'react';
 import { SpriteBox } from './SpriteStyles';
 
-interface SpriteProps {
+export interface SpriteProps {
 	imagePath: string;
 	width: number;
 	height: number;
