@@ -47,6 +47,7 @@ export const TILE_CONFIGS: Record<string, TileConfig> = {
 		height: 64,
 		frameCount: 8,
 		fps: 4,
+		offsetY: 18,
 	},
 
 	// Standard Monsters

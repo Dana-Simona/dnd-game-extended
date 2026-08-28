@@ -6,10 +6,30 @@ interface StaticTileProps {
 	$posY: number;
 }
 
+interface PositionedSpriteProps {
+	$frameHeight: number;
+	$offsetY?: number;
+}
+
 export const SpriteTileWrapper = styled.div`
 	width: 32px;
 	height: 32px;
 	position: relative;
+	overflow: visible;
+`;
+
+export const PositionedSpriteContainer = styled.div<PositionedSpriteProps>`
+	position: absolute;
+	left: 50%;
+	top: 0;
+	transform: translate(
+		-50%,
+		calc(
+			-${(props) => props.$frameHeight - 32}px +
+				${(props) => props.$offsetY || 0}px
+		)
+	);
+	pointer-events: none;
 `;
 
 export const StaticTile = styled.div<StaticTileProps>`

@@ -1,7 +1,11 @@
 import React from 'react';
 import Sprite from '../sprite/Sprite';
 import { getTileConfig } from './tileMapping';
-import { SpriteTileWrapper, StaticTile } from './TileStyles';
+import {
+	SpriteTileWrapper,
+	PositionedSpriteContainer,
+	StaticTile,
+} from './TileStyles';
 
 interface TileProps {
 	char: string;
@@ -14,9 +18,16 @@ const Tile: React.FC<TileProps> = ({ char, x = 0, y = 0 }) => {
 
 	if (config.type === 'sprite') {
 		const { type, ...spriteProps } = config;
+		const offsetY = (config as { offsetY?: number }).offsetY || 0;
+
 		return (
 			<SpriteTileWrapper>
-				<Sprite {...spriteProps} />
+				<PositionedSpriteContainer
+					$frameHeight={spriteProps.height}
+					$offsetY={offsetY}
+				>
+					<Sprite {...spriteProps} />
+				</PositionedSpriteContainer>
 			</SpriteTileWrapper>
 		);
 	}

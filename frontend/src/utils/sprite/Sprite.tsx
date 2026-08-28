@@ -7,6 +7,7 @@ export interface SpriteProps {
 	height: number;
 	frameCount: number;
 	fps?: number;
+	offsetY?: number;
 }
 
 const Sprite: React.FC<SpriteProps> = ({
