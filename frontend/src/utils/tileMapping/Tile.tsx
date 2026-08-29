@@ -11,16 +11,16 @@ interface TileProps {
 	char: string;
 	x?: number;
 	y?: number;
+	grid?: string[];
 }
 
-const Tile: React.FC<TileProps> = ({ char, x = 0, y = 0 }) => {
-	const config = getTileConfig(char, x, y);
+const Tile: React.FC<TileProps> = ({ char, x = 0, y = 0, grid = [] }) => {
+	const config = getTileConfig(char, x, y, grid);
 
 	if (config.type === 'sprite') {
 		const { type, ...spriteProps } = config;
 		const offsetY = (config as { offsetY?: number }).offsetY || 0;
-
-		const groundConfig = getTileConfig('.', x, y);
+		const groundConfig = getTileConfig('.', x, y, grid);
 
 		return (
 			<SpriteTileWrapper>
@@ -44,6 +44,32 @@ const Tile: React.FC<TileProps> = ({ char, x = 0, y = 0 }) => {
 				>
 					<Sprite {...spriteProps} />
 				</PositionedSpriteContainer>
+			</SpriteTileWrapper>
+		);
+	}
+
+	if (char === '#' && 'groundImagePath' in config) {
+		const wallConfig = config as typeof config & {
+			groundImagePath: string;
+			groundTileX: number;
+			groundTileY: number;
+		};
+
+		const tileSize = wallConfig.tileSize || 32;
+
+		return (
+			<SpriteTileWrapper>
+				<StaticTile
+					$imagePath={wallConfig.groundImagePath}
+					$posX={wallConfig.groundTileX * tileSize}
+					$posY={wallConfig.groundTileY * tileSize}
+				/>
+				<StaticTile
+					$imagePath={wallConfig.imagePath}
+					$posX={(wallConfig.tileX || 0) * tileSize}
+					$posY={(wallConfig.tileY || 0) * tileSize}
+					style={{ position: 'absolute', top: 0, left: 0 }}
+				/>
 			</SpriteTileWrapper>
 		);
 	}

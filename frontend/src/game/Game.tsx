@@ -144,6 +144,7 @@ const Game: React.FC = () => {
 										char={char}
 										x={colIndex}
 										y={rowIndex}
+										grid={board}
 									/>
 								))}
 							</BoardRow>

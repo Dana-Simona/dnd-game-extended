@@ -1,9 +1,11 @@
-import playerSpriteSheet from '../../assets/The Female Adventurer - Free/Idle/Idle.png';
+import playerSpriteSheet from '../../assets/The Female Adventurer - Free/Idle/Idle_Right_Down.png';
+import enemySpriteSheet from '../../assets/enemies/Skeleton/Sprite Sheets/Skeleton Idle.png';
 import grassSpriteSheet from '../../assets/tiles/Texture/TX Tileset Grass.png';
 import wallSpriteSheet from '../../assets/tiles/Texture/TX Tileset Wall.png';
-import enemySpriteSheet from '../../assets/enemies/Skeleton/Sprite Sheets/Skeleton Idle.png';
+import stoneGroundSpriteSheet from '../../assets/tiles/Texture/TX Tileset Stone Ground.png';
 import type { SpriteProps } from '../sprite/Sprite';
 import { getProceduralTileCoords } from './proceduralNoise/useProceduralNoise';
+import { getWallConfigAt } from './wallAutotile';
 
 export type TileConfig =
 	| {
@@ -12,6 +14,9 @@ export type TileConfig =
 			tileX?: number;
 			tileY?: number;
 			tileSize?: number;
+			groundImagePath?: string;
+			groundTileX?: number;
+			groundTileY?: number;
 	  }
 	| ({ type: 'sprite' } & SpriteProps);
 
@@ -24,14 +29,10 @@ const defaultEnemySprite: TileConfig = {
 	fps: 6,
 };
 
+const STATIC_WALL_GROUND_X = 2;
+const STATIC_WALL_GROUND_Y = 2;
+
 export const TILE_CONFIGS: Record<string, TileConfig> = {
-	'#': {
-		type: 'static',
-		imagePath: wallSpriteSheet,
-		tileX: 0,
-		tileY: 0,
-		tileSize: 32,
-	},
 	'.': {
 		type: 'static',
 		imagePath: grassSpriteSheet,
@@ -51,22 +52,21 @@ export const TILE_CONFIGS: Record<string, TileConfig> = {
 	},
 
 	// Standard Monsters
-	s: defaultEnemySprite, // Gold Cloak
-	k: defaultEnemySprite, // Knight
-	q: defaultEnemySprite, // Queen's Guard
-	z: defaultEnemySprite, // Wright
-	b: defaultEnemySprite, // Bear
-	g: defaultEnemySprite, // Giant
-	w: defaultEnemySprite, // White Walker
+	s: defaultEnemySprite,
+	k: defaultEnemySprite,
+	q: defaultEnemySprite,
+	z: defaultEnemySprite,
+	b: defaultEnemySprite,
+	g: defaultEnemySprite,
+	w: defaultEnemySprite,
 
 	// Bosses
-	M: defaultEnemySprite, // The Mountain
-	C: defaultEnemySprite, // Queen Cersei
-	K: defaultEnemySprite, // Night's King
+	M: defaultEnemySprite,
+	C: defaultEnemySprite,
+	K: defaultEnemySprite,
 
 	// Traps
 	B: {
-		// Bonus Trap
 		type: 'static',
 		imagePath: grassSpriteSheet,
 		tileX: 3,
@@ -74,7 +74,6 @@ export const TILE_CONFIGS: Record<string, TileConfig> = {
 		tileSize: 32,
 	},
 	Q: {
-		// Queen's Trap
 		type: 'static',
 		imagePath: grassSpriteSheet,
 		tileX: 3,
@@ -82,7 +81,6 @@ export const TILE_CONFIGS: Record<string, TileConfig> = {
 		tileSize: 32,
 	},
 	D: {
-		// Death Trap
 		type: 'static',
 		imagePath: grassSpriteSheet,
 		tileX: 3,
@@ -95,7 +93,23 @@ export const getTileConfig = (
 	char: string,
 	x: number = 0,
 	y: number = 0,
+	grid: string[] = [],
 ): TileConfig => {
+	if (char === '#') {
+		const wallData = getWallConfigAt(grid, x, y);
+
+		return {
+			type: 'static',
+			imagePath: wallSpriteSheet,
+			tileX: wallData.wallTileX,
+			tileY: wallData.wallTileY,
+			tileSize: 32,
+			groundImagePath: stoneGroundSpriteSheet,
+			groundTileX: STATIC_WALL_GROUND_X,
+			groundTileY: STATIC_WALL_GROUND_Y,
+		};
+	}
+
 	if (char === '.') {
 		const { tileX, tileY } = getProceduralTileCoords(x, y);
 
