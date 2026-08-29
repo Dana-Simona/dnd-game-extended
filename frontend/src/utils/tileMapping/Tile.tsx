@@ -20,8 +20,24 @@ const Tile: React.FC<TileProps> = ({ char, x = 0, y = 0 }) => {
 		const { type, ...spriteProps } = config;
 		const offsetY = (config as { offsetY?: number }).offsetY || 0;
 
+		const groundConfig = getTileConfig('.', x, y);
+
 		return (
 			<SpriteTileWrapper>
+				{groundConfig.type === 'static' && (
+					<StaticTile
+						$imagePath={groundConfig.imagePath}
+						$posX={
+							(groundConfig.tileX || 0) *
+							(groundConfig.tileSize || 32)
+						}
+						$posY={
+							(groundConfig.tileY || 0) *
+							(groundConfig.tileSize || 32)
+						}
+					/>
+				)}
+
 				<PositionedSpriteContainer
 					$frameHeight={spriteProps.height}
 					$offsetY={offsetY}
