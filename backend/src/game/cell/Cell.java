@@ -3,6 +3,7 @@ package game.cell;
 import game.occupant.Occupant;
 
 public abstract class Cell {
+
     private char character;
     private Position position;
 
@@ -10,6 +11,7 @@ public abstract class Cell {
         this.character = character;
     }
 
+    @Override
     public String toString() {
         return character + "";
     }

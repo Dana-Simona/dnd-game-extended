@@ -4,7 +4,7 @@ import game.cell.Position;
 import game.occupant.unit.player.*;
 import java.util.*;
 
-public class Game {
+public final class Game {
 
     private Player chosenPlayer;
     private List<String> levels;

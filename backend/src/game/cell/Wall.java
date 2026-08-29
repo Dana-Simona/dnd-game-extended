@@ -3,6 +3,7 @@ package game.cell;
 import game.occupant.Occupant;
 
 public class Wall extends Cell {
+
     public Wall() {
         super('#');
     }
@@ -14,9 +15,9 @@ public class Wall extends Cell {
 
     @Override
     public void setOccupant(Occupant occupant) {
-        return;
     }
 
+    @Override
     public void accept(CellVisitor visitor) {
         visitor.visit(this);
     }

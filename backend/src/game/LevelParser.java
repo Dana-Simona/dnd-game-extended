@@ -3,6 +3,7 @@ package game;
 import game.cell.Cell;
 import game.cell.Floor;
 import game.cell.Position;
+import game.cell.StairCase;
 import game.cell.Wall;
 import game.occupant.unit.Unit;
 import game.occupant.unit.enemy.Trap;
@@ -22,6 +23,7 @@ import static java.util.Map.entry;
 import java.util.function.Function;
 
 public class LevelParser {
+
     private MessageCallback callback;
     private GameBoard boardOutcome;
     private BoardCallback boardCallback;
@@ -33,6 +35,9 @@ public class LevelParser {
         this.chosenPlayer = player;
         this.cellFactory = Map.ofEntries(
                 entry('#', p -> new Wall()),
+                entry('*', p -> new Wall()),
+                entry('~', p -> new Wall()),
+                entry('^', p -> new StairCase()),
                 entry('.', p -> new Floor()),
                 entry('@', p -> {
                     player.setPosition(p.getX(), p.getY());
@@ -91,42 +96,10 @@ public class LevelParser {
             List<String> lines = Files.readAllLines(levelFile.toPath());
             return parseLinesToBoard(lines);
         } catch (IOException e) {
-            throw new RuntimeException("couldn't read file: " + levelFile.getName(), e);
+            throw new RuntimeException("Failed to read level file: " + levelFile.getName(), e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing level file '" + levelFile.getName() + "': " + e.getMessage(), e);
         }
-    }
-
-    private GameBoard parseLinesToBoard(List<String> lines) {
-        int boardWidth = lines.getFirst().length();
-        int boardHeight = lines.size();
-
-        boardOutcome = new GameBoard(boardWidth, boardHeight);
-
-        this.boardCallback = new BoardManager(boardOutcome);
-        chosenPlayer.setBoardCallback(this.boardCallback);
-
-        for (int i = 0; i < lines.size(); i++) {
-            String line = lines.get(i);
-            for (int j = 0; j < line.length(); j++) {
-                char character = line.charAt(j);
-
-                Position currentPosition = new Position(j, i);
-
-                Cell cell = parseCharacterToCell(character, currentPosition);
-                boardOutcome.setCell(currentPosition, cell);
-            }
-        }
-
-        return boardOutcome;
-    }
-
-    private Cell parseCharacterToCell(char character, Position position) {
-        Function<Position, Cell> cellBuilder = cellFactory.get(character);
-        if (cellBuilder == null) {
-            throw new IllegalArgumentException("the character " + character + " doesn't exist in the game");
-        }
-        Cell cell = cellBuilder.apply(position);
-        cell.setPosition(position);
-        return cell;
     }
 
     public GameBoard parseLevelFromResource(String resourcePath) {
@@ -140,7 +113,76 @@ public class LevelParser {
                 return parseLinesToBoard(lines);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't read level resource: " + resourcePath, e);
+            throw new RuntimeException("Failed to read level resource: " + resourcePath, e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error parsing level resource '" + resourcePath + "': " + e.getMessage(), e);
+        }
+    }
+
+    private GameBoard parseLinesToBoard(List<String> lines) {
+        validateLines(lines);
+
+        int boardWidth = lines.getFirst().length();
+        int boardHeight = lines.size();
+
+        boardOutcome = new GameBoard(boardWidth, boardHeight);
+        this.boardCallback = new BoardManager(boardOutcome);
+        chosenPlayer.setBoardCallback(this.boardCallback);
+
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
+            validateLineLength(line, boardWidth, i);
+
+            for (int j = 0; j < line.length(); j++) {
+                char character = line.charAt(j);
+                Position currentPosition = new Position(j, i);
+
+                Cell cell = parseCharacterToCell(character, currentPosition, i, j);
+                boardOutcome.setCell(currentPosition, cell);
+            }
+        }
+
+        try {
+            StairCaseParser.configureStaircases(boardOutcome);
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed during staircase configuration: " + e.getMessage(), e);
+        }
+
+        return boardOutcome;
+    }
+
+    private Cell parseCharacterToCell(char character, Position position, int lineIndex, int colIndex) {
+        Function<Position, Cell> cellBuilder = cellFactory.get(character);
+        if (cellBuilder == null) {
+            throw new IllegalArgumentException(
+                    String.format("Unknown level character '%c' at [Row %d, Col %d] (x=%d, y=%d)",
+                            character, lineIndex + 1, colIndex + 1, colIndex, lineIndex)
+            );
+        }
+        try {
+            Cell cell = cellBuilder.apply(position);
+            cell.setPosition(position);
+            return cell;
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    String.format("Failed to instantiate cell for character '%c' at [Row %d, Col %d]: %s",
+                            character, lineIndex + 1, colIndex + 1, e.getMessage()), e
+            );
+        }
+    }
+
+    private void validateLines(List<String> lines) {
+        if (lines == null || lines.isEmpty()) {
+            throw new IllegalArgumentException("Level map cannot be empty or null.");
+        }
+    }
+
+    private void validateLineLength(String line, int expectedWidth, int lineIndex) {
+        if (line.length() != expectedWidth) {
+            throw new IllegalArgumentException(
+                    String.format("Inconsistent map width on line %d. Expected %d characters, but found %d.",
+                            lineIndex + 1, expectedWidth, line.length())
+            );
         }
     }
 }

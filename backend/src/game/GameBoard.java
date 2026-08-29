@@ -6,10 +6,10 @@ import game.occupant.Occupant;
 import game.occupant.unit.OccupantFilterVisitor;
 import game.occupant.unit.enemy.Enemy;
 import game.occupant.unit.player.Player;
-
 import java.util.List;
 
 public class GameBoard {
+
     private Cell[][] board;
 
     public GameBoard(int boardWidth, int boardHeight) {
@@ -26,6 +26,10 @@ public class GameBoard {
 
     public Cell getCell(Position p) {
         return board[p.getX()][p.getY()];
+    }
+
+    public Cell getCell(int x, int y) {
+        return board[x][y];
     }
 
     public void setOccupant(Position position, Occupant occupant) {
@@ -91,6 +95,7 @@ public class GameBoard {
         return allEnemies.isEmpty();
     }
 
+    @Override
     public String toString() {
         StringBuilder output = new StringBuilder();
         for (int y = 0; y < board[0].length; y++) {

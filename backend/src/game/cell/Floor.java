@@ -3,6 +3,7 @@ package game.cell;
 import game.occupant.Occupant;
 
 public class Floor extends Cell {
+
     private Occupant occupant;
 
     char emptyFloor = '.';
@@ -17,6 +18,7 @@ public class Floor extends Cell {
         this.occupant = occupant;
     }
 
+    @Override
     public void accept(CellVisitor visitor) {
         visitor.visit(this);
     }
@@ -31,10 +33,12 @@ public class Floor extends Cell {
         }
     }
 
+    @Override
     public Occupant getOccupant() {
         return occupant;
     }
 
+    @Override
     public String toString() {
         if (occupant == null) {
             return super.toString();
