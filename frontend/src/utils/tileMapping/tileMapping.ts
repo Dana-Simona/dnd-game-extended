@@ -1,6 +1,7 @@
 import playerSpriteSheet from '../../assets/The Female Adventurer - Free/Idle/Idle_Right_Down.png';
 import enemySpriteSheet from '../../assets/enemies/Skeleton/Sprite Sheets/Skeleton Idle.png';
 import grassSpriteSheet from '../../assets/tiles/Texture/TX Tileset Grass.png';
+import stairsSpriteSheet from '../../assets/tiles/Texture/TX Struct.png';
 import wallSpriteSheet from '../../assets/tiles/Texture/TX Tileset Wall.png';
 import stoneGroundSpriteSheet from '../../assets/tiles/Texture/TX Tileset Stone Ground.png';
 import type { SpriteProps } from '../sprite/Sprite';
@@ -49,6 +50,14 @@ export const TILE_CONFIGS: Record<string, TileConfig> = {
 		frameCount: 8,
 		fps: 4,
 		offsetY: 18,
+	},
+
+	'^': {
+		type: 'static',
+		imagePath: stairsSpriteSheet,
+		tileX: 1,
+		tileY: 2,
+		tileSize: 32,
 	},
 
 	// Standard Monsters

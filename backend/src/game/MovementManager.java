@@ -56,7 +56,6 @@ public class MovementManager implements CellVisitor, OccupantVisitor {
      */
     @Override
     public void visit(StairCase stairCase) {
-        System.err.println("moving upstairs");
         Position unitPos = activeUnit.getPosition();
         Position stairPos = stairCase.getPosition();
 
@@ -69,10 +68,8 @@ public class MovementManager implements CellVisitor, OccupantVisitor {
         int deltaY = stairPos.getY() - unitPos.getY();
 
         if (stairCase.isVertical()) {
-            System.err.println("UP");
             handleVerticalStaircase(unitPos, deltaX, deltaY);
         } else {
-            System.err.println("Right");
             handleHorizontalStaircase(unitPos, deltaX, deltaY);
         }
     }
