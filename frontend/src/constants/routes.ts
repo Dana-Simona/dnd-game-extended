@@ -7,4 +7,5 @@ export const ROUTES = {
 	CHARACTER_SELECTION_HUNTER: '/characterSelection/hunter',
 	LEVEL_SELECTION: '/levelSelection',
 	GAME: '/game',
+	DEV_TOOLS: '/devTools',
 } as const;

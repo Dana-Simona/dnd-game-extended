@@ -7,6 +7,7 @@ import LevelSelection from './levelSelection/LevelSelection';
 import ClassSelection from './classSelection/ClassSelection';
 import CharacterSelection from './classSelection/characterSelection/CharacterSelection';
 import { CharacterProvider } from './utils/characterContext/CharacterContext';
+import DevTools from './devTools/DevTools';
 
 const App: React.FC = () => {
 	return (
@@ -40,6 +41,11 @@ const App: React.FC = () => {
 				<Route
 					path='*'
 					element={<NotFound />}
+				/>
+
+				<Route
+					path={ROUTES.DEV_TOOLS}
+					element={<DevTools />}
 				/>
 			</Routes>
 		</CharacterProvider>

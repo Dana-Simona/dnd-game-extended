@@ -11,6 +11,10 @@ const MainMenu: React.FC = () => {
 		navigate(ROUTES.CHARACTER_SELECTION);
 	};
 
+	const devTools = () => {
+		navigate(ROUTES.DEV_TOOLS);
+	};
+
 	return (
 		<Container>
 			<Title>Dungeon.exe</Title>
@@ -25,6 +29,7 @@ const MainMenu: React.FC = () => {
 				>
 					Controls
 				</Button>
+				<Button onClick={devTools}> Developer Tools </Button>
 			</MenuBox>
 		</Container>
 	);

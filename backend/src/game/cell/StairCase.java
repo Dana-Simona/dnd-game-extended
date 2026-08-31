@@ -5,18 +5,18 @@ import game.occupant.Occupant;
 public class StairCase extends Cell {
 
     private boolean isVertical;
-    public static  int stairLength = 3;
+    public static int stairLength = 3;
 
-    public StairCase() {
+    public StairCase(boolean isVertical) {
         super('^');
-        this.isVertical = true;
+        this.isVertical = isVertical;
     }
 
-    public void setOrientation(boolean isStraight) {
-        this.isVertical = isStraight;
+    public void setIsVertical(boolean isVertical) {
+        this.isVertical = isVertical;
     }
 
-    public boolean isVertical() {
+    public boolean getIsVertical() {
         return isVertical;
     }
 

@@ -5,44 +5,30 @@ export interface WallTileResult {
 	groundTileY: number;
 }
 
-const isWall = (grid: string[] | string[][], x: number, y: number): boolean => {
-	if (!grid || grid.length === 0) return false;
-	if (y < 0 || y >= grid.length) return true;
-
-	const row = grid[y];
-	if (!row || x < 0 || x >= row.length) return true;
-
-	return row[x] === '#';
+// 1. Bit flags for quick spatial queries around (x, y)
+export const N = {
+	U1: 1 << 0, // Up 1 (x, y-1)
+	U2: 1 << 1, // Up 2 (x, y-2)
+	D1: 1 << 2, // Down 1 (x, y+1)
+	D2: 1 << 3, // Down 2 (x, y+2)
+	L1: 1 << 4, // Left 1 (x-1, y)
+	R1: 1 << 5, // Right 1 (x+1, y)
+	UL: 1 << 6, // Top-Left corner (x-1, y-1)
+	UR: 1 << 7, // Top-Right corner (x+1, y-1)
+	DL: 1 << 8, // Bottom-Left corner (x-1, y+1)
+	DR: 1 << 9, // Bottom-Right corner (x+1, y+1)
 };
 
-const WALL_TILE_MAP: Record<string, { x: number; y: number }> = {
-	NONE: { x: 3, y: 3 },
+const getChar = (grid: string[], x: number, y: number): string => {
+	if (!grid || grid.length === 0) return '#';
+	if (y < 0 || y >= grid.length) return '#';
+	const row = grid[y];
+	if (!row || x < 0 || x >= row.length) return '#';
+	return row[x];
+};
 
-	U1: { x: 1, y: 4 },
-	U2: { x: 1, y: 4 },
-	D1: { x: 1, y: 0 },
-	D2: { x: 1, y: 0 },
-	L1: { x: 2, y: 1 },
-	L2: { x: 2, y: 1 },
-	R1: { x: 0, y: 1 },
-	R2: { x: 0, y: 1 },
-
-	U1_D1: { x: 1, y: 3 },
-	U2_D2: { x: 1, y: 10 },
-	L1_R1: { x: 0, y: 3 },
-	L2_R2: { x: 0, y: 3 },
-
-	U1_R1: { x: 0, y: 2 },
-	D1_R1: { x: 0, y: 0 },
-	D1_L1: { x: 2, y: 0 },
-	U1_L1: { x: 2, y: 2 },
-
-	U1_D1_R1: { x: 3, y: 0 },
-	U1_L1_R1: { x: 3, y: 1 },
-	U1_D1_L1: { x: 3, y: 2 },
-	D1_L1_R1: { x: 2, y: 3 },
-
-	U1_D1_L1_R1: { x: 4, y: 1 },
+const isWall = (grid: string[], x: number, y: number): boolean => {
+	return getChar(grid, x, y) === '#';
 };
 
 export const getWallConfigAt = (
@@ -50,41 +36,98 @@ export const getWallConfigAt = (
 	x: number,
 	y: number,
 ): WallTileResult => {
-	const U1 = isWall(grid, x, y - 1);
-	const U2 = U1 && isWall(grid, x, y - 2);
+	// Collect 10-bit state surrounding the current tile
+	let mask = 0;
+	if (isWall(grid, x, y - 1)) mask |= N.U1;
+	if (isWall(grid, x, y - 2)) mask |= N.U2;
+	if (isWall(grid, x, y + 1)) mask |= N.D1;
+	if (isWall(grid, x, y + 2)) mask |= N.D2;
+	if (isWall(grid, x - 1, y)) mask |= N.L1;
+	if (isWall(grid, x + 1, y)) mask |= N.R1;
+	if (isWall(grid, x - 1, y - 1)) mask |= N.UL;
+	if (isWall(grid, x + 1, y - 1)) mask |= N.UR;
+	if (isWall(grid, x - 1, y + 1)) mask |= N.DL;
+	if (isWall(grid, x + 1, y + 1)) mask |= N.DR;
 
-	const D1 = isWall(grid, x, y + 1);
-	const D2 = D1 && isWall(grid, x, y + 2);
+	let wallTileX = 3;
+	let wallTileY = 3;
 
-	const L1 = isWall(grid, x - 1, y);
-	const L2 = L1 && isWall(grid, x - 2, y);
+	const hasU = Boolean(mask & N.U1);
+	const hasD = Boolean(mask & N.D1);
+	const hasL = Boolean(mask & N.L1);
+	const hasR = Boolean(mask & N.R1);
 
-	const R1 = isWall(grid, x + 1, y);
-	const R2 = R1 && isWall(grid, x + 2, y);
+	if (hasU && hasD && hasL && hasR) {
+		wallTileX = 2;
+		wallTileY = 4;
+	} else if (hasU && hasD && hasR) {
+		wallTileX = 1;
+		wallTileY = 2;
+	} else if (hasU && hasD && hasL) {
+		wallTileX = 3;
+		wallTileY = 2;
+	} else if (hasU && hasL && hasR) {
+		wallTileX = 2;
+		wallTileY = 4;
+	} else if (hasD && hasL && hasR) {
+		wallTileX = 5;
+		wallTileY = 1;
+	} else if (hasU && hasR) {
+		wallTileX = 1;
+		wallTileY = 4;
+	} else if (hasD && hasR) {
+		wallTileX = 1;
+		wallTileY = 1;
+	} else if (hasD && hasL) {
+		wallTileX = 3;
+		wallTileY = 1;
+	} else if (hasU && hasL) {
+		wallTileX = 3;
+		wallTileY = 4;
+	} else if (hasU && hasD) {
+		wallTileX = 9;
+		wallTileY = mask & N.D2 ? 7 : 8;
+	} else if (hasL && hasR) {
+		wallTileX = 2;
+		wallTileY = 4;
+	} else if (hasU) {
+		wallTileX = 9;
+		wallTileY = 8;
+	} else if (hasD) {
+		wallTileX = 9;
+		wallTileY = 6;
+	} else if (hasL) {
+		wallTileX = 2;
+		wallTileY = 1;
+	} else if (hasR) {
+		wallTileX = 2;
+		wallTileY = 1;
+	}
 
-	const connections: string[] = [];
-	if (U2) connections.push('U2');
-	else if (U1) connections.push('U1');
+	const isEdgeTile = !(
+		mask & N.U1 &&
+		mask & N.D1 &&
+		mask & N.L1 &&
+		mask & N.R1
+	);
+	// Returns true if any adjacent cardinally connected tile is a staircase '^'
+	const isNearStairs = (grid: string[], x: number, y: number): boolean => {
+		return (
+			getChar(grid, x, y - 1) === '^' ||
+			getChar(grid, x, y + 1) === '^' ||
+			getChar(grid, x - 1, y) === '^' ||
+			getChar(grid, x + 1, y) === '^'
+		);
+	};
 
-	if (D2) connections.push('D2');
-	else if (D1) connections.push('D1');
-
-	if (L2) connections.push('L2');
-	else if (L1) connections.push('L1');
-
-	if (R2) connections.push('R2');
-	else if (R1) connections.push('R1');
-
-	const key = connections.length > 0 ? connections.join('_') : 'NONE';
-
-	const tile =
-		WALL_TILE_MAP[key] ||
-		WALL_TILE_MAP[key.replace(/2/g, '1')] ||
-		WALL_TILE_MAP['L1_R1'];
+	// if (isEdgeTile && isNearStairs(grid, x, y)) {
+	// 	wallTileX = 4;
+	// 	wallTileY = 7;
+	// }
 
 	return {
-		wallTileX: tile.x,
-		wallTileY: tile.y,
+		wallTileX,
+		wallTileY,
 		groundTileX: 2,
 		groundTileY: 2,
 	};

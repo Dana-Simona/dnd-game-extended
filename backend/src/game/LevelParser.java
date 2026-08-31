@@ -37,7 +37,8 @@ public class LevelParser {
                 entry('#', p -> new Wall()),
                 entry('*', p -> new Wall()),
                 entry('~', p -> new Wall()),
-                entry('^', p -> new StairCase()),
+                entry('^', p -> new StairCase(true)),
+                entry('>', p -> new StairCase(false)),
                 entry('.', p -> new Floor()),
                 entry('@', p -> {
                     player.setPosition(p.getX(), p.getY());
@@ -143,7 +144,6 @@ public class LevelParser {
         }
 
         try {
-            StairCaseParser.configureStaircases(boardOutcome);
         } catch (Exception e) {
             throw new IllegalStateException("Failed during staircase configuration: " + e.getMessage(), e);
         }
