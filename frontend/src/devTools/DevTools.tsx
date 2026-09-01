@@ -4,6 +4,13 @@ import { tiles } from '../utils/tileMapping/AllTiles';
 
 const TILE_SIZE = 32;
 
+export interface ITile {
+	imageSrc: string;
+	size?: { horizontalTiles: number; verticalTiles: number };
+	coordinates: { x: number[]; y: number[] };
+	name?: string;
+}
+
 type LayerType = 'ascii' | 'data';
 type ToolMode = 'pan' | 'paint';
 
@@ -15,7 +22,6 @@ interface LevelLayer {
 	zIndex: number;
 }
 
-// 1. Dynamic import that matches all files inside ANY level folder
 const allLevelFiles = import.meta.glob('/src/constants/levels_dir/*/*.*', {
 	eager: true,
 });
@@ -34,7 +40,7 @@ const DevTools: React.FC = () => {
 
 	// Editing State
 	const [activeLayerId, setActiveLayerId] = useState<string | null>(null);
-	const [selectedTileIndex, setSelectedTileIndex] = useState<number>(-1); // -1 is eraser
+	const [selectedTileIndex, setSelectedTileIndex] = useState<number>(-1);
 	const [toolMode, setToolMode] = useState<ToolMode>('pan');
 	const [copied, setCopied] = useState(false);
 
@@ -58,7 +64,6 @@ const DevTools: React.FC = () => {
 		const levelNamesSet = new Set<string>();
 
 		filePaths.forEach((path) => {
-			// Path structure: /src/constants/levels_dir/[levelName]/[fileName]
 			const parts = path.split('/');
 			const dirIndex = parts.indexOf('levels_dir');
 			if (dirIndex !== -1 && parts[dirIndex + 1]) {
@@ -126,7 +131,6 @@ const DevTools: React.FC = () => {
 			const isAscii =
 				Array.isArray(rawData) && typeof rawData[0] === 'string';
 
-			// Deep clone array so editing in memory doesn't mutate imported modules
 			const clonedData = JSON.parse(JSON.stringify(rawData));
 
 			loadedLayers.push({
@@ -147,7 +151,7 @@ const DevTools: React.FC = () => {
 		if (topmostData) setActiveLayerId(topmostData.id);
 	}, [selectedLevel]);
 
-	// --- CANVAS RENDERING ---
+	// --- CANVAS RENDERING WITH SIZE ACCOMMODATION ---
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (!canvas || !imagesLoaded) return;
@@ -176,25 +180,39 @@ const DevTools: React.FC = () => {
 					rowArr.forEach((tileIndex, colIdx) => {
 						if (tileIndex === -1) return;
 
-						const tileDef = tiles[tileIndex];
+						const tileDef = tiles[tileIndex] as ITile;
 						if (tileDef) {
 							const img = imageCache.current[tileDef.imageSrc];
 							if (img) {
+								// Source Top-Left coordinates
 								const sourceX =
 									tileDef.coordinates.x[0] * TILE_SIZE;
 								const sourceY =
 									tileDef.coordinates.y[0] * TILE_SIZE;
 
+								// Number of tiles to take from tileset
+								const hTiles =
+									tileDef.size?.horizontalTiles ?? 1;
+								const vTiles = tileDef.size?.verticalTiles ?? 1;
+
+								const sourceW = hTiles * TILE_SIZE;
+								const sourceH = vTiles * TILE_SIZE;
+
+								// Destination position anchor calculation:
+								// Multi-tile sprites anchor at the top-left of their tile footprint
+								const destX = colIdx * TILE_SIZE;
+								const destY = rowIdx * TILE_SIZE;
+
 								ctx.drawImage(
 									img,
 									sourceX,
 									sourceY,
-									TILE_SIZE,
-									TILE_SIZE,
-									colIdx * TILE_SIZE,
-									rowIdx * TILE_SIZE,
-									TILE_SIZE,
-									TILE_SIZE,
+									sourceW,
+									sourceH,
+									destX,
+									destY,
+									sourceW,
+									sourceH,
 								);
 							}
 						}
@@ -208,9 +226,9 @@ const DevTools: React.FC = () => {
 				asciiData.forEach((rowStr, rowIdx) => {
 					for (let colIdx = 0; colIdx < rowStr.length; colIdx++) {
 						const char = rowStr[colIdx];
-						if (char !== ' ' && char !== '#') {
+						if (char !== ' ') {
 							ctx.fillStyle =
-								char === '@' ? '#00ff00' : '#ff0000';
+								char === '@' ? '#00ff00' : '#6acec6';
 							ctx.shadowColor = 'black';
 							ctx.shadowBlur = 4;
 							ctx.fillText(
@@ -393,41 +411,27 @@ const DevTools: React.FC = () => {
 	return (
 		<S.Container>
 			<S.CanvasContainer onWheel={handleWheel}>
-				<canvas
+				<S.Canvas
 					ref={canvasRef}
 					onMouseDown={handleMouseDown}
 					onMouseMove={handleMouseMove}
 					onMouseUp={handleMouseUp}
 					onMouseLeave={handleMouseUp}
-					style={{
-						cursor:
-							toolMode === 'paint'
-								? 'crosshair'
-								: isDragging
-									? 'grabbing'
-									: 'grab',
-					}}
+					$cursor={
+						toolMode === 'paint'
+							? 'crosshair'
+							: isDragging
+								? 'grabbing'
+								: 'grab'
+					}
 				/>
 			</S.CanvasContainer>
 
-			<S.Sidebar style={{ overflowY: 'auto' }}>
-				{/* 1. LEVEL DROPDOWN */}
+			<S.Sidebar>
 				<S.SectionTitle>Select Level</S.SectionTitle>
-				<select
+				<S.Select
 					value={selectedLevel}
 					onChange={(e) => setSelectedLevel(e.target.value)}
-					style={{
-						width: '100%',
-						padding: '8px',
-						marginBottom: '16px',
-						background: '#1a1a1a',
-						color: '#fff',
-						border: '1px solid #444',
-						borderRadius: '4px',
-						fontSize: '14px',
-						fontWeight: 'bold',
-						cursor: 'pointer',
-					}}
 				>
 					{availableLevels.map((lvl) => (
 						<option
@@ -437,55 +441,28 @@ const DevTools: React.FC = () => {
 							📁 {lvl}
 						</option>
 					))}
-				</select>
+				</S.Select>
 
 				<S.SectionTitle>Tools</S.SectionTitle>
-				<div
-					style={{
-						display: 'flex',
-						gap: '8px',
-						marginBottom: '16px',
-					}}
-				>
-					<button
+				<S.ToolButtonGroup>
+					<S.ToolButton
+						$active={toolMode === 'pan'}
 						onClick={() => setToolMode('pan')}
-						style={{
-							flex: 1,
-							padding: '8px',
-							background: toolMode === 'pan' ? '#444' : '#222',
-							color: 'white',
-							border: '1px solid #555',
-							cursor: 'pointer',
-						}}
 					>
 						✋ Pan
-					</button>
-					<button
+					</S.ToolButton>
+					<S.ToolButton
+						$active={toolMode === 'paint'}
 						onClick={() => setToolMode('paint')}
-						style={{
-							flex: 1,
-							padding: '8px',
-							background: toolMode === 'paint' ? '#444' : '#222',
-							color: 'white',
-							border: '1px solid #555',
-							cursor: 'pointer',
-						}}
 					>
 						🖌️ Paint
-					</button>
-				</div>
+					</S.ToolButton>
+				</S.ToolButtonGroup>
 
 				<S.SectionTitle>Layers (Active / Visible)</S.SectionTitle>
 				<S.LayerList>
 					{[...layers].reverse().map((layer) => (
-						<S.LayerItem
-							key={layer.id}
-							style={{
-								display: 'flex',
-								alignItems: 'center',
-								gap: '8px',
-							}}
-						>
+						<S.LayerItem key={layer.id}>
 							<input
 								type='radio'
 								name='activeLayer'
@@ -499,17 +476,10 @@ const DevTools: React.FC = () => {
 								onChange={() => toggleLayer(layer.id)}
 								title='Toggle Visibility'
 							/>
-							<span
-								style={{
-									fontWeight:
-										activeLayerId === layer.id
-											? 'bold'
-											: 'normal',
-								}}
-							>
+							<S.LayerName $active={activeLayerId === layer.id}>
 								{layer.name}{' '}
 								{layer.type === 'ascii' && '(ASCII)'}
-							</span>
+							</S.LayerName>
 						</S.LayerItem>
 					))}
 				</S.LayerList>
@@ -531,114 +501,62 @@ const DevTools: React.FC = () => {
 							</p>
 						</>
 					) : (
-						<p style={{ color: '#666' }}>Hover over a tile...</p>
+						<S.MutedText>Hover over a tile...</S.MutedText>
 					)}
 				</S.HoverInfoBox>
 
-				{/* 2. LAYER OUTPUT WITH COPY BUTTON */}
-				<div
-					style={{
-						display: 'flex',
-						justifyContent: 'space-between',
-						alignItems: 'center',
-					}}
-				>
-					<S.SectionTitle style={{ marginBottom: 0 }}>
+				<S.OutputHeader>
+					<S.SectionTitle $noMarginBottom>
 						Layer Output
 					</S.SectionTitle>
-					<button
+					<S.CopyButton
+						$copied={copied}
 						onClick={handleCopy}
-						style={{
-							padding: '4px 8px',
-							fontSize: '11px',
-							background: copied ? '#28a745' : '#333',
-							color: '#fff',
-							border: '1px solid #555',
-							borderRadius: '3px',
-							cursor: 'pointer',
-							transition: 'background 0.2s',
-						}}
 					>
 						{copied ? '✓ Copied!' : '📋 Copy'}
-					</button>
-				</div>
+					</S.CopyButton>
+				</S.OutputHeader>
 
-				<textarea
+				<S.OutputTextArea
 					readOnly
 					value={generateOutputArray()}
-					style={{
-						width: '100%',
-						height: '150px',
-						background: '#1a1a1a',
-						color: '#00ff00',
-						border: '1px solid #444',
-						fontFamily: 'monospace',
-						fontSize: '12px',
-						padding: '8px',
-						resize: 'vertical',
-						marginTop: '8px',
-						marginBottom: '16px',
-						whiteSpace: 'pre',
-					}}
 				/>
 
 				<S.SectionTitle>Tiles Palette</S.SectionTitle>
-				<div
-					style={{
-						display: 'flex',
-						flexWrap: 'wrap',
-						gap: '4px',
-						marginBottom: '20px',
-					}}
-				>
-					<div
+				<S.PaletteContainer>
+					<S.EraserTile
+						$selected={selectedTileIndex === -1}
 						onClick={() => {
 							setSelectedTileIndex(-1);
 							setToolMode('paint');
 						}}
-						style={{
-							width: 32,
-							height: 32,
-							border:
-								selectedTileIndex === -1
-									? '2px solid red'
-									: '1px solid #444',
-							background: '#222',
-							color: 'red',
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							cursor: 'pointer',
-							fontWeight: 'bold',
-						}}
 						title='Eraser (Index: -1)'
 					>
 						X
-					</div>
+					</S.EraserTile>
 
-					{tiles.map((tile, index) => (
-						<div
-							key={index}
-							onClick={() => {
-								setSelectedTileIndex(index);
-								setToolMode('paint');
-							}}
-							style={{
-								width: 32,
-								height: 32,
-								border:
-									selectedTileIndex === index
-										? '2px solid #00ff00'
-										: '1px solid #444',
-								backgroundImage: `url(${tile.imageSrc})`,
-								backgroundPosition: `-${tile.coordinates.x[0] * TILE_SIZE}px -${tile.coordinates.y[0] * TILE_SIZE}px`,
-								cursor: 'pointer',
-								backgroundColor: '#000',
-							}}
-							title={`Index: ${index}`}
-						/>
-					))}
-				</div>
+					{tiles.map((tile: ITile, index) => {
+						const hTiles = tile.size?.horizontalTiles ?? 1;
+						const vTiles = tile.size?.verticalTiles ?? 1;
+
+						return (
+							<S.PaletteTile
+								key={index}
+								$selected={selectedTileIndex === index}
+								$imageSrc={tile.imageSrc}
+								$posX={tile.coordinates.x[0] * TILE_SIZE}
+								$posY={tile.coordinates.y[0] * TILE_SIZE}
+								$hTiles={hTiles}
+								$vTiles={vTiles}
+								onClick={() => {
+									setSelectedTileIndex(index);
+									setToolMode('paint');
+								}}
+								title={`Index: ${index} | ${tile.name || 'Unnamed tile'} (${hTiles}x${vTiles})`}
+							/>
+						);
+					})}
+				</S.PaletteContainer>
 			</S.Sidebar>
 		</S.Container>
 	);
