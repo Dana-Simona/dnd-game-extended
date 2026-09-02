@@ -7,15 +7,15 @@ import game.occupant.OccupantVisitor;
 import game.occupant.unit.OccupantFilterVisitor;
 import game.occupant.unit.Unit;
 import game.occupant.unit.enemy.Enemy;
-
 import java.util.List;
 
 public abstract class Player extends Unit {
+
     private Integer level;
     private Integer experience;
 
     public Player(String name, Integer health, Integer attack, Integer defense, Position position,
-                  MessageCallback callback, BoardCallback boardCallback) {
+            MessageCallback callback, BoardCallback boardCallback) {
         super('@', name, health, attack, defense, position, callback, boardCallback);
         this.experience = 0;
         this.level = 1;
@@ -29,13 +29,13 @@ public abstract class Player extends Unit {
 
         int overallAddedAttack = calculateSumToAdd(getAddedAttack(), 4 * level);
 
-        int overallAddedDefence = calculateSumToAdd(getAddedDefense(), level);
+        int overallAddedDefense = calculateSumToAdd(getAddedDefense(), level);
 
         addMaxHealth(overallAddedHealth);
         heal(getHealthPool());
         addAttackPoints(overallAddedAttack);
-        addDefensePoints(overallAddedDefence);
-        this.sendMessage(this.getName() + " reached level " + level + ": +" + overallAddedHealth + " Health, +" + overallAddedAttack + " Attack, +" + overallAddedDefence + " Defense");
+        addDefensePoints(overallAddedDefense);
+        this.sendMessage(this.getName() + " reached level " + level + ": +" + overallAddedHealth + " Health, +" + overallAddedAttack + " Attack, +" + overallAddedDefense + " Defense");
     }
 
     private Integer calculateSumToAdd(Integer addedIndividually, Integer addedDefaultly) {
@@ -48,18 +48,20 @@ public abstract class Player extends Unit {
         this.experience += experience;
     }
 
+    @Override
     public void accept(OccupantVisitor visitor) {
         visitor.visit(this);
     }
 
     //when a player interacts with another player
     //(shouldn't happen)
+    @Override
     public void interactWith(Player player) {
-        return;
     }
 
     //when a player interacts with an enemy
     //player should attack the enemy
+    @Override
     public void interactWith(Enemy enemy) {
         this.attack(enemy);
         handleEnemyIfDead(enemy);
@@ -86,9 +88,11 @@ public abstract class Player extends Unit {
         return experience;
     }
 
+    @Override
     public void onGameTick() {
-        while (getExperience() >= (50 * level))
+        while (getExperience() >= (50 * level)) {
             levelUp();
+        }
     }
 
     public List<Enemy> getEnemiesInRange(Position center, Integer range) {
@@ -101,6 +105,7 @@ public abstract class Player extends Unit {
 
     protected abstract Integer getAddedDefense();
 
+    @Override
     public void accept(OccupantFilterVisitor visitor) {
         visitor.visit(this);
     }

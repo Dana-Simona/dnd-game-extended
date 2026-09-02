@@ -41,6 +41,7 @@ public class Mage extends Player {
         }
     }
 
+    @Override
     public void levelUp() {
         super.levelUp();
         this.manaPool += 25 * getLevel();
@@ -48,6 +49,7 @@ public class Mage extends Player {
         this.spellPower += 10 * getLevel();
     }
 
+    @Override
     public void abilityCast() {
         if (this.currentMana < this.manaCost) {
             sendMessage(getName() + "tried to cast Blizzard, but there was not enough mana: " + currentMana + "/" + manaPool);

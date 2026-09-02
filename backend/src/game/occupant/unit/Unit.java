@@ -1,6 +1,5 @@
 package game.occupant.unit;
 
-import game.GameBoard;
 import game.BoardCallback;
 import game.MessageCallback;
 import game.cell.Position;
@@ -9,6 +8,7 @@ import game.occupant.unit.enemy.Enemy;
 import game.occupant.unit.player.Player;
 
 public abstract class Unit extends Occupant {
+
     private final String name;
     private final Health health;
     private Integer attackPoints;
@@ -16,7 +16,7 @@ public abstract class Unit extends Occupant {
     private final MessageCallback callback;
 
     public Unit(char character, String name, Integer health, Integer attack, Integer defense,
-                Position position, MessageCallback callback, BoardCallback boardCallback) {
+            Position position, MessageCallback callback, BoardCallback boardCallback) {
         super(character, position, boardCallback);
         this.name = name;
         this.health = new Health(health);
@@ -58,10 +58,12 @@ public abstract class Unit extends Occupant {
      * @throws IllegalArgumentException If increaseBy is null or negative.
      */
     public void addMaxHealth(Integer increaseBy) {
-        if (increaseBy == null)
+        if (increaseBy == null) {
             throw new IllegalArgumentException("increase by can't be null");
-        if (increaseBy < 0)
+        }
+        if (increaseBy < 0) {
             throw new IllegalArgumentException("can't increase health pool by a negative amount");
+        }
         this.health.increaseMaxHealth(increaseBy);
     }
 
@@ -72,8 +74,9 @@ public abstract class Unit extends Occupant {
      * @throws IllegalArgumentException If heal amount is negative.
      */
     public void heal(int healAmount) {
-        if (healAmount < 0)
+        if (healAmount < 0) {
             throw new IllegalArgumentException("you can't heal negative health");
+        }
         health.heal(healAmount);
     }
 
@@ -102,10 +105,12 @@ public abstract class Unit extends Occupant {
      * @throws IllegalArgumentException If increaseBy is null or negative.
      */
     public void addAttackPoints(Integer increaseBy) {
-        if (increaseBy == null)
+        if (increaseBy == null) {
             throw new IllegalArgumentException("attack points can't be null");
-        if (increaseBy < 0)
+        }
+        if (increaseBy < 0) {
             throw new IllegalArgumentException("can't add negative points to attack");
+        }
 
         this.attackPoints += increaseBy;
     }
@@ -117,10 +122,12 @@ public abstract class Unit extends Occupant {
      * @throws IllegalArgumentException If increaseBy is null or negative.
      */
     public void addDefensePoints(Integer increaseBy) {
-        if (increaseBy == null)
+        if (increaseBy == null) {
             throw new IllegalArgumentException("defense points can't be null");
-        if (increaseBy < 0)
+        }
+        if (increaseBy < 0) {
             throw new IllegalArgumentException("can't add negative points to defense");
+        }
 
         this.defensePoints += increaseBy;
     }
@@ -132,8 +139,9 @@ public abstract class Unit extends Occupant {
      * @throws IllegalArgumentException If message is null.
      */
     protected void sendMessage(String message) {
-        if (message == null)
+        if (message == null) {
             throw new IllegalArgumentException("message can't be null");
+        }
         callback.send(message);
     }
 
@@ -144,18 +152,19 @@ public abstract class Unit extends Occupant {
      * @throws IllegalArgumentException If defender is null.
      */
     public void attack(Unit defender) {
-        if (defender == null)
+        if (defender == null) {
             throw new IllegalArgumentException("defender can't be null");
+        }
 
+        sendMessage("");
         sendMessage(this.name + " engaged in combat with " + defender.getName() + ".");
-        sendMessage(this.description());
-        sendMessage(defender.description());
 
         int attackRoll = (int) (Math.random() * (attackPoints + 1));
         sendMessage(this.name + " rolled " + attackRoll + " attack points.");
 
         int damageTaken = defender.defend(attackRoll);
         sendMessage(this.name + " dealt " + damageTaken + " damage to " + defender.getName() + ".");
+        sendMessage("");
     }
 
     /**
@@ -163,7 +172,8 @@ public abstract class Unit extends Occupant {
      * <p>
      * The unit may either defend the attack or take damage based on luck.
      *
-     * @param incomingDamage the amount of damage that is being dealt to this unit.
+     * @param incomingDamage the amount of damage that is being dealt to this
+     * unit.
      * @return the amount of damage that actually hit the defender.
      */
     public int defend(int incomingDamage) {
@@ -187,8 +197,9 @@ public abstract class Unit extends Occupant {
      * @throws IllegalArgumentException If damage amount is negative.
      */
     public void takeDamage(int damageAmount) {
-        if (damageAmount < 0)
+        if (damageAmount < 0) {
             throw new IllegalArgumentException("damage dealt can't be negative");
+        }
         health.takeDamage(damageAmount);
     }
 
@@ -203,10 +214,12 @@ public abstract class Unit extends Occupant {
      * @throws IllegalArgumentException If the attacker is null.
      */
     public void takeDamageFromAbility(int damageAmount, String attackerName) {
-        if (damageAmount < 0)
+        if (damageAmount < 0) {
             throw new IllegalArgumentException("damage dealt can't be negative");
-        if (attackerName == null)
+        }
+        if (attackerName == null) {
             throw new IllegalArgumentException("unit can't be null");
+        }
         int actualDamage = this.defend(damageAmount);
         this.takeDamage(actualDamage);
 

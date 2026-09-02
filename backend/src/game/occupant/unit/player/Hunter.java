@@ -6,12 +6,13 @@ import game.cell.Position;
 import game.occupant.unit.enemy.Enemy;
 
 public class Hunter extends Player {
+
     private Integer arrowCount;
     private final Integer range;
     private Integer tickCount;
 
     public Hunter(String name, Integer health, Integer attack, Integer defense, Position position, Integer range,
-                  MessageCallback callback, BoardCallback boardCallback) {
+            MessageCallback callback, BoardCallback boardCallback) {
         super(name, health, attack, defense, position, callback, boardCallback);
         this.range = range;
         this.arrowCount = 10 * getLevel();
@@ -21,7 +22,7 @@ public class Hunter extends Player {
     public void shoot() {
         Enemy closestEnemy = getBoardCallback().getClosestEnemy(getPosition(), this.range);
         if (closestEnemy != null && arrowCount != 0) {
-            sendMessage(getName() + "fired an arrow at" + closestEnemy.getName());
+            sendMessage(getName() + " fired an arrow at " + closestEnemy.getName());
             closestEnemy.takeDamageFromAbility(getAttackPoints(), this.getName());
             handleEnemyIfDead(closestEnemy);
             arrowCount--;
@@ -57,8 +58,9 @@ public class Hunter extends Player {
         if (tickCount == 10) {
             arrowCount += getLevel();
             tickCount = 0;
-        } else
+        } else {
             tickCount++;
+        }
     }
 
     @Override

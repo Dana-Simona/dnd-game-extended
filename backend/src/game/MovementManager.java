@@ -67,7 +67,7 @@ public class MovementManager implements CellVisitor, OccupantVisitor {
         int deltaX = stairPos.getX() - unitPos.getX();
         int deltaY = stairPos.getY() - unitPos.getY();
 
-        if (stairCase.isVertical()) {
+        if (stairCase.getIsVertical()) {
             handleVerticalStaircase(unitPos, deltaX, deltaY);
         } else {
             handleHorizontalStaircase(unitPos, deltaX, deltaY);

@@ -12,14 +12,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MainServer {
+
     private static Game game;
+    private static final List<String> gameLogs = Collections.synchronizedList(new ArrayList<>());
 
     public static void main(String[] args) {
         try {
-            MessageCallback callback = msg -> System.out.println("[GAME LOG]: " + msg);
+            MessageCallback callback = msg -> {
+                System.out.println("[GAME LOG]: " + msg);
+                gameLogs.add(msg);
+            };
             game = new Game(callback);
 
             HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
@@ -33,7 +40,7 @@ public class MainServer {
                 if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
                     sendJsonResponse(exchange, getPlayersJson());
                 } else {
-                    exchange.sendResponseHeaders(450, -1);
+                    exchange.sendResponseHeaders(405, -1);
                 }
             });
 
@@ -50,6 +57,7 @@ public class MainServer {
                     try {
                         int index = Integer.parseInt(indexStr);
                         game.selectPlayer(index);
+                        gameLogs.clear(); // Clear logs when a new player is selected
                         sendJsonResponse(exchange, "{\"status\": \"success\", \"selected\": " + index + "}");
                     } catch (NumberFormatException e) {
                         sendJsonResponse(exchange, "{\"status\": \"error\", \"message\": \"Invalid index\"}");
@@ -70,6 +78,7 @@ public class MainServer {
                     try {
                         int levelIndex = Integer.parseInt(indexStr);
                         game.selectLevel(levelIndex);
+                        gameLogs.clear(); // Clear logs when switching levels
                         sendJsonResponse(exchange, getBoardJson());
                     } catch (NumberFormatException e) {
                         sendJsonResponse(exchange, "{\"status\": \"error\", \"message\": \"Invalid level index\"}");
@@ -99,6 +108,7 @@ public class MainServer {
                     String key = new String(is.readAllBytes()).trim().toLowerCase();
 
                     if (!key.isEmpty()) {
+                        gameLogs.clear();
                         game.processTurn(key.charAt(0));
                     }
 
@@ -106,14 +116,49 @@ public class MainServer {
                 }
             });
 
+            server.createContext("/api/logs", exchange -> {
+                addCorsHeaders(exchange);
+                if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                    exchange.sendResponseHeaders(204, -1);
+                    return;
+                }
+                if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
+                    sendJsonResponse(exchange, getLogsJson());
+                } else {
+                    exchange.sendResponseHeaders(405, -1);
+                }
+            });
+
             server.setExecutor(null);
             server.start();
             System.out.println("Java Game Server successfully started on http://localhost:8080");
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.err.println("Server failed to start:");
             e.printStackTrace();
         }
+    }
+
+    private static String getLogsJson() {
+        StringBuilder json = new StringBuilder("[");
+        synchronized (gameLogs) {
+            for (int i = 0; i < gameLogs.size(); i++) {
+                String sanitizedLog = gameLogs.get(i)
+                        .replace("\\", "\\\\")
+                        .replace("\"", "\\\"")
+                        .replace("\b", "\\b")
+                        .replace("\f", "\\f")
+                        .replace("\n", "\\n")
+                        .replace("\r", "\\r")
+                        .replace("\t", "\\t");
+                json.append("\"").append(sanitizedLog).append("\"");
+                if (i < gameLogs.size() - 1) {
+                    json.append(",");
+                }
+            }
+        }
+        json.append("]");
+        return json.toString();
     }
 
     private static String getPlayersJson() {
@@ -131,18 +176,21 @@ public class MainServer {
                     .append("\"attack\":").append(p.getAttackPoints()).append(",")
                     .append("\"defense\":").append(p.getDefensePoints());
 
-            if (p instanceof Mage mage) {
-                json.append(",\"mana\":").append(mage.getManaPool()).append(",")
-                        .append("\"manaCost\":").append(mage.getManaCost()).append(",")
-                        .append("\"spellPower\":").append(mage.getSpellPower()).append(",")
-                        .append("\"hitCount\":").append(mage.getHitCount()).append(",")
-                        .append("\"range\":").append(mage.getAbilityRange());
-            } else if (p instanceof Rogue rogue) {
-                json.append(",\"energyCost\":").append(rogue.getEnergyCost());
-            } else if (p instanceof Warrior warrior) {
-                json.append(",\"cooldown\":").append(warrior.getCooldown());
-            } else if (p instanceof Hunter hunter) {
-                json.append(",\"range\":").append(hunter.getRange());
+            switch (p) {
+                case Mage mage ->
+                    json.append(",\"mana\":").append(mage.getManaPool()).append(",")
+                            .append("\"manaCost\":").append(mage.getManaCost()).append(",")
+                            .append("\"spellPower\":").append(mage.getSpellPower()).append(",")
+                            .append("\"hitCount\":").append(mage.getHitCount()).append(",")
+                            .append("\"range\":").append(mage.getAbilityRange());
+                case Rogue rogue ->
+                    json.append(",\"energyCost\":").append(rogue.getEnergyCost());
+                case Warrior warrior ->
+                    json.append(",\"cooldown\":").append(warrior.getCooldown());
+                case Hunter hunter ->
+                    json.append(",\"range\":").append(hunter.getRange());
+                default -> {
+                }
             }
 
             json.append("}");
@@ -178,8 +226,8 @@ public class MainServer {
         exchange.getResponseHeaders().add("Content-Type", "application/json");
         byte[] bytes = json.getBytes();
         exchange.sendResponseHeaders(200, bytes.length);
-        OutputStream os = exchange.getResponseBody();
-        os.write(bytes);
-        os.close();
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(bytes);
+        }
     }
 }
