@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Tile from '../../utils/tileMapping/Tile';
+import Tile from './Tile/Tile';
 import { ViewportContainer, Board, BoardRow } from './GameBoardStyles';
 import type { Unit } from '../../constants/interfaces/player';
 
@@ -60,15 +60,24 @@ export const GameBoard: React.FC<GameBoardProps> = ({ board, enemies }) => {
 				{board.length > 0 ? (
 					board.map((row, rowIndex) => (
 						<BoardRow key={rowIndex}>
-							{row.split('').map((char, colIndex) => (
-								<Tile
-									key={`${rowIndex}-${colIndex}`}
-									char={char}
-									x={colIndex}
-									y={rowIndex}
-									grid={board}
-								/>
-							))}
+							{row.split('').map((char, colIndex) => {
+								const enemyUnit = enemies.find(
+									(enemy) =>
+										enemy.x === colIndex &&
+										enemy.y === rowIndex,
+								);
+
+								return (
+									<Tile
+										key={`${rowIndex}-${colIndex}`}
+										char={char}
+										x={colIndex}
+										y={rowIndex}
+										grid={board}
+										unit={enemyUnit}
+									/>
+								);
+							})}
 						</BoardRow>
 					))
 				) : (

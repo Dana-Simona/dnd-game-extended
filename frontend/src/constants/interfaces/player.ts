@@ -5,6 +5,8 @@ export interface Unit {
 	defense: number;
 	health: number;
 	currentHealth: number;
+	x: number;
+	y: number;
 }
 export interface Player extends Unit {
 	class: string;

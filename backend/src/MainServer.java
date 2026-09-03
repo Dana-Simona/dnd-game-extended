@@ -207,8 +207,7 @@ public class MainServer {
     private static StringBuilder buildGenericUnitJson(StringBuilder json, Unit unit) {
         json.append("{")
                 .append("\"name\":\"").append(unit.getName()).append("\",")
-                .append("\"type\":\"").append(unit.getClass().getSimpleName()).append("\",")
-                .append("\"tile\":\"").append(unit.getCharacter()).append("\",")
+                .append("\"character\":\"").append(unit.getCharacter()).append("\",")
                 .append("\"x\":").append(unit.getPosition().getX()).append(",")
                 .append("\"y\":").append(unit.getPosition().getY()).append(",")
                 .append("\"health\":").append(unit.getHealthPool()).append(",")
