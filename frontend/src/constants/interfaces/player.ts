@@ -1,4 +1,5 @@
 export interface Unit {
+	id: string;
 	character: string;
 	name: string;
 	attack: number;

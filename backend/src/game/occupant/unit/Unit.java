@@ -6,10 +6,12 @@ import game.cell.Position;
 import game.occupant.Occupant;
 import game.occupant.unit.enemy.Enemy;
 import game.occupant.unit.player.Player;
+import java.util.UUID;
 
 public abstract class Unit extends Occupant {
 
     private final String name;
+    private final String id;
     private final Health health;
     private Integer attackPoints;
     private Integer defensePoints;
@@ -23,6 +25,7 @@ public abstract class Unit extends Occupant {
         this.attackPoints = attack;
         this.defensePoints = defense;
         this.callback = callback;
+        this.id = UUID.randomUUID().toString();
     }
 
     /**
@@ -32,6 +35,10 @@ public abstract class Unit extends Occupant {
      */
     public String getName() {
         return this.name;
+    }
+
+    public String getId() {
+        return this.id;
     }
 
     /**
