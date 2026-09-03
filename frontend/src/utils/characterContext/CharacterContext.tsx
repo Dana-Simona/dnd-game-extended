@@ -4,6 +4,7 @@ import type { AllPlayerData } from '../../constants/interfaces/player';
 interface CharacterContextType {
 	character: AllPlayerData | null;
 	selectCharacter: (char: AllPlayerData) => void;
+	updateCharacter: (char: AllPlayerData) => void;
 	resetCharacter: () => void;
 }
 
@@ -15,13 +16,19 @@ export const CharacterProvider = ({ children }: { children: ReactNode }) => {
 	const [character, setCharacter] = useState<AllPlayerData | null>(null);
 
 	const selectCharacter = (char: AllPlayerData) => setCharacter(char);
+	const updateCharacter = (char: AllPlayerData) => setCharacter(char);
 	const resetCharacter = () => setCharacter(null);
 
-	console.log("🎮 CURRENT CONTEXT CHARACTER:", character);
+	console.log('🎮 CURRENT CONTEXT CHARACTER:', character);
 
 	return (
 		<CharacterContext.Provider
-			value={{ character, selectCharacter, resetCharacter }}
+			value={{
+				character,
+				selectCharacter,
+				updateCharacter,
+				resetCharacter,
+			}}
 		>
 			{children}
 		</CharacterContext.Provider>

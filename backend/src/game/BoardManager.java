@@ -4,11 +4,11 @@ import game.cell.Cell;
 import game.cell.Position;
 import game.occupant.unit.enemy.Enemy;
 import game.occupant.unit.player.Player;
-
 import java.util.List;
 
 public class BoardManager implements BoardCallback {
-    private GameBoard board;
+
+    private final GameBoard board;
 
     public BoardManager(GameBoard board) {
         this.board = board;
@@ -42,5 +42,10 @@ public class BoardManager implements BoardCallback {
     @Override
     public Cell getCell(Position position) {
         return board.getCell(position);
+    }
+
+    @Override
+    public void onEnemyDeath(Enemy enemy) {
+        board.removeEnemy(enemy);
     }
 }

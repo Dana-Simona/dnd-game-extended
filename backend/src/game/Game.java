@@ -1,6 +1,7 @@
 package game;
 
 import game.cell.Position;
+import game.occupant.unit.enemy.Enemy;
 import game.occupant.unit.player.*;
 import java.util.*;
 
@@ -96,6 +97,10 @@ public final class Game {
 
     public Player getChosenPlayer() {
         return chosenPlayer;
+    }
+
+    public List<Enemy> getEnemies() {
+        return currentGameBoard.getEnemies();
     }
 
     private void playerInput(char c) {

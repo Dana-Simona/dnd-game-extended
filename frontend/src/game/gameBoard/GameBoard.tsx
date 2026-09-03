@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Tile from '../../utils/tileMapping/Tile';
 import { ViewportContainer, Board, BoardRow } from './GameBoardStyles';
+import type { Unit } from '../../constants/interfaces/player';
 
 interface GameBoardProps {
 	board: string[];
+	enemies: Unit[];
 }
 
 const TILE_SIZE = 32;
@@ -18,7 +20,7 @@ const getPlayerPosition = (board: string[]) => {
 	return { x: 0, y: 0 };
 };
 
-export const GameBoard: React.FC<GameBoardProps> = ({ board }) => {
+export const GameBoard: React.FC<GameBoardProps> = ({ board, enemies }) => {
 	const viewportRef = useRef<HTMLDivElement>(null);
 	const [viewportDimensions, setViewportDimensions] = useState({
 		width: 0,

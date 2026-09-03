@@ -1,11 +1,14 @@
-export interface Player {
-	class: string;
+export interface Unit {
+	character: string;
 	name: string;
 	attack: number;
 	defense: number;
-	level: number;
 	health: number;
 	currentHealth: number;
+}
+export interface Player extends Unit {
+	class: string;
+	level: number;
 }
 
 export interface Warrior extends Player {
@@ -23,11 +26,14 @@ export interface Mage extends Player {
 }
 
 export interface Rogue extends Player {
-	cost: number;
+	energyCost: number;
+	energy: number;
+	currentEnergy: number;
 }
 
 export interface Hunter extends Player {
 	range: number;
+	arrowCount: number;
 }
 
 export type PlayerData = Warrior | Mage | Rogue | Hunter;

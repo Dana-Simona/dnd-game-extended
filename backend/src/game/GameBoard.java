@@ -6,14 +6,17 @@ import game.occupant.Occupant;
 import game.occupant.unit.OccupantFilterVisitor;
 import game.occupant.unit.enemy.Enemy;
 import game.occupant.unit.player.Player;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameBoard {
 
-    private Cell[][] board;
+    private final Cell[][] board;
+    private final List<Enemy> enemies;
 
     public GameBoard(int boardWidth, int boardHeight) {
         this.board = new Cell[boardWidth][boardHeight];
+        this.enemies = new ArrayList<>();
     }
 
     public void setCell(Position position, Cell cell) {
@@ -33,10 +36,26 @@ public class GameBoard {
     }
 
     public void setOccupant(Position position, Occupant occupant) {
+        if (occupant instanceof Enemy enemy && !enemies.contains(enemy)) {
+            enemies.add(enemy);
+        }
+
         if (occupant != null) {
             occupant.setPosition(position);
         }
+
         getCell(position).setOccupant(occupant);
+    }
+
+    public void removeEnemy(Enemy enemy) {
+        enemies.remove(enemy);
+        if (enemy.getPosition() != null) {
+            getCell(enemy.getPosition()).setOccupant(null);
+        }
+    }
+
+    public List<Enemy> getEnemies() {
+        return enemies;
     }
 
     public OccupantFilterVisitor scanWithinRange(Position center, Integer maxRange) {
@@ -91,8 +110,7 @@ public class GameBoard {
     }
 
     public boolean isLevelComplete() {
-        List<Enemy> allEnemies = getEnemiesInRange(new Position(0, 0), Integer.MAX_VALUE);
-        return allEnemies.isEmpty();
+        return enemies.isEmpty();
     }
 
     @Override

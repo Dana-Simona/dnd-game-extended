@@ -1,9 +1,9 @@
 import styled from 'styled-components';
+import { motion } from 'framer-motion';
 
-export const LogContainer = styled.div`
+export const LogContainer = styled(motion.div)`
 	width: 100%;
 	max-width: 600px;
-	height: 150px;
 	background-color: #1a1a1a;
 	border: 1px solid #333;
 	border-radius: 8px;
@@ -26,12 +26,10 @@ export const LogHeader = styled.div`
 `;
 
 export const LogBody = styled.div`
-	flex: 1;
-	padding: 8px 12px;
-	overflow-y: auto;
+	padding: 1rem;
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+	gap: 0.25rem;
 `;
 
 export const LogEntry = styled.p`

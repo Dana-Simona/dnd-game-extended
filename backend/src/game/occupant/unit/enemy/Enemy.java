@@ -7,14 +7,14 @@ import game.occupant.OccupantVisitor;
 import game.occupant.unit.OccupantFilterVisitor;
 import game.occupant.unit.Unit;
 import game.occupant.unit.player.Player;
-
 import java.util.List;
 
 public abstract class Enemy extends Unit {
+
     private final Integer experienceValue;
 
     public Enemy(char character, String name, Integer health, Integer attack, Integer defense,
-                 Integer experienceValue, Position position, MessageCallback callback, BoardCallback boardCallback) {
+            Integer experienceValue, Position position, MessageCallback callback, BoardCallback boardCallback) {
         super(character, name, health, attack, defense, position, callback, boardCallback);
         this.experienceValue = experienceValue;
     }
@@ -23,6 +23,7 @@ public abstract class Enemy extends Unit {
         return experienceValue;
     }
 
+    @Override
     public void accept(OccupantVisitor visitor) {
         visitor.visit(this);
     }
@@ -30,14 +31,17 @@ public abstract class Enemy extends Unit {
     @Override
     public void onDeath() {
         getBoardCallback().getCell(getPosition()).setOccupant(null);
+        getBoardCallback().onEnemyDeath(this);
     }
 
+    @Override
     public void accept(OccupantFilterVisitor visitor) {
         visitor.visit(this);
     }
 
     //when an enemy interacts with the player
     //enemy should attack the player
+    @Override
     public void interactWith(Player player) {
         this.attack(player);
         if (player.isDead()) {
@@ -49,8 +53,8 @@ public abstract class Enemy extends Unit {
 
     //when an enemy interacts with another enemy
     //they shouldn't do anything
+    @Override
     public void interactWith(Enemy enemy) {
-        return;
     }
 
     public List<Player> getPlayersInRange(Position center, Integer range) {

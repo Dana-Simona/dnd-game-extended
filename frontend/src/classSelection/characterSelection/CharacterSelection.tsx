@@ -68,7 +68,7 @@ export const CharacterSelection: React.FC = () => {
 										spellPower: player.spellPower,
 										hitCount: player.hitCount,
 										range: player.range,
-										cost: player.cost,
+										cost: player.energyCost,
 									}}
 								/>
 							),

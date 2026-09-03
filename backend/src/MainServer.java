@@ -3,6 +3,8 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import game.Game;
 import game.MessageCallback;
+import game.occupant.unit.Unit;
+import game.occupant.unit.enemy.Enemy;
 import game.occupant.unit.player.Hunter;
 import game.occupant.unit.player.Mage;
 import game.occupant.unit.player.Player;
@@ -24,8 +26,10 @@ public class MainServer {
     public static void main(String[] args) {
         try {
             MessageCallback callback = msg -> {
-                System.out.println("[GAME LOG]: " + msg);
-                gameLogs.add(msg);
+                if (!isMovementLog(msg)) {
+                    System.out.println("[GAME LOG]: " + msg);
+                    gameLogs.add(msg);
+                }
             };
             game = new Game(callback);
 
@@ -57,7 +61,7 @@ public class MainServer {
                     try {
                         int index = Integer.parseInt(indexStr);
                         game.selectPlayer(index);
-                        gameLogs.clear(); // Clear logs when a new player is selected
+                        gameLogs.clear();
                         sendJsonResponse(exchange, "{\"status\": \"success\", \"selected\": " + index + "}");
                     } catch (NumberFormatException e) {
                         sendJsonResponse(exchange, "{\"status\": \"error\", \"message\": \"Invalid index\"}");
@@ -78,8 +82,8 @@ public class MainServer {
                     try {
                         int levelIndex = Integer.parseInt(indexStr);
                         game.selectLevel(levelIndex);
-                        gameLogs.clear(); // Clear logs when switching levels
-                        sendJsonResponse(exchange, getBoardJson());
+                        gameLogs.clear();
+                        sendJsonResponse(exchange, getGameStateJson());
                     } catch (NumberFormatException e) {
                         sendJsonResponse(exchange, "{\"status\": \"error\", \"message\": \"Invalid level index\"}");
                     }
@@ -93,7 +97,7 @@ public class MainServer {
                     return;
                 }
                 if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
-                    sendJsonResponse(exchange, getBoardJson());
+                    sendJsonResponse(exchange, getGameStateJson());
                 }
             });
 
@@ -112,7 +116,7 @@ public class MainServer {
                         game.processTurn(key.charAt(0));
                     }
 
-                    sendJsonResponse(exchange, getBoardJson());
+                    sendJsonResponse(exchange, getGameStateJson());
                 }
             });
 
@@ -134,9 +138,153 @@ public class MainServer {
             System.out.println("Java Game Server successfully started on http://localhost:8080");
 
         } catch (IOException e) {
-            System.err.println("Server failed to start:");
-            e.printStackTrace();
+            System.err.println("Server failed to start");
         }
+    }
+
+    private static boolean isMovementLog(String msg) {
+        if (msg == null) {
+            return false;
+        }
+        String lower = msg.toLowerCase();
+        return lower.contains("moved") || lower.contains("moves");
+    }
+
+    private static String getGameStateJson() {
+        StringBuilder json = new StringBuilder("{");
+
+        json.append("\"grid\":[");
+        String[] lines = game.getBoardAsLines();
+        for (int i = 0; i < lines.length; i++) {
+            String sanitizedLine = lines[i]
+                    .replace("\\", "\\\\")
+                    .replace("\"", "\\\"");
+            json.append("\"").append(sanitizedLine).append("\"");
+            if (i < lines.length - 1) {
+                json.append(",");
+            }
+        }
+        json.append("],");
+
+        json.append("\"player\":");
+        if (game.getChosenPlayer() != null) {
+            buildPlayerJson(json, game.getChosenPlayer(), null);
+        } else {
+            json.append("null");
+        }
+
+        json.append(",\"units\":").append(getUnitsJson());
+
+        json.append("}");
+        return json.toString();
+    }
+
+    private static String getUnitsJson() {
+        StringBuilder json = new StringBuilder("[");
+        List<Enemy> enemies = game.getEnemies();
+
+        boolean first = true;
+
+        if (game.getChosenPlayer() != null) {
+            buildGenericUnitJson(json, game.getChosenPlayer());
+            first = false;
+        }
+
+        if (enemies != null) {
+            for (Enemy enemy : enemies) {
+                if (!first) {
+                    json.append(",");
+                }
+                buildGenericUnitJson(json, enemy);
+                first = false;
+            }
+        }
+
+        json.append("]");
+        return json.toString();
+    }
+
+    private static StringBuilder buildGenericUnitJson(StringBuilder json, Unit unit) {
+        json.append("{")
+                .append("\"name\":\"").append(unit.getName()).append("\",")
+                .append("\"type\":\"").append(unit.getClass().getSimpleName()).append("\",")
+                .append("\"tile\":\"").append(unit.getCharacter()).append("\",")
+                .append("\"x\":").append(unit.getPosition().getX()).append(",")
+                .append("\"y\":").append(unit.getPosition().getY()).append(",")
+                .append("\"health\":").append(unit.getHealthPool()).append(",")
+                .append("\"currentHealth\":").append(unit.getCurrentHealth()).append(",")
+                .append("\"attack\":").append(unit.getAttackPoints()).append(",")
+                .append("\"defense\":").append(unit.getDefensePoints());
+
+        if (unit instanceof Enemy enemy) {
+            json.append(",\"experienceValue\":").append(enemy.getExperienceValue());
+        }
+
+        json.append("}");
+        return json;
+    }
+
+    private static StringBuilder buildPlayerJson(StringBuilder json, Player player, Integer index) {
+        json.append("{");
+
+        if (index != null) {
+            json.append("\"index\":").append(index).append(",");
+        }
+
+        json.append("\"name\":\"").append(player.getName()).append("\",")
+                .append("\"class\":\"").append(player.getClass().getSimpleName()).append("\",")
+                .append("\"tile\":\"").append(player.getCharacter()).append("\",")
+                .append("\"x\":").append(player.getPosition().getX()).append(",")
+                .append("\"y\":").append(player.getPosition().getY()).append(",")
+                .append("\"level\":").append(player.getLevel()).append(",")
+                .append("\"health\":").append(player.getHealthPool()).append(",")
+                .append("\"currentHealth\":").append(player.getCurrentHealth()).append(",")
+                .append("\"attack\":").append(player.getAttackPoints()).append(",")
+                .append("\"defense\":").append(player.getDefensePoints());
+
+        switch (player) {
+            case Mage mage ->
+                json.append(",\"manaPool\":").append(mage.getManaPool())
+                        .append(",\"currentMana\":").append(mage.getCurrentMana())
+                        .append(",\"manaCost\":").append(mage.getManaCost())
+                        .append(",\"spellPower\":").append(mage.getSpellPower())
+                        .append(",\"hitCount\":").append(mage.getHitCount())
+                        .append(",\"range\":").append(mage.getAbilityRange());
+
+            case Rogue rogue ->
+                json.append(",\"energy\":").append(100)
+                        .append(",\"currentEnergy\":").append(rogue.getCurrentEnergy())
+                        .append(",\"energyCost\":").append(rogue.getEnergyCost());
+
+            case Warrior warrior ->
+                json.append(",\"cooldown\":").append(warrior.getCooldown())
+                        .append(",\"currentCooldown\":").append(warrior.getRemainingCooldown());
+
+            case Hunter hunter ->
+                json.append(",\"arrowCount\":").append(hunter.getArrowCount())
+                        .append(",\"range\":").append(hunter.getRange());
+
+            default -> {
+            }
+        }
+
+        json.append("}");
+        return json;
+    }
+
+    private static String getPlayersJson() {
+        List<Player> players = game.getAvailablePlayers();
+        StringBuilder json = new StringBuilder("[");
+
+        for (int i = 0; i < players.size(); i++) {
+            buildPlayerJson(json, players.get(i), i);
+            if (i < players.size() - 1) {
+                json.append(",");
+            }
+        }
+
+        json.append("]");
+        return json.toString();
     }
 
     private static String getLogsJson() {
@@ -158,61 +306,6 @@ public class MainServer {
             }
         }
         json.append("]");
-        return json.toString();
-    }
-
-    private static String getPlayersJson() {
-        List<Player> players = game.getAvailablePlayers();
-        StringBuilder json = new StringBuilder("[");
-
-        for (int i = 0; i < players.size(); i++) {
-            Player p = players.get(i);
-
-            json.append("{")
-                    .append("\"index\":").append(i).append(",")
-                    .append("\"name\":\"").append(p.getName()).append("\",")
-                    .append("\"class\":\"").append(p.getClass().getSimpleName()).append("\",")
-                    .append("\"health\":").append(p.getHealthPool()).append(",")
-                    .append("\"attack\":").append(p.getAttackPoints()).append(",")
-                    .append("\"defense\":").append(p.getDefensePoints());
-
-            switch (p) {
-                case Mage mage ->
-                    json.append(",\"mana\":").append(mage.getManaPool()).append(",")
-                            .append("\"manaCost\":").append(mage.getManaCost()).append(",")
-                            .append("\"spellPower\":").append(mage.getSpellPower()).append(",")
-                            .append("\"hitCount\":").append(mage.getHitCount()).append(",")
-                            .append("\"range\":").append(mage.getAbilityRange());
-                case Rogue rogue ->
-                    json.append(",\"energyCost\":").append(rogue.getEnergyCost());
-                case Warrior warrior ->
-                    json.append(",\"cooldown\":").append(warrior.getCooldown());
-                case Hunter hunter ->
-                    json.append(",\"range\":").append(hunter.getRange());
-                default -> {
-                }
-            }
-
-            json.append("}");
-
-            if (i < players.size() - 1) {
-                json.append(",");
-            }
-        }
-        json.append("]");
-        return json.toString();
-    }
-
-    private static String getBoardJson() {
-        String[] lines = game.getBoardAsLines();
-        StringBuilder json = new StringBuilder("{\"grid\": [");
-        for (int i = 0; i < lines.length; i++) {
-            json.append("\"").append(lines[i].replace("\"", "\\\"")).append("\"");
-            if (i < lines.length - 1) {
-                json.append(",");
-            }
-        }
-        json.append("]}");
         return json.toString();
     }
 

@@ -11,6 +11,7 @@ import {
 	HighlightGreen,
 } from './GameLogStyles';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
+import { AnimatePresence, motion } from 'framer-motion';
 
 interface GameLogProps {
 	actionTrigger?: number | string;
@@ -123,15 +124,26 @@ export const GameLog: React.FC<GameLogProps> = ({ actionTrigger }) => {
 	}, [logs]);
 
 	return (
-		<LogContainer>
+		<LogContainer
+			layout
+			transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+		>
 			<LogHeader>Game Log</LogHeader>
 			<LogBody>
-				{logs.length > 0 &&
-					logs.map((log, index) => (
-						<LogEntry key={index}>
-							{colorizeLog(log, character?.name)}
-						</LogEntry>
+				<AnimatePresence initial={false}>
+					{logs.map((log, index) => (
+						<motion.div
+							key={index}
+							initial={{ opacity: 0, y: 10 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.2 }}
+						>
+							<LogEntry>
+								{colorizeLog(log, character?.name)}
+							</LogEntry>
+						</motion.div>
 					))}
+				</AnimatePresence>
 				<div ref={logEndRef} />
 			</LogBody>
 		</LogContainer>

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const VIEWPORT_WIDTH_VW = 95;
-export const VIEWPORT_HEIGHT_VH = 70;
+export const VIEWPORT_HEIGHT_VH = 60;
 
 interface BoardProps {
 	$offsetX: number;
