@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import type { Unit } from '../../constants/interfaces/player';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import { ViewportContainer, Board, BoardCanvas } from './GameBoardStyles';
-import { StaticLayer } from './staticLayer/StaticLayer';
-import { ActiveLayer } from './activeLayer/ActiveLayer';
+import StaticLayer from './staticLayer/StaticLayer';
+import ActiveLayer from './activeLayer/ActiveLayer';
 
 interface GameBoardProps {
 	board: string[];

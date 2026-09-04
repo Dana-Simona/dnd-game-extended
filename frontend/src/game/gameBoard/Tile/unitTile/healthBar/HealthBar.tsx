@@ -7,7 +7,7 @@ interface HealthBarProps {
 	isEnemy: boolean;
 }
 
-export const HealthBar: React.FC<HealthBarProps> = ({
+const HealthBar: React.FC<HealthBarProps> = ({
 	currentHp,
 	maxHp,
 	isEnemy,
@@ -31,3 +31,5 @@ export const HealthBar: React.FC<HealthBarProps> = ({
 		</BarContainer>
 	);
 };
+
+export default HealthBar;

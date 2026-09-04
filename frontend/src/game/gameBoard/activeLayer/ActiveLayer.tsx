@@ -10,7 +10,7 @@ interface ActiveLayerProps {
 	board: string[];
 }
 
-export const ActiveLayer: React.FC<ActiveLayerProps> = React.memo(
+const ActiveLayer: React.FC<ActiveLayerProps> = React.memo(
 	({ units, characterId, tileSize, board }) => {
 		return (
 			<ActiveLayerContainer>
@@ -45,3 +45,5 @@ export const ActiveLayer: React.FC<ActiveLayerProps> = React.memo(
 );
 
 ActiveLayer.displayName = 'ActiveLayer';
+
+export default ActiveLayer;

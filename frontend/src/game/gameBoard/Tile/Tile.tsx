@@ -36,4 +36,4 @@ const Tile: React.FC<TileProps> = ({ char, x = 0, y = 0, grid = [], unit }) => {
 	return <BaseStaticTile config={config} />;
 };
 
-export default Tile;
+export default React.memo(Tile);

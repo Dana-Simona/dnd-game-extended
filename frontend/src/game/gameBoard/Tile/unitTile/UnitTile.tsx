@@ -1,5 +1,5 @@
 import React from 'react';
-import { HealthBar } from './healthBar/HealthBar';
+import HealthBar from './healthBar/HealthBar';
 import Sprite from '../../../../utils/sprite/Sprite';
 import type { Unit } from '../../../../constants/interfaces/player';
 import { PositionedSpriteContainer, SpriteTileWrapper } from '../TileStyles';
