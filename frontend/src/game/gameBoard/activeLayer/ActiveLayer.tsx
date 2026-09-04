@@ -14,9 +14,9 @@ const ActiveLayer: React.FC<ActiveLayerProps> = React.memo(
 	({ units, characterId, tileSize, board }) => {
 		return (
 			<ActiveLayerContainer>
-				{units.map((unit) => (
+				{units.map((unit, index) => (
 					<AnimatedUnitWrapper
-						key={unit.id}
+						key={unit.id ?? `unit-${index}`}
 						$tileSize={tileSize}
 						$zIndex={unit.id === characterId ? 10 : 1}
 						initial={false}

@@ -10,6 +10,7 @@ import type { AllPlayerData, Unit } from '../constants/interfaces/player';
 
 interface BoardData {
 	grid: string[];
+	player: AllPlayerData;
 }
 
 const Game: React.FC = () => {
@@ -30,6 +31,8 @@ const Game: React.FC = () => {
 	useEffect(() => {
 		if (!character) return;
 
+		const controller = new AbortController();
+
 		const initializeLevel = async () => {
 			const levelIndex = level ? parseInt(level, 10) : 0;
 
@@ -40,17 +43,32 @@ const Game: React.FC = () => {
 						method: 'POST',
 						headers: { 'Content-Type': 'text/plain' },
 						body: levelIndex.toString(),
+						signal: controller.signal,
 					},
 				);
+
+				if (!res.ok) {
+					throw new Error(`Server returned status: ${res.status}`);
+				}
+
 				const data: BoardData = await res.json();
+
 				setBoard(data.grid);
+
+				if (data.player) {
+					updateCharacter(data.player);
+				}
+
 				setActionCount((prev) => prev + 1);
-			} catch (err) {
+			} catch (err: unknown) {
+				if (err instanceof Error && err.name === 'AbortError') return;
 				console.error('Failed to load level from backend:', err);
 			}
 		};
 
 		initializeLevel();
+
+		return () => controller.abort();
 	}, [level]);
 
 	const handleKeyPress = useCallback(
