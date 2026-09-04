@@ -233,7 +233,7 @@ public class MainServer {
 
         json.append("\"name\":\"").append(player.getName()).append("\",")
                 .append("\"class\":\"").append(player.getClass().getSimpleName()).append("\",")
-                .append("\"tile\":\"").append(player.getCharacter()).append("\",")
+                .append("\"character\":\"").append(player.getCharacter()).append("\",")
                 .append("\"x\":").append(player.getPosition().getX()).append(",")
                 .append("\"y\":").append(player.getPosition().getY()).append(",")
                 .append("\"level\":").append(player.getLevel()).append(",")

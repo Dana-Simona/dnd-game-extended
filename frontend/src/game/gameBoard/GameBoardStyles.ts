@@ -37,6 +37,6 @@ export const Board = styled.div<BoardProps>`
 	image-rendering: pixelated;
 `;
 
-export const BoardRow = styled.div`
-	display: flex;
+export const BoardCanvas = styled.div`
+	position: relative;
 `;

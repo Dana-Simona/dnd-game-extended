@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Tile from './Tile/Tile';
-import { ViewportContainer, Board, BoardRow } from './GameBoardStyles';
 import type { Unit } from '../../constants/interfaces/player';
+import { useCharacter } from '../../utils/characterContext/CharacterContext';
+import { ViewportContainer, Board, BoardCanvas } from './GameBoardStyles';
+import { StaticLayer } from './staticLayer/StaticLayer';
+import { ActiveLayer } from './activeLayer/ActiveLayer';
 
 interface GameBoardProps {
 	board: string[];
@@ -10,17 +12,10 @@ interface GameBoardProps {
 
 const TILE_SIZE = 32;
 const ZOOM = 2;
-const CAMERA_SPEED_SECONDS = '1s';
-
-const getPlayerPosition = (board: string[]) => {
-	for (let y = 0; y < board.length; y++) {
-		const x = board[y].indexOf('@');
-		if (x !== -1) return { x, y };
-	}
-	return { x: 0, y: 0 };
-};
 
 export const GameBoard: React.FC<GameBoardProps> = ({ board, enemies }) => {
+	const { character } = useCharacter();
+
 	const viewportRef = useRef<HTMLDivElement>(null);
 	const [viewportDimensions, setViewportDimensions] = useState({
 		width: 0,
@@ -42,12 +37,22 @@ export const GameBoard: React.FC<GameBoardProps> = ({ board, enemies }) => {
 		return () => window.removeEventListener('resize', updateDimensions);
 	}, []);
 
-	const playerPos = getPlayerPosition(board);
-	const playerPixelX = (playerPos.x * TILE_SIZE + TILE_SIZE / 2) * ZOOM;
-	const playerPixelY = (playerPos.y * TILE_SIZE + TILE_SIZE / 2) * ZOOM;
+	if (!character) {
+		return (
+			<ViewportContainer ref={viewportRef}>
+				<p>Loading character...</p>
+			</ViewportContainer>
+		);
+	}
+
+	const playerPixelX = (character.x * TILE_SIZE + TILE_SIZE / 2) * ZOOM;
+	const playerPixelY = (character.y * TILE_SIZE + TILE_SIZE / 2) * ZOOM;
 
 	const cameraOffsetX = viewportDimensions.width / 2 - playerPixelX;
 	const cameraOffsetY = viewportDimensions.height / 2 - playerPixelY;
+
+	const validEnemies = (enemies || []).filter((e): e is Unit => Boolean(e));
+	const allUnits: Unit[] = [character, ...validEnemies];
 
 	return (
 		<ViewportContainer ref={viewportRef}>
@@ -55,34 +60,17 @@ export const GameBoard: React.FC<GameBoardProps> = ({ board, enemies }) => {
 				$offsetX={cameraOffsetX}
 				$offsetY={cameraOffsetY}
 				$zoom={ZOOM}
-				$transitionDuration={CAMERA_SPEED_SECONDS}
+				$transitionDuration='0.25s'
 			>
-				{board.length > 0 ? (
-					board.map((row, rowIndex) => (
-						<BoardRow key={rowIndex}>
-							{row.split('').map((char, colIndex) => {
-								const enemyUnit = enemies.find(
-									(enemy) =>
-										enemy.x === colIndex &&
-										enemy.y === rowIndex,
-								);
-
-								return (
-									<Tile
-										key={`${rowIndex}-${colIndex}`}
-										char={char}
-										x={colIndex}
-										y={rowIndex}
-										grid={board}
-										unit={enemyUnit}
-									/>
-								);
-							})}
-						</BoardRow>
-					))
-				) : (
-					<p>Loading board...</p>
-				)}
+				<BoardCanvas>
+					<StaticLayer board={board} />
+					<ActiveLayer
+						units={allUnits}
+						characterId={character.id}
+						tileSize={TILE_SIZE}
+						board={board}
+					/>
+				</BoardCanvas>
 			</Board>
 		</ViewportContainer>
 	);
