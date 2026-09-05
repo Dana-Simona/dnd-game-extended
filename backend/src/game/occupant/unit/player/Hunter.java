@@ -1,7 +1,10 @@
 package game.occupant.unit.player;
 
+import game.ActionType;
 import game.BoardCallback;
+import game.GameEvent;
 import game.MessageCallback;
+import game.StepCounter;
 import game.cell.Position;
 import game.occupant.unit.enemy.Enemy;
 
@@ -12,8 +15,8 @@ public class Hunter extends Player {
     private Integer tickCount;
 
     public Hunter(String name, Integer health, Integer attack, Integer defense, Position position, Integer range,
-            MessageCallback callback, BoardCallback boardCallback) {
-        super(name, health, attack, defense, position, callback, boardCallback);
+            MessageCallback callback, BoardCallback boardCallback, StepCounter stepCounter) {
+        super(name, health, attack, defense, position, callback, boardCallback, stepCounter);
         this.range = range;
         this.arrowCount = 10 * getLevel();
         this.tickCount = 0;
@@ -23,6 +26,7 @@ public class Hunter extends Player {
         Enemy closestEnemy = getBoardCallback().getClosestEnemy(getPosition(), this.range);
         if (closestEnemy != null && arrowCount != 0) {
             sendMessage(getName() + " fired an arrow at " + closestEnemy.getName());
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, closestEnemy.getId(), null));
             closestEnemy.takeDamageFromAbility(getAttackPoints(), this.getName());
             handleEnemyIfDead(closestEnemy);
             arrowCount--;

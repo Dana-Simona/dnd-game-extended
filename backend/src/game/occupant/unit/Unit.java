@@ -1,7 +1,10 @@
 package game.occupant.unit;
 
+import game.ActionType;
 import game.BoardCallback;
+import game.GameEvent;
 import game.MessageCallback;
+import game.StepCounter;
 import game.cell.Position;
 import game.occupant.Occupant;
 import game.occupant.unit.enemy.Enemy;
@@ -16,15 +19,17 @@ public abstract class Unit extends Occupant {
     private Integer attackPoints;
     private Integer defensePoints;
     private final MessageCallback callback;
+    protected final StepCounter stepCounter;
 
     public Unit(char character, String name, Integer health, Integer attack, Integer defense,
-            Position position, MessageCallback callback, BoardCallback boardCallback) {
+            Position position, MessageCallback callback, BoardCallback boardCallback, StepCounter stepCounter) {
         super(character, position, boardCallback);
         this.name = name;
         this.health = new Health(health);
         this.attackPoints = attack;
         this.defensePoints = defense;
         this.callback = callback;
+        this.stepCounter = stepCounter;
         this.id = UUID.randomUUID().toString();
     }
 
@@ -152,6 +157,13 @@ public abstract class Unit extends Occupant {
         callback.send(message);
     }
 
+    protected void sendEvent(GameEvent event) {
+        if (event == null) {
+            throw new IllegalArgumentException("event can't be null");
+        }
+        callback.sendEvent(event);
+    }
+
     /**
      * The unit initiates attack on another unit.
      *
@@ -165,11 +177,13 @@ public abstract class Unit extends Occupant {
 
         sendMessage("");
         sendMessage(this.name + " engaged in combat with " + defender.getName() + ".");
+        sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.COMBAT, this.getId(), defender.getId(), null));
 
         int attackRoll = (int) (Math.random() * (attackPoints + 1));
         sendMessage(this.name + " rolled " + attackRoll + " attack points.");
+        sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ROLL_ATTACK, this.getId(), attackRoll));
 
-        int damageTaken = defender.defend(attackRoll);
+        int damageTaken = defender.defend(attackRoll, true);
         sendMessage(this.name + " dealt " + damageTaken + " damage to " + defender.getName() + ".");
         sendMessage("");
     }
@@ -183,11 +197,16 @@ public abstract class Unit extends Occupant {
      * unit.
      * @return the amount of damage that actually hit the defender.
      */
-    public int defend(int incomingDamage) {
+    public int defend(int incomingDamage, boolean isFromMelee) {
         int defenseRoll = (int) (Math.random() * (defensePoints + 1));
         sendMessage(this.name + " rolled " + defenseRoll + " defense points.");
+        sendEvent(new GameEvent(stepCounter.getCurrentStep(), ActionType.ROLL_DEFENSE, this.getId(), defenseRoll));
+
         int finalDamage = incomingDamage - defenseRoll;
         if (finalDamage > 0) {
+            if (isFromMelee) {
+                sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.MELEE, this.getId(), finalDamage));
+            }
             takeDamage(finalDamage);
         } else {
             finalDamage = 0;
@@ -227,10 +246,13 @@ public abstract class Unit extends Occupant {
         if (attackerName == null) {
             throw new IllegalArgumentException("unit can't be null");
         }
-        int actualDamage = this.defend(damageAmount);
-        this.takeDamage(actualDamage);
+        int actualDamage = this.defend(damageAmount, false);
+        if (actualDamage > 0) {
+            this.takeDamage(actualDamage);
+            sendMessage(attackerName + " hit " + this.getName() + " for " + actualDamage + " ability damage");
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.TAKE_DAMAGE_FROM_ABILITY, getId(), actualDamage));
+        }
 
-        sendMessage(attackerName + " hit " + this.getName() + " for " + actualDamage + " ability damage");
     }
 
     /**

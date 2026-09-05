@@ -1,7 +1,10 @@
 package game.occupant.unit.player;
 
+import game.ActionType;
 import game.BoardCallback;
+import game.GameEvent;
 import game.MessageCallback;
+import game.StepCounter;
 import game.cell.Position;
 import game.occupant.OccupantVisitor;
 import game.occupant.unit.OccupantFilterVisitor;
@@ -15,8 +18,8 @@ public abstract class Player extends Unit {
     private Integer experience;
 
     public Player(String name, Integer health, Integer attack, Integer defense, Position position,
-            MessageCallback callback, BoardCallback boardCallback) {
-        super('@', name, health, attack, defense, position, callback, boardCallback);
+            MessageCallback callback, BoardCallback boardCallback, StepCounter stepCounter) {
+        super('@', name, health, attack, defense, position, callback, boardCallback, stepCounter);
         this.experience = 0;
         this.level = 1;
     }
@@ -72,12 +75,15 @@ public abstract class Player extends Unit {
             enemy.onDeath();
             gainExperience(enemy.getExperienceValue());
             sendMessage(enemy.getName() + " died. " + this.getName() + " gained " + enemy.getExperienceValue() + " experience");
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.DIE, enemy.getId(), null));
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.GAIN_XP, this.getId(), enemy.getId(), enemy.getExperienceValue()));
         }
     }
 
     @Override
     public void onDeath() {
         this.setCharacter('X');
+        sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.DIE, this.getId(), null));
     }
 
     public Integer getLevel() {

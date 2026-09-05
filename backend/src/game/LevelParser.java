@@ -29,9 +29,11 @@ public class LevelParser {
     private BoardCallback boardCallback;
     private Player chosenPlayer;
     private final Map<Character, Function<Position, Cell>> cellFactory;
+    private StepCounter stepCounter;
 
-    public LevelParser(Player player, MessageCallback callback) {
+    public LevelParser(Player player, MessageCallback callback, StepCounter stepCounter) {
         this.callback = callback;
+        this.stepCounter = stepCounter;
         this.chosenPlayer = player;
         this.cellFactory = Map.ofEntries(
                 entry('#', p -> new Wall()),
@@ -65,7 +67,7 @@ public class LevelParser {
     private Map.Entry<Character, Function<Position, Cell>> monster(char character, String name, int health, int attack,
             int defense, int vision, int xp) {
         return entry(character, (p) -> {
-            Unit activeUnit = new Monster(character, name, health, attack, defense, vision, xp, p, this.callback, this.boardCallback);
+            Unit activeUnit = new Monster(character, name, health, attack, defense, vision, xp, p, this.callback, this.boardCallback, stepCounter);
             MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit);
             activeUnit.setMovementManager(movementManager);
             return new Floor(activeUnit);
@@ -75,7 +77,7 @@ public class LevelParser {
     private Map.Entry<Character, Function<Position, Cell>> boss(char character, String name, int health, int attack, int defense,
             int vision, int xp, int freq) {
         return entry(character, (p) -> {
-            Unit activeUnit = new Boss(character, name, health, attack, defense, vision, xp, freq, p, this.callback, this.boardCallback);
+            Unit activeUnit = new Boss(character, name, health, attack, defense, vision, xp, freq, p, this.callback, this.boardCallback, stepCounter);
             MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit);
             activeUnit.setMovementManager(movementManager);
             return new Floor(activeUnit);
@@ -85,7 +87,7 @@ public class LevelParser {
     private Map.Entry<Character, Function<Position, Cell>> trap(char character, String name, int health, int attack,
             int defense, int xp, int visibilityTime, int invisibilityTime) {
         return entry(character, (p) -> {
-            Unit activeUnit = new Trap(character, name, health, attack, defense, xp, visibilityTime, invisibilityTime, p, this.callback, this.boardCallback);
+            Unit activeUnit = new Trap(character, name, health, attack, defense, xp, visibilityTime, invisibilityTime, p, this.callback, this.boardCallback, stepCounter);
             MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit);
             activeUnit.setMovementManager(movementManager);
             return new Floor(activeUnit);

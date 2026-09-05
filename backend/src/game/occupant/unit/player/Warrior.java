@@ -1,19 +1,22 @@
 package game.occupant.unit.player;
 
+import game.ActionType;
 import game.BoardCallback;
+import game.GameEvent;
 import game.MessageCallback;
+import game.StepCounter;
 import game.cell.Position;
 import game.occupant.unit.enemy.Enemy;
-
 import java.util.List;
 
 public class Warrior extends Player {
+
     private final Integer cooldown;
     private Integer remainingCooldown;
 
     public Warrior(String name, Integer health, Integer attack, Integer defense, Integer cooldown,
-                   Position position, MessageCallback callback, BoardCallback boardCallback) {
-        super(name, health, attack, defense, position, callback, boardCallback);
+            Position position, MessageCallback callback, BoardCallback boardCallback, StepCounter stepCounter) {
+        super(name, health, attack, defense, position, callback, boardCallback, stepCounter);
         this.cooldown = cooldown;
         this.remainingCooldown = 0;
     }
@@ -21,7 +24,8 @@ public class Warrior extends Player {
     /**
      * Casts warrior's special ability: Avenger's Shield.
      * <p>
-     * The warrior damages a random enemy on the board within range, and heals itself.
+     * The warrior damages a random enemy on the board within range, and heals
+     * itself.
      */
     private void avengersShield() {
         sendMessage(getName() + " used Avenger's Shield");
@@ -43,6 +47,7 @@ public class Warrior extends Player {
             Enemy randomEnemy = enemiesWithinRange.get(randomEnemyIndex);
 
             int damage = (int) (getHealthPool() * 0.1);
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), randomEnemy.getId(), null));
             randomEnemy.takeDamageFromAbility(damage, this.getName());
             handleEnemyIfDead(randomEnemy);
         }
@@ -56,15 +61,17 @@ public class Warrior extends Player {
     private void avengersShieldHeal() {
         int heal = this.getDefensePoints() * 10;
         this.heal(heal);
+        sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.HEAL, getId(), heal));
         sendMessage("Avenger's Shield healed " + getName() + " for " + heal + "hp.");
     }
 
     /**
      * On level-up, the warrior gains additional stats.
      * <p>
-     * The warrior gains additional health, attack, and defense,
-     * And the cooldown resets.
+     * The warrior gains additional health, attack, and defense, And the
+     * cooldown resets.
      */
+    @Override
     public void levelUp() {
         super.levelUp();
         this.remainingCooldown = 0;
@@ -75,8 +82,10 @@ public class Warrior extends Player {
      * <p>
      * The warrior only casts the ability if it's not on cooldown.
      *
-     * @throws IllegalArgumentException If the game board is null or if it's the incorrect board.
+     * @throws IllegalArgumentException If the game board is null or if it's the
+     * incorrect board.
      */
+    @Override
     public void abilityCast() {
         if (remainingCooldown == 0) {
             avengersShield();
@@ -112,8 +121,9 @@ public class Warrior extends Player {
     }
 
     private void reduceCooldown() {
-        if (remainingCooldown > 0)
+        if (remainingCooldown > 0) {
             remainingCooldown--;
+        }
     }
 
     @Override

@@ -12,9 +12,11 @@ public final class Game {
     private Integer currentLevelIndex;
     private GameBoard currentGameBoard;
     private final MessageCallback messageCallback;
+    private final StepCounter stepCounter;
 
     public Game(MessageCallback callback) {
         this.messageCallback = callback;
+        this.stepCounter = new StepCounter();
         loadAllFiles();
         this.currentLevelIndex = 0;
         selectPlayer(0);
@@ -40,13 +42,13 @@ public final class Game {
 
     public List<Player> getAvailablePlayers() {
         List<Player> availablePlayers = new ArrayList<>();
-        availablePlayers.add(new Warrior("Jon Snow", 300, 30, 4, 3, new Position(0, 0), messageCallback, null));
-        availablePlayers.add(new Warrior("The Hound", 400, 20, 6, 5, new Position(0, 0), messageCallback, null));
-        availablePlayers.add(new Mage("Melisandre", 100, 5, 1, new Position(0, 0), messageCallback, 300, 30, 15, 5, 6, null));
-        availablePlayers.add(new Mage("Thoros of Myr", 250, 25, 4, new Position(0, 0), messageCallback, 150, 20, 20, 3, 4, null));
-        availablePlayers.add(new Rogue("Arya Stark", 150, 40, 2, new Position(0, 0), 20, messageCallback, null));
-        availablePlayers.add(new Rogue("Bronn", 250, 35, 3, new Position(0, 0), 50, messageCallback, null));
-        availablePlayers.add(new Hunter("Ygritte", 220, 30, 2, new Position(0, 0), 6, messageCallback, null));
+        availablePlayers.add(new Warrior("Jon Snow", 300, 30, 4, 3, new Position(0, 0), messageCallback, null, stepCounter));
+        availablePlayers.add(new Warrior("The Hound", 400, 20, 6, 5, new Position(0, 0), messageCallback, null, stepCounter));
+        availablePlayers.add(new Mage("Melisandre", 100, 5, 1, new Position(0, 0), messageCallback, 300, 30, 15, 5, 6, null, stepCounter));
+        availablePlayers.add(new Mage("Thoros of Myr", 250, 25, 4, new Position(0, 0), messageCallback, 150, 20, 20, 3, 4, null, stepCounter));
+        availablePlayers.add(new Rogue("Arya Stark", 150, 40, 2, new Position(0, 0), 20, messageCallback, null, stepCounter));
+        availablePlayers.add(new Rogue("Bronn", 250, 35, 3, new Position(0, 0), 50, messageCallback, null, stepCounter));
+        availablePlayers.add(new Hunter("Ygritte", 220, 30, 2, new Position(0, 0), 6, messageCallback, null, stepCounter));
         return availablePlayers;
     }
 
@@ -70,7 +72,7 @@ public final class Game {
     private void parseBoard() {
         if (!levels.isEmpty() && currentLevelIndex < levels.size()) {
             String resourcePath = levels.get(currentLevelIndex);
-            LevelParser levelParser = new LevelParser(chosenPlayer, messageCallback);
+            LevelParser levelParser = new LevelParser(chosenPlayer, messageCallback, stepCounter);
             this.currentGameBoard = levelParser.parseLevelFromResource(resourcePath);
         }
     }
@@ -85,6 +87,7 @@ public final class Game {
         if (chosenPlayer.isDead()) {
             chosenPlayer.onDeath();
             messageCallback.send("Game Over!");
+            messageCallback.sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.LOSE, null, null));
         }
     }
 
@@ -134,10 +137,12 @@ public final class Game {
             if (currentGameBoard.isLevelComplete()) {
                 currentLevelIndex++;
                 messageCallback.send("NEXT LEVEL!");
+                messageCallback.sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.NEXT_LEVEL, null, null));
                 if (currentLevelIndex < levels.size()) {
                     parseBoard();
                 } else {
                     messageCallback.send("You won!");
+                    messageCallback.sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.WIN, null, null));
                 }
             }
         }

@@ -1,7 +1,10 @@
 package game.occupant.unit.player;
 
+import game.ActionType;
 import game.BoardCallback;
+import game.GameEvent;
 import game.MessageCallback;
+import game.StepCounter;
 import game.cell.Position;
 import game.occupant.unit.enemy.Enemy;
 import java.util.List;
@@ -16,8 +19,8 @@ public class Mage extends Player {
     private final Integer abilityRange;
 
     public Mage(String name, Integer health, Integer attack, Integer defense, Position position, MessageCallback callback,
-            Integer manaPool, Integer manaCost, Integer spellPower, Integer hitsCount, Integer abilityRange, BoardCallback boardCallback) {
-        super(name, health, attack, defense, position, callback, boardCallback);
+            Integer manaPool, Integer manaCost, Integer spellPower, Integer hitsCount, Integer abilityRange, BoardCallback boardCallback, StepCounter stepCounter) {
+        super(name, health, attack, defense, position, callback, boardCallback, stepCounter);
         this.manaPool = manaPool;
         this.currentMana = this.manaPool / 4;
         this.manaCost = manaCost;
@@ -34,6 +37,8 @@ public class Mage extends Player {
         while (hits < this.hitsCount && !enemies.isEmpty()) {
             int randomEnemyPlace = (int) (Math.random() * enemies.size());
             Enemy randomEnemy = enemies.get(randomEnemyPlace);
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), randomEnemy.getId(), null));
+
             randomEnemy.takeDamageFromAbility(this.spellPower, this.getName());
             handleEnemyIfDead(randomEnemy);
             enemies.removeIf(Enemy::isDead);

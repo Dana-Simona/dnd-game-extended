@@ -2,6 +2,7 @@ package game.occupant.unit.enemy;
 
 import game.BoardCallback;
 import game.MessageCallback;
+import game.StepCounter;
 import game.cell.Position;
 import game.occupant.OccupantVisitor;
 import game.occupant.unit.OccupantFilterVisitor;
@@ -14,8 +15,8 @@ public abstract class Enemy extends Unit {
     private final Integer experienceValue;
 
     public Enemy(char character, String name, Integer health, Integer attack, Integer defense,
-            Integer experienceValue, Position position, MessageCallback callback, BoardCallback boardCallback) {
-        super(character, name, health, attack, defense, position, callback, boardCallback);
+            Integer experienceValue, Position position, MessageCallback callback, BoardCallback boardCallback, StepCounter stepCounter) {
+        super(character, name, health, attack, defense, position, callback, boardCallback, stepCounter);
         this.experienceValue = experienceValue;
     }
 

@@ -5,7 +5,7 @@ import game.*;
 import game.cell.Floor;
 import game.cell.Position;
 import game.cell.Wall;
-import game.occupant.unit.Unit;
+import game.occupant.unit.messageCallback;
 import game.occupant.unit.enemy.monster.Monster;
 import game.occupant.unit.player.*;
 import org.junit.jupiter.api.BeforeAll;
@@ -58,7 +58,7 @@ public class PlayerTests {
         assertNotNull(messageCallback, "MessageCallback should be initialized.");
     }
 
-    private void attachOccupantToBoard(Unit occupant) {
+    private void attachOccupantToBoard(messageCallback occupant) {
         occupant.setBoardCallback(boardCallback);
         MovementManager movementManager = new MovementManager(board, occupant);
         occupant.setMovementManager(movementManager);

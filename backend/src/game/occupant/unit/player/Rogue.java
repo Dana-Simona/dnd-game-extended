@@ -1,7 +1,10 @@
 package game.occupant.unit.player;
 
+import game.ActionType;
 import game.BoardCallback;
+import game.GameEvent;
 import game.MessageCallback;
+import game.StepCounter;
 import game.cell.Position;
 import game.occupant.unit.enemy.Enemy;
 import java.util.List;
@@ -13,8 +16,8 @@ public class Rogue extends Player {
     private final Integer maxEnergy = 100;
 
     public Rogue(String name, Integer health, Integer attack, Integer defense, Position position,
-            Integer energyCost, MessageCallback callback, BoardCallback boardCallback) {
-        super(name, health, attack, defense, position, callback, boardCallback);
+            Integer energyCost, MessageCallback callback, BoardCallback boardCallback, StepCounter stepCounter) {
+        super(name, health, attack, defense, position, callback, boardCallback, stepCounter);
         currentEnergy = maxEnergy;
         cost = energyCost;
     }
@@ -28,8 +31,11 @@ public class Rogue extends Player {
         sendMessage(getName() + " cast Fan of Knives.");
         Integer attackRange = 2;
         List<Enemy> enemiesWithinRange = getEnemiesInRange(this.getPosition(), attackRange);
+        List<String> targetIds = enemiesWithinRange.stream().map(Enemy::getId).toList();
+        
         int damageAmount = getAttackPoints();
         for (Enemy enemy : enemiesWithinRange) {
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), targetIds, null));
             enemy.takeDamageFromAbility(damageAmount, this.getName());
             handleEnemyIfDead(enemy);
         }

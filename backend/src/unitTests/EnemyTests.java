@@ -14,8 +14,6 @@ import game.occupant.unit.player.Warrior;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class EnemyTests {
     private CLI cli;
     private MessageCallback messageCallback;

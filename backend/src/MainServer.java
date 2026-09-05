@@ -2,6 +2,7 @@
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import game.Game;
+import game.GameEvent;
 import game.MessageCallback;
 import game.occupant.unit.Unit;
 import game.occupant.unit.enemy.Enemy;
@@ -22,15 +23,25 @@ public class MainServer {
 
     private static Game game;
     private static final List<String> gameLogs = Collections.synchronizedList(new ArrayList<>());
+    private static final List<GameEvent> turnEvents = Collections.synchronizedList(new ArrayList<>());
 
     public static void main(String[] args) {
         try {
-            MessageCallback callback = msg -> {
-                if (!isMovementLog(msg)) {
-                    System.out.println("[GAME LOG]: " + msg);
-                    gameLogs.add(msg);
+            MessageCallback callback = new MessageCallback() {
+                @Override
+                public void send(String message) {
+                    if (!isMovementLog(message)) {
+                        System.out.println("[GAME LOG]: " + message);
+                        gameLogs.add(message);
+                    }
+                }
+
+                @Override
+                public void sendEvent(GameEvent event) {
+                    turnEvents.add(event);
                 }
             };
+
             game = new Game(callback);
 
             HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
@@ -113,6 +124,7 @@ public class MainServer {
 
                     if (!key.isEmpty()) {
                         gameLogs.clear();
+                        turnEvents.clear();
                         game.processTurn(key.charAt(0));
                     }
 
@@ -174,6 +186,17 @@ public class MainServer {
         }
 
         json.append(",\"units\":").append(getUnitsJson());
+
+        json.append(",\"events\":[");
+        synchronized (turnEvents) {
+            for (int i = 0; i < turnEvents.size(); i++) {
+                buildGameEventJson(json, turnEvents.get(i));
+                if (i < turnEvents.size() - 1) {
+                    json.append(",");
+                }
+            }
+        }
+        json.append("]");
 
         json.append("}");
         return json.toString();
@@ -307,6 +330,31 @@ public class MainServer {
         }
         json.append("]");
         return json.toString();
+    }
+
+    private static StringBuilder buildGameEventJson(StringBuilder json, GameEvent event) {
+        json.append("{")
+                .append("\"step\":").append(event.getStep()).append(",")
+                .append("\"type\":\"").append(event.getType() != null ? event.getType().name() : "").append("\",")
+                .append("\"sourceId\":").append(event.getSourceId() != null ? "\"" + event.getSourceId() + "\"" : "null").append(",");
+
+        json.append("\"targetIds\":");
+        if (event.getTargetIds() != null) {
+            json.append("[");
+            for (int i = 0; i < event.getTargetIds().size(); i++) {
+                json.append("\"").append(event.getTargetIds().get(i)).append("\"");
+                if (i < event.getTargetIds().size() - 1) {
+                    json.append(",");
+                }
+            }
+            json.append("]");
+        } else {
+            json.append("null");
+        }
+
+        json.append(",\"amount\":").append(event.getAmount() != null ? event.getAmount() : "null");
+        json.append("}");
+        return json;
     }
 
     private static void addCorsHeaders(HttpExchange exchange) {

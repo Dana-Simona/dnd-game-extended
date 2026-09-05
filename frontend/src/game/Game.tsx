@@ -8,9 +8,19 @@ import { useCharacter } from '../utils/characterContext/CharacterContext';
 import { PlayerStats } from './playerStats/PlayerStats';
 import type { AllPlayerData, Unit } from '../constants/interfaces/player';
 
+export interface GameEvent {
+	step: number;
+	type: string;
+	sourceId: string | null;
+	targetIds: string[] | null;
+	amount: number | null;
+}
+
 interface BoardData {
 	grid: string[];
 	player: AllPlayerData;
+	units: AllPlayerData[];
+	events?: GameEvent[];
 }
 
 const Game: React.FC = () => {
@@ -21,6 +31,8 @@ const Game: React.FC = () => {
 	const [board, setBoard] = useState<string[]>([]);
 	const [actionCount, setActionCount] = useState<number>(0);
 	const [enemies, setEnemies] = useState<Unit[]>([]);
+
+	const [turnEvents, setTurnEvents] = useState<GameEvent[]>([]);
 
 	useEffect(() => {
 		if (!character) {
@@ -85,11 +97,12 @@ const Game: React.FC = () => {
 					body: lowerKey,
 				});
 
-				const data: {
-					grid: string[];
-					player: AllPlayerData;
-					units: AllPlayerData[];
-				} = await res.json();
+				const data: BoardData = await res.json();
+
+				if (data.events) {
+					setTurnEvents(data.events);
+					console.log('Turn Events Received:', data.events);
+				}
 
 				setBoard(data.grid);
 
