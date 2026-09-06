@@ -19,8 +19,6 @@ export const CharacterProvider = ({ children }: { children: ReactNode }) => {
 	const updateCharacter = (char: AllPlayerData) => setCharacter(char);
 	const resetCharacter = () => setCharacter(null);
 
-	console.log('🎮 CURRENT CONTEXT CHARACTER:', character);
-
 	return (
 		<CharacterContext.Provider
 			value={{

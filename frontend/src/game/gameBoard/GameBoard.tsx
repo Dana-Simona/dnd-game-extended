@@ -4,31 +4,27 @@ import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import { ViewportContainer, Board, BoardCanvas } from './GameBoardStyles';
 import StaticLayer from './staticLayer/StaticLayer';
 import ActiveLayer from './activeLayer/ActiveLayer';
-import {
-	useViewport,
-	resolvePlayerPosition,
-	calculateCameraCoordinates,
-	combineUnits,
-} from './useGameBoard';
+import { useViewport, combineUnits } from './useGameBoard';
 
 interface GameBoardProps {
 	board: string[];
 	enemies: Unit[];
 	activeUnitStates?: Record<string, string>;
 	visualPositions?: Record<string, { x: number; y: number }>;
+	cameraStyle?: React.CSSProperties;
 }
 
 const TILE_SIZE = 32;
-const ZOOM = 2;
 
 export const GameBoard: React.FC<GameBoardProps> = ({
 	board,
 	enemies,
 	activeUnitStates = {},
 	visualPositions = {},
+	cameraStyle,
 }) => {
 	const { character } = useCharacter();
-	const { viewportRef, dimensions } = useViewport();
+	const { viewportRef } = useViewport();
 
 	if (!character) {
 		return (
@@ -38,23 +34,11 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 		);
 	}
 
-	const playerPos = resolvePlayerPosition(character, visualPositions);
-	const camera = calculateCameraCoordinates(
-		playerPos,
-		dimensions,
-		TILE_SIZE,
-		ZOOM,
-	);
 	const allUnits = combineUnits(character, enemies);
 
 	return (
 		<ViewportContainer ref={viewportRef}>
-			<Board
-				$offsetX={camera.offsetX}
-				$offsetY={camera.offsetY}
-				$zoom={ZOOM}
-				$transitionDuration='0.25s'
-			>
+			<Board style={cameraStyle}>
 				<BoardCanvas>
 					<StaticLayer board={board} />
 					<ActiveLayer

@@ -3,13 +3,6 @@ import styled from 'styled-components';
 export const VIEWPORT_WIDTH_VW = 95;
 export const VIEWPORT_HEIGHT_VH = 60;
 
-interface BoardProps {
-	$offsetX: number;
-	$offsetY: number;
-	$zoom: number;
-	$transitionDuration: string;
-}
-
 export const ViewportContainer = styled.div`
 	width: ${VIEWPORT_WIDTH_VW}vw;
 	height: ${VIEWPORT_HEIGHT_VH}vh;
@@ -21,20 +14,13 @@ export const ViewportContainer = styled.div`
 	background-color: #000;
 `;
 
-export const Board = styled.div<BoardProps>`
+export const Board = styled.div`
 	position: absolute;
 	top: 0;
 	left: 0;
 	transform-origin: top left;
-	transform: translate3d(
-			${(props) => props.$offsetX}px,
-			${(props) => props.$offsetY}px,
-			0
-		)
-		scale(${(props) => props.$zoom});
-	transition: transform ${(props) => props.$transitionDuration}
-		cubic-bezier(0.25, 1, 0.5, 1);
 	image-rendering: pixelated;
+	/* transform and transition are now handled by cameraStyle */
 `;
 
 export const BoardCanvas = styled.div`

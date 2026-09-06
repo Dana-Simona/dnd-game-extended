@@ -4,7 +4,7 @@ import { ROUTES } from '../constants/routes';
 import type { GameEvent } from '../constants/gameEvent';
 import type { AllPlayerData, Unit } from '../constants/interfaces/player';
 import { useCharacter } from '../utils/characterContext/CharacterContext';
-import { useGameAnimation } from '../utils/animation/useGameAnimation';
+import { useGameAnimation } from '../utils/animation/useGameAnimation/useGameAnimation';
 import { usePreloader } from '../utils/animation/usePreloader';
 
 export interface BoardData {
@@ -50,8 +50,14 @@ export const useGame = (level?: string) => {
 	const [actionCount, setActionCount] = useState<number>(0);
 	const [enemies, setEnemies] = useState<Unit[]>([]);
 
-	const { isAnimating, activeUnitStates, visualPositions, runTurn } =
-		useGameAnimation(enemies, character);
+	// Added cameraStyle here
+	const {
+		isAnimating,
+		activeUnitStates,
+		visualPositions,
+		runTurn,
+		cameraStyle,
+	} = useGameAnimation(enemies, character);
 
 	usePreloader(enemies, character);
 	useAuthGuard(character);
@@ -127,5 +133,6 @@ export const useGame = (level?: string) => {
 		enemies,
 		activeUnitStates,
 		visualPositions,
+		cameraStyle,
 	};
 };

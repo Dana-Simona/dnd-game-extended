@@ -12,6 +12,7 @@ export const usePreloader = (units: Unit[], player: AllPlayerData | null) => {
 			ActionType.MOVE,
 			ActionType.MELEE,
 			ActionType.DIE,
+			ActionType.ABILITY_CAST,
 		];
 
 		allUnits.forEach((unit) => {
