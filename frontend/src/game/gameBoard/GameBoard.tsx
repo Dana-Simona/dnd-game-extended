@@ -1,18 +1,21 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import type { Unit } from '../../constants/interfaces/player';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import { ViewportContainer, Board, BoardCanvas } from './GameBoardStyles';
 import StaticLayer from './staticLayer/StaticLayer';
 import ActiveLayer from './activeLayer/ActiveLayer';
+import {
+	useViewport,
+	resolvePlayerPosition,
+	calculateCameraCoordinates,
+	combineUnits,
+} from './useGameBoard';
 
 interface GameBoardProps {
 	board: string[];
 	enemies: Unit[];
 	activeUnitStates?: Record<string, string>;
-	visualPositions?: Record<
-		string,
-		{ x: number; y: number }
-	>; /* Add visualPositions prop */
+	visualPositions?: Record<string, { x: number; y: number }>;
 }
 
 const TILE_SIZE = 32;
@@ -22,30 +25,10 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 	board,
 	enemies,
 	activeUnitStates = {},
-	visualPositions = {} /* Default to empty object */,
+	visualPositions = {},
 }) => {
 	const { character } = useCharacter();
-
-	const viewportRef = useRef<HTMLDivElement>(null);
-	const [viewportDimensions, setViewportDimensions] = useState({
-		width: 0,
-		height: 0,
-	});
-
-	useEffect(() => {
-		const updateDimensions = () => {
-			if (viewportRef.current) {
-				setViewportDimensions({
-					width: viewportRef.current.clientWidth,
-					height: viewportRef.current.clientHeight,
-				});
-			}
-		};
-
-		updateDimensions();
-		window.addEventListener('resize', updateDimensions);
-		return () => window.removeEventListener('resize', updateDimensions);
-	}, []);
+	const { viewportRef, dimensions } = useViewport();
 
 	if (!character) {
 		return (
@@ -55,28 +38,20 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 		);
 	}
 
-	/* Resolve player position from visualPositions driven by step animation */
-	const playerId = character.id || 'player';
-	const playerPos = visualPositions[playerId] ?? {
-		x: character.x,
-		y: character.y,
-	};
-
-	/* Calculate camera pixel position using dynamic visual coordinates */
-	const playerPixelX = (playerPos.x * TILE_SIZE + TILE_SIZE / 2) * ZOOM;
-	const playerPixelY = (playerPos.y * TILE_SIZE + TILE_SIZE / 2) * ZOOM;
-
-	const cameraOffsetX = viewportDimensions.width / 2 - playerPixelX;
-	const cameraOffsetY = viewportDimensions.height / 2 - playerPixelY;
-
-	const validEnemies = (enemies || []).filter((e): e is Unit => Boolean(e));
-	const allUnits: Unit[] = [character, ...validEnemies];
+	const playerPos = resolvePlayerPosition(character, visualPositions);
+	const camera = calculateCameraCoordinates(
+		playerPos,
+		dimensions,
+		TILE_SIZE,
+		ZOOM,
+	);
+	const allUnits = combineUnits(character, enemies);
 
 	return (
 		<ViewportContainer ref={viewportRef}>
 			<Board
-				$offsetX={cameraOffsetX}
-				$offsetY={cameraOffsetY}
+				$offsetX={camera.offsetX}
+				$offsetY={camera.offsetY}
 				$zoom={ZOOM}
 				$transitionDuration='0.25s'
 			>

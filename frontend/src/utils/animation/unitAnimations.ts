@@ -6,9 +6,53 @@ import type {
 import type { SpriteProps } from '../sprite/Sprite';
 import { SPRITE_MANIFEST, DEFAULT_ANIM_META } from './spriteManifest';
 
-const sanitize = (str?: string, defaultValue = 'idle'): string => {
-	if (!str) return defaultValue;
-	return str.toLowerCase().replace(/\s+/g, '');
+export const sanitize = (str?: string, defaultValue = 'idle'): string =>
+	!str ? defaultValue : str.toLowerCase().replace(/\s+/g, '');
+
+const getDefaultPlayerIdentity = (action: string) => ({
+	manifestKey: 'player_warrior_jonsnow',
+	imagePath: `/sprites/player/warrior/jonsnow/${action}.png`,
+});
+
+const getPlayerIdentity = (player: Player, action: string) => {
+	const cls = sanitize(player.class, 'warrior');
+	const name = sanitize(player.name, 'jonsnow');
+	return {
+		manifestKey: `player_${cls}_${name}`,
+		imagePath: `/sprites/player/${cls}/${name}/${action}.png`,
+	};
+};
+
+const getEnemyIdentity = (unit: Unit | AllPlayerData, action: string) => {
+	const name = sanitize(unit.name, 'skeleton');
+	return {
+		manifestKey: `enemy_${name}`,
+		imagePath: `/sprites/enemies/${name}/${action}.png`,
+	};
+};
+
+export const resolveSpriteIdentity = (
+	unit: Unit | AllPlayerData | undefined,
+	action: string,
+) => {
+	if (!unit) return getDefaultPlayerIdentity(action);
+	if (unit.character === '@')
+		return getPlayerIdentity(unit as Player, action);
+	return getEnemyIdentity(unit, action);
+};
+
+export const resolveAnimationMeta = (
+	manifestKey: string,
+	action: string,
+	actionLower: string,
+) => {
+	const manifest = SPRITE_MANIFEST[manifestKey];
+	return (
+		manifest?.[action] ||
+		manifest?.[actionLower] ||
+		manifest?.idle ||
+		DEFAULT_ANIM_META
+	);
 };
 
 export const getUnitSpriteConfig = (
@@ -16,33 +60,8 @@ export const getUnitSpriteConfig = (
 	action: string,
 ): SpriteProps => {
 	const actionLower = sanitize(action, 'idle');
-	let resolvedImagePath = '';
-	let manifestKey = '';
+	const { manifestKey, imagePath } = resolveSpriteIdentity(unit, actionLower);
+	const meta = resolveAnimationMeta(manifestKey, action, actionLower);
 
-	if (!unit) {
-		manifestKey = 'player_warrior_jonsnow';
-		resolvedImagePath = `/sprites/player/warrior/jonsnow/${actionLower}.png`;
-	} else if (unit.character === '@') {
-		const player = unit as Player;
-		const unitClass = sanitize(player.class, 'warrior');
-		const unitName = sanitize(player.name, 'jonsnow');
-
-		manifestKey = `player_${unitClass}_${unitName}`;
-		resolvedImagePath = `/sprites/player/${unitClass}/${unitName}/${actionLower}.png`;
-	} else {
-		const enemyName = sanitize(unit.name, 'skeleton');
-
-		manifestKey = `enemy_${enemyName}`;
-		resolvedImagePath = `/sprites/enemies/${enemyName}/${actionLower}.png`;
-	}
-
-	const unitManifest = SPRITE_MANIFEST[manifestKey];
-	const specificMeta = unitManifest?.[action] || unitManifest?.[actionLower];
-
-	const finalMeta = specificMeta || unitManifest?.idle || DEFAULT_ANIM_META;
-
-	return {
-		...finalMeta,
-		imagePath: resolvedImagePath,
-	};
+	return { ...meta, imagePath };
 };

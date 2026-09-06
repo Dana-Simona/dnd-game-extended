@@ -30,7 +30,7 @@ export const SPRITE_MANIFEST: Record<
 		},
 	},
 	enemy_skeleton: {
-		idle: { width: 24, height: 32, frameCount: 11, fps: 6 },
+		idle: { width: 24, height: 32, frameCount: 11, fps: 12 },
 		[ActionType.MOVE]: { width: 22, height: 32, frameCount: 13, fps: 6 },
 		[ActionType.DIE]: {
 			width: 40,

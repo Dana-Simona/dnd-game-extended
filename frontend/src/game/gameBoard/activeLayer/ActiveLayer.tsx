@@ -3,7 +3,7 @@ import type { Unit } from '../../../constants/interfaces/player';
 import Tile from '../Tile/Tile';
 import { ActiveLayerContainer, AnimatedUnitWrapper } from './ActiveLayerStyles';
 
-interface ActiveLayerProps {
+interface Props {
 	units: Unit[];
 	characterId: string;
 	tileSize: number;
@@ -12,7 +12,7 @@ interface ActiveLayerProps {
 	visualPositions?: Record<string, { x: number; y: number }>;
 }
 
-const ActiveLayer: React.FC<ActiveLayerProps> = React.memo(
+const ActiveLayer: React.FC<Props> = React.memo(
 	({
 		units,
 		characterId,
@@ -21,8 +21,6 @@ const ActiveLayer: React.FC<ActiveLayerProps> = React.memo(
 		activeUnitStates = {},
 		visualPositions = {},
 	}) => {
-
-		console.log('VISUAL POSITIONS', visualPositions)
 		return (
 			<ActiveLayerContainer>
 				{units.map((unit, index) => {

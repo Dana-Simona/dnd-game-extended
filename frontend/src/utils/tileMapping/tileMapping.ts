@@ -1,12 +1,12 @@
-import grassSpriteSheet from '../../assets/tiles/Texture/TX Tileset Grass.png';
+import { getWallConfigAt } from './wallAutotile';
+import type { SpriteProps } from '../sprite/Sprite';
+import type { Unit } from '../../constants/interfaces/player';
+import { getUnitSpriteConfig } from '../animation/unitAnimations';
 import stairsSpriteSheet from '../../assets/tiles/Texture/TX Struct.png';
 import wallSpriteSheet from '../../assets/tiles/Texture/TX Tileset Wall.png';
-import stoneGroundSpriteSheet from '../../assets/tiles/Texture/TX Tileset Stone Ground.png';
-import type { SpriteProps } from '../sprite/Sprite';
+import grassSpriteSheet from '../../assets/tiles/Texture/TX Tileset Grass.png';
 import { getProceduralTileCoords } from './proceduralNoise/useProceduralNoise';
-import { getWallConfigAt } from './wallAutotile';
-import { getUnitSpriteConfig } from '../animation/unitAnimations';
-import type { Unit } from '../../constants/interfaces/player';
+import stoneGroundSpriteSheet from '../../assets/tiles/Texture/TX Tileset Stone Ground.png';
 
 export type TileConfig =
 	| {

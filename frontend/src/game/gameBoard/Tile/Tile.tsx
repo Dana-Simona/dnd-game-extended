@@ -6,7 +6,7 @@ import UnitTile from './unitTile/UnitTile';
 import LayeredTile from './layeredTile/LayeredTile';
 import BaseStaticTile from './baseStaticTile/BaseStaticTile';
 
-interface TileProps {
+interface Props {
 	char: string;
 	x?: number;
 	y?: number;
@@ -15,7 +15,7 @@ interface TileProps {
 	activeActionState?: string;
 }
 
-const Tile: React.FC<TileProps> = ({
+const Tile: React.FC<Props> = ({
 	char,
 	x = 0,
 	y = 0,
