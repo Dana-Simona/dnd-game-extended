@@ -9,6 +9,10 @@ interface GameBoardProps {
 	board: string[];
 	enemies: Unit[];
 	activeUnitStates?: Record<string, string>;
+	visualPositions?: Record<
+		string,
+		{ x: number; y: number }
+	>; /* Add visualPositions prop */
 }
 
 const TILE_SIZE = 32;
@@ -18,6 +22,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 	board,
 	enemies,
 	activeUnitStates = {},
+	visualPositions = {} /* Default to empty object */,
 }) => {
 	const { character } = useCharacter();
 
@@ -50,8 +55,16 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 		);
 	}
 
-	const playerPixelX = (character.x * TILE_SIZE + TILE_SIZE / 2) * ZOOM;
-	const playerPixelY = (character.y * TILE_SIZE + TILE_SIZE / 2) * ZOOM;
+	/* Resolve player position from visualPositions driven by step animation */
+	const playerId = character.id || 'player';
+	const playerPos = visualPositions[playerId] ?? {
+		x: character.x,
+		y: character.y,
+	};
+
+	/* Calculate camera pixel position using dynamic visual coordinates */
+	const playerPixelX = (playerPos.x * TILE_SIZE + TILE_SIZE / 2) * ZOOM;
+	const playerPixelY = (playerPos.y * TILE_SIZE + TILE_SIZE / 2) * ZOOM;
 
 	const cameraOffsetX = viewportDimensions.width / 2 - playerPixelX;
 	const cameraOffsetY = viewportDimensions.height / 2 - playerPixelY;
@@ -74,7 +87,8 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 						characterId={character.id}
 						tileSize={TILE_SIZE}
 						board={board}
-						activeUnitStates={activeUnitStates} 
+						activeUnitStates={activeUnitStates}
+						visualPositions={visualPositions}
 					/>
 				</BoardCanvas>
 			</Board>

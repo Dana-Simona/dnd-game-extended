@@ -20,14 +20,13 @@ export const SPRITE_MANIFEST: Record<
 	Partial<Record<string, AnimMeta>>
 > = {
 	player_warrior_jonsnow: {
-		idle: { width: 48, height: 46, frameCount: 8, fps: 4 },
-		[ActionType.MOVE]: { width: 24, height: 34, frameCount: 10, fps: 6 },
+		idle: { width: 48, height: 48, frameCount: 8, fps: 4 },
+		[ActionType.MOVE]: { width: 48, height: 48, frameCount: 6, fps: 8 },
 		[ActionType.MELEE]: {
 			width: 48,
 			height: 48,
-			frameCount: 5,
+			frameCount: 11,
 			fps: 12,
-			offsetY: -10,
 		},
 	},
 	enemy_skeleton: {
@@ -47,10 +46,17 @@ export const SPRITE_MANIFEST: Record<
 			width: 100,
 			height: 100,
 			frameCount: 6,
+			fps: 12,
+			offsetY: 36,
+		},
+		[ActionType.DIE]: {
+			width: 100,
+			height: 100,
+			frameCount: 6,
 			fps: 6,
 			offsetY: 36,
 		},
-        [ActionType.DIE]: {
+		[ActionType.MELEE]: {
 			width: 100,
 			height: 100,
 			frameCount: 6,

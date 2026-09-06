@@ -16,4 +16,14 @@ export const setupAnimations = (controllers: Controllers) => {
 		if (!event.sourceId) return;
 		await controllers.playUnitAnimation(event.sourceId, ActionType.MOVE);
 	});
+
+	animationRegistry.register(ActionType.DIE, async (event) => {
+		if (!event.sourceId) return;
+		await controllers.playUnitAnimation(event.sourceId, ActionType.DIE);
+	});
+
+	animationRegistry.register(ActionType.MELEE, async (event) => {
+		if (!event.sourceId) return;
+		await controllers.playUnitAnimation(event.sourceId, ActionType.MELEE);
+	});
 };

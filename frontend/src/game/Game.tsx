@@ -27,10 +27,8 @@ const Game: React.FC = () => {
 	const [actionCount, setActionCount] = useState<number>(0);
 	const [enemies, setEnemies] = useState<Unit[]>([]);
 
-	const { isAnimating, activeUnitStates, runTurn } = useGameAnimation(
-		enemies,
-		character,
-	);
+	const { isAnimating, activeUnitStates, visualPositions, runTurn } =
+		useGameAnimation(enemies, character);
 
 	usePreloader(enemies, character);
 
@@ -65,6 +63,12 @@ const Game: React.FC = () => {
 				if (data.player) {
 					updateCharacter(data.player);
 				}
+				if (data.units) {
+					const enemyList = data.units.filter(
+						(unit) => unit.character !== '@',
+					) as Unit[];
+					setEnemies(enemyList);
+				}
 
 				setActionCount((prev) => prev + 1);
 			} catch (err: unknown) {
@@ -97,20 +101,21 @@ const Game: React.FC = () => {
 				const data: BoardData = await res.json();
 				setBoard(data.grid);
 
-				if (data.player) {
-					updateCharacter(data.player);
-				}
+				const enemyList = (data.units || []).filter(
+					(unit) => unit.character !== '@',
+				) as Unit[];
 
-				if (data.units) {
-					const enemyList = data.units.filter(
-						(unit) => unit.character !== '@',
-					);
-					setEnemies(enemyList);
-				}
-				
 				setActionCount((prev) => prev + 1);
+
 				if (data.events && data.events.length > 0) {
-					runTurn(data.events, () => {});
+					console.log(data.events);
+					runTurn(data.events, data.player || null, enemyList, () => {
+						if (data.player) updateCharacter(data.player);
+						if (data.units) setEnemies(enemyList);
+					});
+				} else {
+					if (data.player) updateCharacter(data.player);
+					if (data.units) setEnemies(enemyList);
 				}
 			} catch (err) {
 				console.error('Failed to send move:', err);
@@ -131,6 +136,7 @@ const Game: React.FC = () => {
 				board={board}
 				enemies={enemies}
 				activeUnitStates={activeUnitStates}
+				visualPositions={visualPositions}
 			/>
 			<Stats>
 				<GameLog actionTrigger={actionCount} />

@@ -11,9 +11,6 @@ interface UnitTileProps {
 }
 
 const UnitTile: React.FC<UnitTileProps> = ({ unit, spriteProps, offsetY }) => {
-	console.log(
-		`[UnitTile Render] Unit: ${unit?.name} | Action: ${spriteProps.imagePath}`,
-	);
 	return (
 		<SpriteTileWrapper>
 			<PositionedSpriteContainer

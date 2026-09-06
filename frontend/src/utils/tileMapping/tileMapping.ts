@@ -6,6 +6,7 @@ import type { SpriteProps } from '../sprite/Sprite';
 import { getProceduralTileCoords } from './proceduralNoise/useProceduralNoise';
 import { getWallConfigAt } from './wallAutotile';
 import { getUnitSpriteConfig } from '../animation/unitAnimations';
+import type { Unit } from '../../constants/interfaces/player';
 
 export type TileConfig =
 	| {
@@ -68,7 +69,7 @@ export const getTileConfig = (
 	x: number = 0,
 	y: number = 0,
 	grid: string[] = [],
-	actionState: 'idle',
+	actionState: string = 'idle',
 ): TileConfig => {
 	if (char === '#') {
 		const wallData = getWallConfigAt(grid, x, y);
@@ -110,10 +111,11 @@ export const getTileConfig = (
 		'C',
 		'K',
 	].includes(char);
+
 	if (isUnit) {
 		return {
 			type: 'sprite',
-			...getUnitSpriteConfig(char, actionState),
+			...getUnitSpriteConfig({ character: char } as Unit, actionState),
 		};
 	}
 

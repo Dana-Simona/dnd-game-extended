@@ -255,6 +255,7 @@ public class MainServer {
         }
 
         json.append("\"name\":\"").append(player.getName()).append("\",")
+                .append("\"id\":\"").append(player.getId()).append("\",")
                 .append("\"class\":\"").append(player.getClass().getSimpleName()).append("\",")
                 .append("\"character\":\"").append(player.getCharacter()).append("\",")
                 .append("\"x\":").append(player.getPosition().getX()).append(",")

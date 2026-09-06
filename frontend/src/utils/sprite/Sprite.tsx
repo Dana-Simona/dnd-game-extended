@@ -22,6 +22,7 @@ const Sprite: React.FC<SpriteProps> = ({
 
 	return (
 		<SpriteBox
+			key={`${imagePath}-${frameCount}`}
 			$imagePath={imagePath}
 			$width={width}
 			$height={height}

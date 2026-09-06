@@ -41,10 +41,6 @@ export const getUnitSpriteConfig = (
 
 	const finalMeta = specificMeta || unitManifest?.idle || DEFAULT_ANIM_META;
 
-	console.log(
-		`[Sprite Config] Render: ${manifestKey} | Action: ${actionLower} | Path: ${resolvedImagePath}`,
-	);
-
 	return {
 		...finalMeta,
 		imagePath: resolvedImagePath,

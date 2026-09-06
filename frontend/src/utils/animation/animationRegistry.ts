@@ -1,22 +1,14 @@
-import type { GameEvent } from '../../constants/gameEvent';
-
-type EventRunner = (event: GameEvent) => Promise<void>;
-
 class AnimationRegistry {
-	private handlers: Map<string, EventRunner> = new Map();
+	private handlers = new Map<string, (event: any) => Promise<void>>();
 
-	register(type: string, handler: EventRunner) {
+	register(type: string, handler: (event: any) => Promise<void>) {
 		this.handlers.set(type, handler);
 	}
 
-	async execute(event: GameEvent): Promise<void> {
-		const handler = this.handlers.get(event.type);
+	async execute(event: any): Promise<void> {
+		const handler = this.handlers.get(event.type || event.action);
 		if (handler) {
-			await handler(event);
-		} else {
-			console.warn(
-				`No handler registered for event type: $\{event.type}`,
-			);
+			return await handler(event);
 		}
 	}
 }
