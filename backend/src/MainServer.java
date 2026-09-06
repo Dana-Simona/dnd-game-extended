@@ -335,7 +335,7 @@ public class MainServer {
     private static StringBuilder buildGameEventJson(StringBuilder json, GameEvent event) {
         json.append("{")
                 .append("\"step\":").append(event.getStep()).append(",")
-                .append("\"type\":\"").append(event.getType() != null ? event.getType().name() : "").append("\",")
+                .append("\"type\":\"").append(event.getType() != null ? event.getType().getLabel() : "").append("\",")
                 .append("\"sourceId\":").append(event.getSourceId() != null ? "\"" + event.getSourceId() + "\"" : "null").append(",");
 
         json.append("\"targetIds\":");

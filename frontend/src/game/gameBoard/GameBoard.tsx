@@ -8,12 +8,17 @@ import ActiveLayer from './activeLayer/ActiveLayer';
 interface GameBoardProps {
 	board: string[];
 	enemies: Unit[];
+	activeUnitStates?: Record<string, string>;
 }
 
 const TILE_SIZE = 32;
 const ZOOM = 2;
 
-export const GameBoard: React.FC<GameBoardProps> = ({ board, enemies }) => {
+export const GameBoard: React.FC<GameBoardProps> = ({
+	board,
+	enemies,
+	activeUnitStates = {},
+}) => {
 	const { character } = useCharacter();
 
 	const viewportRef = useRef<HTMLDivElement>(null);
@@ -69,6 +74,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({ board, enemies }) => {
 						characterId={character.id}
 						tileSize={TILE_SIZE}
 						board={board}
+						activeUnitStates={activeUnitStates} 
 					/>
 				</BoardCanvas>
 			</Board>

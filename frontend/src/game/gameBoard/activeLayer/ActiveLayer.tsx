@@ -8,10 +8,11 @@ interface ActiveLayerProps {
 	characterId: string;
 	tileSize: number;
 	board: string[];
+	activeUnitStates?: Record<string, string>;
 }
 
 const ActiveLayer: React.FC<ActiveLayerProps> = React.memo(
-	({ units, characterId, tileSize, board }) => {
+	({ units, characterId, tileSize, board, activeUnitStates = {} }) => {
 		return (
 			<ActiveLayerContainer>
 				{units.map((unit, index) => (
@@ -36,6 +37,7 @@ const ActiveLayer: React.FC<ActiveLayerProps> = React.memo(
 							y={unit.y}
 							grid={board}
 							unit={unit}
+							activeActionState={activeUnitStates[unit.id]}
 						/>
 					</AnimatedUnitWrapper>
 				))}

@@ -1,5 +1,3 @@
-import playerSpriteSheet from '../../assets/The Female Adventurer - Free/Idle/Idle_Right_Down.png';
-import enemySpriteSheet from '../../assets/enemies/Skeleton/Sprite Sheets/Skeleton Idle.png';
 import grassSpriteSheet from '../../assets/tiles/Texture/TX Tileset Grass.png';
 import stairsSpriteSheet from '../../assets/tiles/Texture/TX Struct.png';
 import wallSpriteSheet from '../../assets/tiles/Texture/TX Tileset Wall.png';
@@ -7,6 +5,7 @@ import stoneGroundSpriteSheet from '../../assets/tiles/Texture/TX Tileset Stone 
 import type { SpriteProps } from '../sprite/Sprite';
 import { getProceduralTileCoords } from './proceduralNoise/useProceduralNoise';
 import { getWallConfigAt } from './wallAutotile';
+import { getUnitSpriteConfig } from '../animation/unitAnimations';
 
 export type TileConfig =
 	| {
@@ -21,15 +20,6 @@ export type TileConfig =
 	  }
 	| ({ type: 'sprite' } & SpriteProps);
 
-const defaultEnemySprite: TileConfig = {
-	type: 'sprite',
-	imagePath: enemySpriteSheet,
-	width: 24,
-	height: 32,
-	frameCount: 4,
-	fps: 6,
-};
-
 const STATIC_WALL_GROUND_X = 2;
 const STATIC_WALL_GROUND_Y = 2;
 
@@ -42,16 +32,6 @@ export const TILE_CONFIGS: Record<string, TileConfig> = {
 		tileSize: 32,
 	},
 
-	'@': {
-		type: 'sprite',
-		imagePath: playerSpriteSheet,
-		width: 48,
-		height: 64,
-		frameCount: 8,
-		fps: 4,
-		offsetY: 18,
-	},
-
 	'^': {
 		type: 'static',
 		imagePath: stairsSpriteSheet,
@@ -60,21 +40,6 @@ export const TILE_CONFIGS: Record<string, TileConfig> = {
 		tileSize: 32,
 	},
 
-	// Standard Monsters
-	s: defaultEnemySprite,
-	k: defaultEnemySprite,
-	q: defaultEnemySprite,
-	z: defaultEnemySprite,
-	b: defaultEnemySprite,
-	g: defaultEnemySprite,
-	w: defaultEnemySprite,
-
-	// Bosses
-	M: defaultEnemySprite,
-	C: defaultEnemySprite,
-	K: defaultEnemySprite,
-
-	// Traps
 	B: {
 		type: 'static',
 		imagePath: grassSpriteSheet,
@@ -103,6 +68,7 @@ export const getTileConfig = (
 	x: number = 0,
 	y: number = 0,
 	grid: string[] = [],
+	actionState: 'idle',
 ): TileConfig => {
 	if (char === '#') {
 		const wallData = getWallConfigAt(grid, x, y);
@@ -128,6 +94,26 @@ export const getTileConfig = (
 			tileX,
 			tileY,
 			tileSize: 32,
+		};
+	}
+
+	const isUnit = [
+		'@',
+		's',
+		'k',
+		'q',
+		'z',
+		'b',
+		'g',
+		'w',
+		'M',
+		'C',
+		'K',
+	].includes(char);
+	if (isUnit) {
+		return {
+			type: 'sprite',
+			...getUnitSpriteConfig(char, actionState),
 		};
 	}
 

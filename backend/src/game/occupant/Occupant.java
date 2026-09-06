@@ -5,19 +5,27 @@ import game.MovementManager;
 import game.cell.Cell;
 import game.cell.Position;
 import game.occupant.unit.OccupantFilterVisitor;
+import java.util.UUID;
 
 public abstract class Occupant {
+
     private char character;
     private Position position;
     private MovementManager movementManager;
     private BoardCallback boardCallback;
     private boolean hasTicked;
+    private final String id;
 
     public Occupant(char character, Position position, BoardCallback boardCallback) {
         this.character = character;
         this.position = position;
         this.hasTicked = false;
         this.boardCallback = boardCallback;
+        this.id = UUID.randomUUID().toString();
+    }
+
+    public String getId() {
+        return this.id;
     }
 
     public boolean hasTicked() {
@@ -61,12 +69,12 @@ public abstract class Occupant {
         this.position.setY(y);
     }
 
-    public void requestMove(Position tagetPosition) {
+    public void requestMove(Position targetPosition) {
         if (boardCallback == null) {
             throw new IllegalArgumentException("BoardCallback is Null!! " + this.getCharacter());
         }
-        Cell tagetCell = boardCallback.getCell(tagetPosition);
-        tagetCell.accept(getMovementManager());
+        Cell targetCell = boardCallback.getCell(targetPosition);
+        targetCell.accept(getMovementManager());
     }
 
     public void setPosition(Position position) {
@@ -82,6 +90,7 @@ public abstract class Occupant {
      */
     public abstract void onGameTick();
 
+    @Override
     public String toString() {
         return character + "";
     }

@@ -44,8 +44,7 @@ public class LevelParser {
                 entry('.', p -> new Floor()),
                 entry('@', p -> {
                     player.setPosition(p.getX(), p.getY());
-                    MovementManager movementManager = new MovementManager(boardOutcome, player);
-                    player.setMovementManager(movementManager);
+                    player.setMovementManager(new MovementManager(boardOutcome, player, callback, stepCounter));
                     return new Floor(player);
                 }),
                 monster('s', "Gold Cloak", 80, 8, 3, 3, 25),
@@ -68,7 +67,7 @@ public class LevelParser {
             int defense, int vision, int xp) {
         return entry(character, (p) -> {
             Unit activeUnit = new Monster(character, name, health, attack, defense, vision, xp, p, this.callback, this.boardCallback, stepCounter);
-            MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit);
+            MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit, callback, stepCounter);
             activeUnit.setMovementManager(movementManager);
             return new Floor(activeUnit);
         });
@@ -78,7 +77,7 @@ public class LevelParser {
             int vision, int xp, int freq) {
         return entry(character, (p) -> {
             Unit activeUnit = new Boss(character, name, health, attack, defense, vision, xp, freq, p, this.callback, this.boardCallback, stepCounter);
-            MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit);
+            MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit, callback, stepCounter);
             activeUnit.setMovementManager(movementManager);
             return new Floor(activeUnit);
         });
@@ -88,7 +87,7 @@ public class LevelParser {
             int defense, int xp, int visibilityTime, int invisibilityTime) {
         return entry(character, (p) -> {
             Unit activeUnit = new Trap(character, name, health, attack, defense, xp, visibilityTime, invisibilityTime, p, this.callback, this.boardCallback, stepCounter);
-            MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit);
+            MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit, callback, stepCounter);
             activeUnit.setMovementManager(movementManager);
             return new Floor(activeUnit);
         });

@@ -16,6 +16,10 @@ public class StepCounter {
         return currentStep;
     }
 
+    public void setCurrentStep(int step) {
+        currentStep = step;
+    }
+
     public int nextStep() {
         return ++currentStep;
     }

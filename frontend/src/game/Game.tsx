@@ -1,20 +1,15 @@
-import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ROUTES } from '../constants/routes';
 import { GameLog } from './gameLog/GameLog';
-import { GameBoard } from './gameBoard/GameBoard';
 import { Container, Stats } from './GameStyles';
-import { useCharacter } from '../utils/characterContext/CharacterContext';
+import { GameBoard } from './gameBoard/GameBoard';
 import { PlayerStats } from './playerStats/PlayerStats';
+import type { GameEvent } from '../constants/gameEvent';
+import { useCharacter } from '../utils/characterContext/CharacterContext';
 import type { AllPlayerData, Unit } from '../constants/interfaces/player';
-
-export interface GameEvent {
-	step: number;
-	type: string;
-	sourceId: string | null;
-	targetIds: string[] | null;
-	amount: number | null;
-}
+import { useGameAnimation } from '../utils/animation/useGameAnimation';
+import { usePreloader } from '../utils/animation/usePreloader';
 
 interface BoardData {
 	grid: string[];
@@ -32,7 +27,12 @@ const Game: React.FC = () => {
 	const [actionCount, setActionCount] = useState<number>(0);
 	const [enemies, setEnemies] = useState<Unit[]>([]);
 
-	const [turnEvents, setTurnEvents] = useState<GameEvent[]>([]);
+	const { isAnimating, activeUnitStates, runTurn } = useGameAnimation(
+		enemies,
+		character,
+	);
+
+	usePreloader(enemies, character);
 
 	useEffect(() => {
 		if (!character) {
@@ -42,12 +42,10 @@ const Game: React.FC = () => {
 
 	useEffect(() => {
 		if (!character) return;
-
 		const controller = new AbortController();
 
 		const initializeLevel = async () => {
 			const levelIndex = level ? parseInt(level, 10) : 0;
-
 			try {
 				const res = await fetch(
 					'http://localhost:8080/api/select-level',
@@ -62,11 +60,8 @@ const Game: React.FC = () => {
 				if (!res.ok) {
 					throw new Error(`Server returned status: ${res.status}`);
 				}
-
 				const data: BoardData = await res.json();
-
 				setBoard(data.grid);
-
 				if (data.player) {
 					updateCharacter(data.player);
 				}
@@ -85,6 +80,8 @@ const Game: React.FC = () => {
 
 	const handleKeyPress = useCallback(
 		async (key: string) => {
+			if (isAnimating) return;
+
 			const validKeys = ['w', 'a', 's', 'd', 'e', 'q'];
 			const lowerKey = key.toLowerCase();
 
@@ -98,12 +95,6 @@ const Game: React.FC = () => {
 				});
 
 				const data: BoardData = await res.json();
-
-				if (data.events) {
-					setTurnEvents(data.events);
-					console.log('Turn Events Received:', data.events);
-				}
-
 				setBoard(data.grid);
 
 				if (data.player) {
@@ -116,13 +107,16 @@ const Game: React.FC = () => {
 					);
 					setEnemies(enemyList);
 				}
-
+				
 				setActionCount((prev) => prev + 1);
+				if (data.events && data.events.length > 0) {
+					runTurn(data.events, () => {});
+				}
 			} catch (err) {
 				console.error('Failed to send move:', err);
 			}
 		},
-		[updateCharacter],
+		[isAnimating, runTurn, updateCharacter],
 	);
 
 	useEffect(() => {
@@ -136,6 +130,7 @@ const Game: React.FC = () => {
 			<GameBoard
 				board={board}
 				enemies={enemies}
+				activeUnitStates={activeUnitStates}
 			/>
 			<Stats>
 				<GameLog actionTrigger={actionCount} />
