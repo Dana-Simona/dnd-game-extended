@@ -20,7 +20,6 @@ export const Board = styled.div`
 	left: 0;
 	transform-origin: top left;
 	image-rendering: pixelated;
-	/* transform and transition are now handled by cameraStyle */
 `;
 
 export const BoardCanvas = styled.div`

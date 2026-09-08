@@ -2,9 +2,11 @@ import React from 'react';
 import type { Unit } from '../../constants/interfaces/player';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import { ViewportContainer, Board, BoardCanvas } from './GameBoardStyles';
-import StaticLayer from './staticLayer/StaticLayer';
-import ActiveLayer from './activeLayer/ActiveLayer';
 import { useViewport, combineUnits } from './useGameBoard';
+import ActiveLayer from './layers/activeLayer/ActiveLayer';
+import StaticLayer from './layers/staticLayer/StaticLayer';
+import { VfxLayer } from './layers/activeLayer/vfxLayer/VfxLayer';
+import type { VfxItem } from '../../utils/animation/useGameAnimation/useVfxControl';
 
 interface GameBoardProps {
 	board: string[];
@@ -12,6 +14,7 @@ interface GameBoardProps {
 	activeUnitStates?: Record<string, string>;
 	visualPositions?: Record<string, { x: number; y: number }>;
 	cameraStyle?: React.CSSProperties;
+	activeVfxList?: VfxItem[];
 }
 
 const TILE_SIZE = 32;
@@ -22,6 +25,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 	activeUnitStates = {},
 	visualPositions = {},
 	cameraStyle,
+	activeVfxList = [],
 }) => {
 	const { character } = useCharacter();
 	const { viewportRef } = useViewport();
@@ -49,6 +53,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 						activeUnitStates={activeUnitStates}
 						visualPositions={visualPositions}
 					/>
+					<VfxLayer vfxList={activeVfxList} />
 				</BoardCanvas>
 			</Board>
 		</ViewportContainer>

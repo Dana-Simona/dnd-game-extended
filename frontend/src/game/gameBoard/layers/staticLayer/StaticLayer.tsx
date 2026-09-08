@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import Tile from '../Tile/Tile';
-import { getTileConfig } from '../../../utils/tileMapping/tileMapping';
+import Tile from '../../Tile/Tile';
 import { StaticLayerContainer, BoardRow } from './StaticLayerStyles';
+import { getTileConfig } from '../../../../utils/tileMapping/tileMapping';
 
 interface StaticLayerProps {
 	board: string[];

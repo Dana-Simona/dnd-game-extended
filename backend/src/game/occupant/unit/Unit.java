@@ -28,7 +28,7 @@ public abstract class Unit extends Occupant {
         this.defensePoints = defense;
         this.callback = callback;
         this.stepCounter = stepCounter;
-        
+
     }
 
     /**
@@ -177,8 +177,12 @@ public abstract class Unit extends Occupant {
         sendMessage(this.name + " rolled " + attackRoll + " attack points.");
         sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ROLL_ATTACK, this.getId(), attackRoll));
 
-        int damageTaken = defender.defend(attackRoll, true);
+        int damageTaken = defender.defend(attackRoll);
         sendMessage(this.name + " dealt " + damageTaken + " damage to " + defender.getName() + ".");
+        if (damageTaken > 0) {
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.MELEE, this.getId(), damageTaken));
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.TAKE_DAMAGE, defender.getId(), damageTaken));
+        }
         sendMessage("");
     }
 
@@ -191,16 +195,13 @@ public abstract class Unit extends Occupant {
      * unit.
      * @return the amount of damage that actually hit the defender.
      */
-    public int defend(int incomingDamage, boolean isFromMelee) {
+    public int defend(int incomingDamage) {
         int defenseRoll = (int) (Math.random() * (defensePoints + 1));
         sendMessage(this.name + " rolled " + defenseRoll + " defense points.");
         sendEvent(new GameEvent(stepCounter.getCurrentStep(), ActionType.ROLL_DEFENSE, this.getId(), defenseRoll));
 
         int finalDamage = incomingDamage - defenseRoll;
         if (finalDamage > 0) {
-            if (isFromMelee) {
-                sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.MELEE, this.getId(), finalDamage));
-            }
             takeDamage(finalDamage);
         } else {
             finalDamage = 0;
@@ -240,7 +241,7 @@ public abstract class Unit extends Occupant {
         if (attackerName == null) {
             throw new IllegalArgumentException("unit can't be null");
         }
-        int actualDamage = this.defend(damageAmount, false);
+        int actualDamage = this.defend(damageAmount);
         if (actualDamage > 0) {
             this.takeDamage(actualDamage);
             sendMessage(attackerName + " hit " + this.getName() + " for " + actualDamage + " ability damage");

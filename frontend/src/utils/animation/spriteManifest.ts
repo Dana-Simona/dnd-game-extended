@@ -17,10 +17,10 @@ export const DEFAULT_ANIM_META: AnimMeta = {
 
 export const SPRITE_MANIFEST: Record<
 	string,
-	Partial<Record<string, AnimMeta>>
+	Partial<Record<ActionType, AnimMeta>>
 > = {
 	player_warrior_jonsnow: {
-		idle: { width: 48, height: 48, frameCount: 8, fps: 4 },
+		[ActionType.IDLE]: { width: 48, height: 48, frameCount: 8, fps: 4 },
 		[ActionType.MOVE]: { width: 48, height: 48, frameCount: 6, fps: 8 },
 		[ActionType.MELEE]: {
 			width: 48,
@@ -30,7 +30,7 @@ export const SPRITE_MANIFEST: Record<
 		},
 	},
 	enemy_skeleton: {
-		idle: { width: 24, height: 32, frameCount: 11, fps: 12 },
+		[ActionType.IDLE]: { width: 24, height: 32, frameCount: 11, fps: 12 },
 		[ActionType.MOVE]: { width: 22, height: 32, frameCount: 13, fps: 6 },
 		[ActionType.DIE]: {
 			width: 40,
@@ -41,7 +41,13 @@ export const SPRITE_MANIFEST: Record<
 		},
 	},
 	enemy_goldcloak: {
-		idle: { width: 100, height: 100, frameCount: 6, fps: 10, offsetY: 36 },
+		[ActionType.IDLE]: {
+			width: 100,
+			height: 100,
+			frameCount: 6,
+			fps: 10,
+			offsetY: 36,
+		},
 		[ActionType.MOVE]: {
 			width: 100,
 			height: 100,

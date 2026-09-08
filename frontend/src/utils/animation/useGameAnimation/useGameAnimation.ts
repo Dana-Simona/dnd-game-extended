@@ -24,14 +24,18 @@ export const useGameAnimation = (
 		playUnitAnimation,
 	} = useAnimationControl(units, player, tileSize, zoom);
 
-	const { triggerCamera, cameraStyle } = useCameraControl(
+	const { triggerCamera, resetCamera, cameraStyle } = useCameraControl(
 		player,
 		units,
 		visualPositions,
 		tileSize,
 		zoom,
 	);
-	const { spawnVFX } = useVfxControl();
+
+	const { spawnVFX, activeVfxList } = useVfxControl(
+		visualPositions,
+		tileSize,
+	);
 
 	useEffect(() => {
 		setupAnimations({ playUnitAnimation, spawnVFX, triggerCamera });
@@ -45,16 +49,20 @@ export const useGameAnimation = (
 			onComplete: () => void,
 		) => {
 			setIsAnimating(true);
-			const targets = buildTargetPositions(nextPlayer, nextEnemies);
-			targetPositionsRef.current = targets;
+			try {
+				const targets = buildTargetPositions(nextPlayer, nextEnemies);
+				targetPositionsRef.current = targets;
 
-			await executeEventSteps(events);
+				await executeEventSteps(events);
 
-			setVisualPositions(targets);
-			setIsAnimating(false);
-			onComplete();
+				setVisualPositions(targets);
+			} finally {
+				resetCamera();
+				setIsAnimating(false);
+				onComplete();
+			}
 		},
-		[setVisualPositions, targetPositionsRef],
+		[resetCamera, setVisualPositions, targetPositionsRef],
 	);
 
 	return {
@@ -63,5 +71,6 @@ export const useGameAnimation = (
 		visualPositions,
 		cameraStyle,
 		runTurn,
+		activeVfxList,
 	};
 };

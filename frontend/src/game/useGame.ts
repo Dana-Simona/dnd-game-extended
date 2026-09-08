@@ -50,13 +50,13 @@ export const useGame = (level?: string) => {
 	const [actionCount, setActionCount] = useState<number>(0);
 	const [enemies, setEnemies] = useState<Unit[]>([]);
 
-	// Added cameraStyle here
 	const {
 		isAnimating,
 		activeUnitStates,
 		visualPositions,
 		runTurn,
 		cameraStyle,
+		activeVfxList,
 	} = useGameAnimation(enemies, character);
 
 	usePreloader(enemies, character);
@@ -80,6 +80,7 @@ export const useGame = (level?: string) => {
 			const onDone = () => applyUnitState(data, enemyList);
 			if (data.events?.length) {
 				runTurn(data.events, data.player || null, enemyList, onDone);
+				console.log('[EVENTS]: ', data.events);
 			} else {
 				onDone();
 			}
@@ -134,5 +135,6 @@ export const useGame = (level?: string) => {
 		activeUnitStates,
 		visualPositions,
 		cameraStyle,
+		activeVfxList,
 	};
 };

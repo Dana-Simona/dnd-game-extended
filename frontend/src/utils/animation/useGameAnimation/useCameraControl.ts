@@ -162,6 +162,13 @@ export const useCameraControl = (
 		[player, units, visualPositions, defaultZoom],
 	);
 
+	const resetCamera = useCallback(
+		(duration: number = 500): Promise<void> => {
+			return triggerCamera({ type: CameraPreset.RESET, duration });
+		},
+		[triggerCamera],
+	);
+
 	const cameraStyle = useMemo(() => {
 		let targetX = 0;
 		let targetY = 0;
@@ -196,5 +203,5 @@ export const useCameraControl = (
 		};
 	}, [cameraState, player, visualPositions, tileSize]);
 
-	return { triggerCamera, cameraStyle };
+	return { triggerCamera, resetCamera, cameraStyle };
 };

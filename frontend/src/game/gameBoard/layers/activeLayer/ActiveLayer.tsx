@@ -1,6 +1,6 @@
 import React from 'react';
-import type { Unit } from '../../../constants/interfaces/player';
-import Tile from '../Tile/Tile';
+import Tile from '../../Tile/Tile';
+import type { Unit } from '../../../../constants/interfaces/player';
 import { ActiveLayerContainer, AnimatedUnitWrapper } from './ActiveLayerStyles';
 
 interface Props {

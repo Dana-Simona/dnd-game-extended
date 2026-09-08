@@ -18,6 +18,7 @@ export const Game: React.FC = () => {
 				activeUnitStates={game.activeUnitStates}
 				visualPositions={game.visualPositions}
 				cameraStyle={game.cameraStyle}
+				activeVfxList={game.activeVfxList}
 			/>
 			<Stats>
 				<GameLog actionTrigger={game.actionCount} />
