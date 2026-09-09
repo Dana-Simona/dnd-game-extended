@@ -5,6 +5,7 @@ import {
 	CameraPreset,
 	type CameraCommand,
 } from '../../constants/cameraControl';
+import { UnitPreset, type TriggerUnit } from '../../constants/unitControl';
 
 export interface Controllers {
 	playUnitAnimation: (unitId: string, anim: ActionType) => Promise<void>;
@@ -14,6 +15,7 @@ export interface Controllers {
 		amount?: number,
 	) => Promise<void>;
 	triggerCamera: (command: CameraCommand) => Promise<void>;
+	triggerUnit: TriggerUnit;
 }
 
 export const setupAnimations = (controllers: Controllers) => {
@@ -33,16 +35,53 @@ export const setupAnimations = (controllers: Controllers) => {
 	});
 
 	animationRegistry.register(ActionType.MELEE, async (event: GameEvent) => {
-		if (!event.sourceId) return;
-		await controllers.playUnitAnimation(event.sourceId, ActionType.MELEE);
+		const targetId = event.targetIds?.[0];
+		if (!event.sourceId || !targetId) return;
+
+		await Promise.all([
+			controllers.triggerUnit({
+				type: UnitPreset.FACE,
+				sourceId: event.sourceId,
+				targetId,
+			}),
+			controllers.triggerUnit({
+				type: UnitPreset.FACE,
+				sourceId: targetId,
+				targetId: event.sourceId,
+			}),
+		]);
+
+		await Promise.all([
+			controllers.triggerUnit({
+				type: UnitPreset.DASH,
+				sourceId: event.sourceId,
+				targetId,
+				distancePx: 20,
+				durationMs: 180,
+			}),
+			controllers.playUnitAnimation(event.sourceId, ActionType.MELEE),
+		]);
 	});
 
 	animationRegistry.register(ActionType.COMBAT, async (event: GameEvent) => {
-		if (!event.sourceId || !event.targetIds) return;
+		const targetId = event.targetIds?.[0];
+		if (!event.sourceId || !targetId) return;
 		await controllers.triggerCamera({
 			type: CameraPreset.ZOOM_TWO_TARGETS,
 			targetIds: [event.sourceId, ...event.targetIds],
 		});
+		await Promise.all([
+			controllers.triggerUnit({
+				type: UnitPreset.FACE,
+				sourceId: event.sourceId,
+				targetId,
+			}),
+			controllers.triggerUnit({
+				type: UnitPreset.FACE,
+				sourceId: targetId,
+				targetId: event.sourceId,
+			}),
+		]);
 	});
 
 	animationRegistry.register(
@@ -57,6 +96,10 @@ export const setupAnimations = (controllers: Controllers) => {
 				event.sourceId,
 				ActionType.ABILITY_CAST,
 			);
+			await controllers.triggerCamera({
+				type: CameraPreset.FOCUS_TARGET,
+				targetIds: event.targetIds,
+			});
 			await controllers.spawnVFX(
 				VfxTypes.ABILITY_CAST,
 				event.targetIds,
@@ -141,11 +184,22 @@ export const setupAnimations = (controllers: Controllers) => {
 		ActionType.TAKE_DAMAGE,
 		async (event: GameEvent) => {
 			if (!event.sourceId) return;
-			await controllers.spawnVFX(
-				VfxTypes.STAT_DAMAGE,
-				[event.sourceId],
-				event.amount,
-			);
+			await Promise.all([
+				controllers.spawnVFX(
+					VfxTypes.STAT_DAMAGE,
+					[event.sourceId],
+					event.amount,
+				),
+				event.targetIds?.[0]
+					? controllers.triggerUnit({
+							type: UnitPreset.KNOCKBACK,
+							targetId: event.sourceId,
+							sourceId: event.targetIds[0],
+							distancePx: 12,
+							durationMs: 180,
+						})
+					: Promise.resolve(),
+			]);
 		},
 	);
 

@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useAnimationControl } from './useAnimationControl';
 import { useCameraControl } from './useCameraControl';
 import { useVfxControl } from './useVfxControl';
+import { useUnitControl } from './useUnitControl';
 import type { GameEvent } from '../../../constants/gameEvent';
 import type { Unit, AllPlayerData } from '../../../constants/interfaces/player';
 import { setupAnimations } from '../setupAnimations';
@@ -37,9 +38,17 @@ export const useGameAnimation = (
 		tileSize,
 	);
 
+	const { triggerUnit, unitTransforms, resetAllTransforms } =
+		useUnitControl(visualPositions);
+
 	useEffect(() => {
-		setupAnimations({ playUnitAnimation, spawnVFX, triggerCamera });
-	}, [playUnitAnimation, spawnVFX, triggerCamera]);
+		setupAnimations({
+			playUnitAnimation,
+			spawnVFX,
+			triggerCamera,
+			triggerUnit,
+		});
+	}, [playUnitAnimation, spawnVFX, triggerCamera, triggerUnit]);
 
 	const runTurn = useCallback(
 		async (
@@ -58,17 +67,24 @@ export const useGameAnimation = (
 				setVisualPositions(targets);
 			} finally {
 				resetCamera();
+				resetAllTransforms();
 				setIsAnimating(false);
 				onComplete();
 			}
 		},
-		[resetCamera, setVisualPositions, targetPositionsRef],
+		[
+			resetCamera,
+			setVisualPositions,
+			targetPositionsRef,
+			resetAllTransforms,
+		],
 	);
 
 	return {
 		isAnimating,
 		activeUnitStates,
 		visualPositions,
+		unitTransforms,
 		cameraStyle,
 		runTurn,
 		activeVfxList,

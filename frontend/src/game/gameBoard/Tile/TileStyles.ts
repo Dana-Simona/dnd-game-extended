@@ -11,6 +11,10 @@ interface PositionedSpriteProps {
 	$offsetY?: number;
 }
 
+interface SpriteFlipProps {
+	$isFlipped?: boolean;
+}
+
 export const SpriteTileWrapper = styled.div`
 	width: 32px;
 	height: 32px;
@@ -30,6 +34,11 @@ export const PositionedSpriteContainer = styled.div<PositionedSpriteProps>`
 		)
 	);
 	pointer-events: none;
+`;
+
+export const SpriteFlipWrapper = styled.div<SpriteFlipProps>`
+	transform: scaleX(${(props) => (props.$isFlipped ? -1 : 1)});
+	transition: transform 0.15s ease-in-out;
 `;
 
 export const StaticTile = styled.div<StaticTileProps>`

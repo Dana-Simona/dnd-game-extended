@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { Swords, Shield } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 import type { VfxItem } from '../../../../../../utils/animation/useGameAnimation/useVfxControl';
-import { RollNumber, RollValueContainer, IconWrapper } from './RollVfxStyles';
+import {
+	RollNumber,
+	RollValueContainer,
+	IconWrapper,
+	RollValueNumber,
+} from './RollVfxStyles';
 
-interface RollVfxProps {
+interface Props {
 	item: VfxItem;
 }
 
-export const RollVfx: React.FC<RollVfxProps> = ({ item }) => {
+export const RollVfx: React.FC<Props> = ({ item }) => {
 	const [displayVal, setDisplayVal] = useState<string | number>(() => {
 		if (item.amount === undefined) return '🎲';
 		return Math.floor(Math.random() * 20) + 1;
@@ -41,10 +46,8 @@ export const RollVfx: React.FC<RollVfxProps> = ({ item }) => {
 	return (
 		<RollNumber
 			$subType={item.type}
-			style={{
-				left: item.x,
-				top: item.y - 12,
-			}}
+			$x={item.x}
+			$y={item.y}
 			initial={{ opacity: 0, y: 12, scale: 0.3 }}
 			animate={{
 				opacity: [0, 1, 1, 1, 0],
@@ -58,14 +61,8 @@ export const RollVfx: React.FC<RollVfxProps> = ({ item }) => {
 			}}
 		>
 			<RollValueContainer>
-				<IconWrapper>
-					<Icon
-						size={7}
-						strokeWidth={2.5}
-					/>
-				</IconWrapper>
 				<AnimatePresence mode='popLayout'>
-					<motion.span
+					<RollValueNumber
 						key={`${displayVal}-${isFinal}`}
 						initial={
 							isFinal
@@ -96,18 +93,16 @@ export const RollVfx: React.FC<RollVfxProps> = ({ item }) => {
 							duration: isFinal ? 0.25 : 0.045,
 							ease: isFinal ? [0.34, 1.56, 0.64, 1] : 'easeInOut',
 						}}
-						style={{
-							display: 'inline-flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							lineHeight: 1,
-							transformPerspective: 400,
-							backfaceVisibility: 'hidden',
-						}}
 					>
 						{displayVal}
-					</motion.span>
+					</RollValueNumber>
 				</AnimatePresence>
+				<IconWrapper>
+					<Icon
+						size={7}
+						strokeWidth={2.5}
+					/>
+				</IconWrapper>
 			</RollValueContainer>
 		</RollNumber>
 	);

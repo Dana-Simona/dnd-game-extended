@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { Container, Stats } from './GameStyles';
 import { GameBoard } from './gameBoard/GameBoard';
 import { PlayerStats } from './playerStats/PlayerStats';
+import type { ActionType } from '../constants/gameEvent';
 
 export const Game: React.FC = () => {
 	const { level } = useParams<{ level: string }>();
@@ -15,8 +16,11 @@ export const Game: React.FC = () => {
 			<GameBoard
 				board={game.board}
 				enemies={game.enemies}
-				activeUnitStates={game.activeUnitStates}
+				activeUnitStates={
+					game.activeUnitStates as Record<string, ActionType>
+				}
 				visualPositions={game.visualPositions}
+				unitTransforms={game.unitTransforms}
 				cameraStyle={game.cameraStyle}
 				activeVfxList={game.activeVfxList}
 			/>

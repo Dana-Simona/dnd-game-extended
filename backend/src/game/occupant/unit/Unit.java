@@ -180,7 +180,7 @@ public abstract class Unit extends Occupant {
         int damageTaken = defender.defend(attackRoll);
         sendMessage(this.name + " dealt " + damageTaken + " damage to " + defender.getName() + ".");
         if (damageTaken > 0) {
-            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.MELEE, this.getId(), damageTaken));
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.MELEE, this.getId(), defender.getId(), damageTaken));
             sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.TAKE_DAMAGE, defender.getId(), damageTaken));
         }
         sendMessage("");

@@ -21,9 +21,14 @@ export const IconWrapper = styled.div`
 	}
 `;
 
-export const RollNumber = styled(motion.div)<{
-	$subType: string;
-}>`
+export const RollNumber = styled(motion.div).attrs<{ $x: number; $y: number }>(
+	({ $x, $y }) => ({
+		style: {
+			left: $x,
+			top: $y - 12,
+		},
+	}),
+)<{ $subType: string; $x: number; $y: number }>`
 	position: absolute;
 	font-family: 'Impact', 'Arial Black', sans-serif;
 	font-size: 7px;
@@ -49,4 +54,13 @@ export const RollNumber = styled(motion.div)<{
 				`;
 		}
 	}}
+`;
+
+export const RollValueNumber = styled(motion.span)`
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	perspective: 400px;
+	backface-visibility: hidden;
 `;

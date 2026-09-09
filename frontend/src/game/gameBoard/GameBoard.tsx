@@ -7,12 +7,15 @@ import ActiveLayer from './layers/activeLayer/ActiveLayer';
 import StaticLayer from './layers/staticLayer/StaticLayer';
 import { VfxLayer } from './layers/activeLayer/vfxLayer/VfxLayer';
 import type { VfxItem } from '../../utils/animation/useGameAnimation/useVfxControl';
+import type { ActionType } from '../../constants/gameEvent';
+import type { UnitTransform } from '../../constants/unitControl';
 
 interface GameBoardProps {
 	board: string[];
 	enemies: Unit[];
-	activeUnitStates?: Record<string, string>;
+	activeUnitStates?: Record<string, ActionType>;
 	visualPositions?: Record<string, { x: number; y: number }>;
+	unitTransforms?: Record<string, UnitTransform>;
 	cameraStyle?: React.CSSProperties;
 	activeVfxList?: VfxItem[];
 }
@@ -24,6 +27,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 	enemies,
 	activeUnitStates = {},
 	visualPositions = {},
+	unitTransforms = {},
 	cameraStyle,
 	activeVfxList = [],
 }) => {
@@ -52,6 +56,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 						board={board}
 						activeUnitStates={activeUnitStates}
 						visualPositions={visualPositions}
+						unitTransforms={unitTransforms}
 					/>
 					<VfxLayer vfxList={activeVfxList} />
 				</BoardCanvas>

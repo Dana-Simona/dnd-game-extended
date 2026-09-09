@@ -5,6 +5,7 @@ import { getUnitSpriteConfig } from '../../../utils/animation/unitAnimations';
 import UnitTile from './unitTile/UnitTile';
 import LayeredTile from './layeredTile/LayeredTile';
 import BaseStaticTile from './baseStaticTile/BaseStaticTile';
+import type { ActionType } from '../../../constants/gameEvent';
 
 interface Props {
 	char: string;
@@ -12,7 +13,8 @@ interface Props {
 	y?: number;
 	grid?: string[];
 	unit?: Unit;
-	activeActionState?: string;
+	activeActionState?: ActionType;
+	facing?: 'left' | 'right';
 }
 
 const Tile: React.FC<Props> = ({
@@ -22,9 +24,13 @@ const Tile: React.FC<Props> = ({
 	grid = [],
 	unit,
 	activeActionState = 'idle',
+	facing = 'right',
 }) => {
 	if (unit) {
-		const spriteProps = getUnitSpriteConfig(unit, activeActionState);
+		const spriteProps = getUnitSpriteConfig(
+			unit,
+			activeActionState as ActionType,
+		);
 		const offsetY = spriteProps.offsetY || 0;
 
 		return (
@@ -32,6 +38,7 @@ const Tile: React.FC<Props> = ({
 				unit={unit}
 				spriteProps={spriteProps}
 				offsetY={offsetY}
+				facing={facing}
 			/>
 		);
 	}

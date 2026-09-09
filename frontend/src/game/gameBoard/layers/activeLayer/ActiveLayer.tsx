@@ -1,15 +1,18 @@
 import React from 'react';
 import Tile from '../../Tile/Tile';
 import type { Unit } from '../../../../constants/interfaces/player';
+import type { UnitTransform } from '../../../../constants/unitControl';
 import { ActiveLayerContainer, AnimatedUnitWrapper } from './ActiveLayerStyles';
+import type { ActionType } from '../../../../constants/gameEvent';
 
 interface Props {
 	units: Unit[];
 	characterId: string;
 	tileSize: number;
 	board: string[];
-	activeUnitStates?: Record<string, string>;
+	activeUnitStates?: Record<string, ActionType>;
 	visualPositions?: Record<string, { x: number; y: number }>;
+	unitTransforms?: Record<string, UnitTransform>;
 }
 
 const ActiveLayer: React.FC<Props> = React.memo(
@@ -20,12 +23,17 @@ const ActiveLayer: React.FC<Props> = React.memo(
 		board,
 		activeUnitStates = {},
 		visualPositions = {},
+		unitTransforms = {},
 	}) => {
 		return (
 			<ActiveLayerContainer>
 				{units.map((unit, index) => {
 					const currentX = visualPositions[unit.id]?.x ?? unit.x;
 					const currentY = visualPositions[unit.id]?.y ?? unit.y;
+					const transform = unitTransforms[unit.id] ?? {
+						facing: 'right',
+						offset: { x: 0, y: 0 },
+					};
 
 					return (
 						<AnimatedUnitWrapper
@@ -34,8 +42,8 @@ const ActiveLayer: React.FC<Props> = React.memo(
 							$zIndex={unit.id === characterId ? 10 : 1}
 							initial={false}
 							animate={{
-								x: currentX * tileSize,
-								y: currentY * tileSize,
+								x: currentX * tileSize + transform.offset.x,
+								y: currentY * tileSize + transform.offset.y,
 							}}
 							transition={{
 								type: 'spring',
@@ -49,7 +57,10 @@ const ActiveLayer: React.FC<Props> = React.memo(
 								y={currentY}
 								grid={board}
 								unit={unit}
-								activeActionState={activeUnitStates[unit.id]}
+								activeActionState={
+									activeUnitStates[unit.id] as ActionType
+								}
+								facing={transform.facing}
 							/>
 						</AnimatedUnitWrapper>
 					);
