@@ -15,6 +15,7 @@ export type UnitCommand =
 			targetId: string;
 			distancePx?: number;
 			durationMs?: number;
+			delayMs?: number;
 	  }
 	| {
 			type: typeof UnitPreset.KNOCKBACK;
@@ -22,6 +23,7 @@ export type UnitCommand =
 			sourceId: string;
 			distancePx?: number;
 			durationMs?: number;
+			delayMs?: number;
 	  }
 	| { type: typeof UnitPreset.RESET; unitId: string };
 

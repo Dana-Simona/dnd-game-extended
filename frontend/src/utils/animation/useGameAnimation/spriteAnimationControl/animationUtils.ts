@@ -1,8 +1,11 @@
-import type { Position } from '../../../constants/cameraControl';
-import type { GameEvent } from '../../../constants/gameEvent';
-import type { Unit, AllPlayerData } from '../../../constants/interfaces/player';
-import { animationRegistry } from '../animationRegistry';
-import { getUnitSpriteConfig } from '../unitAnimations';
+import { getUnitSpriteConfig } from '../../spriteAnimations';
+import { animationRegistry } from '../../animationRegistry';
+import type { Position } from '../cameraControl/cameraControl';
+import type { ActionType, GameEvent } from '../../../../constants/gameEvent';
+import type {
+	Unit,
+	AllPlayerData,
+} from '../../../../constants/interfaces/player';
 
 export const combinePlayerAndUnits = (
 	player: Unit | AllPlayerData | null,
@@ -47,7 +50,7 @@ export const findUnitPosition = (
 
 export const calculateAnimDuration = (
 	unit: Unit | undefined,
-	action: string,
+	action: ActionType,
 ): number => {
 	const config = getUnitSpriteConfig(unit, action);
 	const fps = config?.fps || 8;

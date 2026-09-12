@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { Unit, AllPlayerData } from '../../constants/interfaces/player';
-import { getUnitSpriteConfig } from './unitAnimations';
+import { getUnitSpriteConfig } from './spriteAnimations';
 import { ActionType } from '../../constants/gameEvent';
 
 export const usePreloader = (units: Unit[], player: AllPlayerData | null) => {
@@ -8,7 +8,7 @@ export const usePreloader = (units: Unit[], player: AllPlayerData | null) => {
 		const allUnits = player ? [player, ...units] : [...units];
 
 		const actionsToPreload = [
-			'idle',
+			ActionType.IDLE,
 			ActionType.MOVE,
 			ActionType.MELEE,
 			ActionType.DIE,

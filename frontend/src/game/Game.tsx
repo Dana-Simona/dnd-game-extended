@@ -21,7 +21,7 @@ export const Game: React.FC = () => {
 				}
 				visualPositions={game.visualPositions}
 				unitTransforms={game.unitTransforms}
-				cameraStyle={game.cameraStyle}
+				cameraMotion={game.cameraMotion}
 				activeVfxList={game.activeVfxList}
 			/>
 			<Stats>

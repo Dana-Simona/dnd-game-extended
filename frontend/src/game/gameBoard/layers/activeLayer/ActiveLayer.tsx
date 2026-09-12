@@ -1,7 +1,7 @@
 import React from 'react';
 import Tile from '../../Tile/Tile';
 import type { Unit } from '../../../../constants/interfaces/player';
-import type { UnitTransform } from '../../../../constants/unitControl';
+import type { UnitTransform } from '../../../../utils/animation/useGameAnimation/unitControl/unitControl';
 import { ActiveLayerContainer, AnimatedUnitWrapper } from './ActiveLayerStyles';
 import type { ActionType } from '../../../../constants/gameEvent';
 

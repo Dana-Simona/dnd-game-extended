@@ -4,8 +4,11 @@ import { ActionType, type GameEvent } from '../../constants/gameEvent';
 import {
 	CameraPreset,
 	type CameraCommand,
-} from '../../constants/cameraControl';
-import { UnitPreset, type TriggerUnit } from '../../constants/unitControl';
+} from './useGameAnimation/cameraControl/cameraControl';
+import {
+	UnitPreset,
+	type TriggerUnit,
+} from './useGameAnimation/unitControl/unitControl';
 
 export interface Controllers {
 	playUnitAnimation: (unitId: string, anim: ActionType) => Promise<void>;
@@ -51,16 +54,21 @@ export const setupAnimations = (controllers: Controllers) => {
 			}),
 		]);
 
-		await Promise.all([
-			controllers.triggerUnit({
-				type: UnitPreset.DASH,
-				sourceId: event.sourceId,
-				targetId,
-				distancePx: 20,
-				durationMs: 180,
-			}),
-			controllers.playUnitAnimation(event.sourceId, ActionType.MELEE),
-		]);
+		const spriteAnimationPromise = controllers.playUnitAnimation(
+			event.sourceId,
+			ActionType.MELEE,
+		);
+
+		const dashPromise = controllers.triggerUnit({
+			type: UnitPreset.DASH,
+			sourceId: event.sourceId,
+			targetId,
+			distancePx: 30,
+			durationMs: 180,
+			delayMs: 300,
+		});
+
+		await Promise.all([spriteAnimationPromise, dashPromise]);
 	});
 
 	animationRegistry.register(ActionType.COMBAT, async (event: GameEvent) => {

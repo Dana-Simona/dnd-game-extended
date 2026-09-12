@@ -54,9 +54,9 @@ export const useGame = (level?: string) => {
 		isAnimating,
 		activeUnitStates,
 		visualPositions,
-		unitTransforms, // <--- Destructured here
+		unitTransforms,
 		runTurn,
-		cameraStyle,
+		cameraMotion,
 		activeVfxList,
 	} = useGameAnimation(enemies, character);
 
@@ -136,7 +136,7 @@ export const useGame = (level?: string) => {
 		activeUnitStates,
 		visualPositions,
 		unitTransforms,
-		cameraStyle,
+		cameraMotion,
 		activeVfxList,
 	};
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Unit } from '../../../constants/interfaces/player';
 import { getTileConfig } from '../../../utils/tileMapping/tileMapping';
-import { getUnitSpriteConfig } from '../../../utils/animation/unitAnimations';
+import { getUnitSpriteConfig } from '../../../utils/animation/spriteAnimations';
 import UnitTile from './unitTile/UnitTile';
 import LayeredTile from './layeredTile/LayeredTile';
 import BaseStaticTile from './baseStaticTile/BaseStaticTile';

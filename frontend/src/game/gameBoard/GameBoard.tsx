@@ -8,15 +8,16 @@ import StaticLayer from './layers/staticLayer/StaticLayer';
 import { VfxLayer } from './layers/activeLayer/vfxLayer/VfxLayer';
 import type { VfxItem } from '../../utils/animation/useGameAnimation/useVfxControl';
 import type { ActionType } from '../../constants/gameEvent';
-import type { UnitTransform } from '../../constants/unitControl';
+import type { UnitTransform } from '../../utils/animation/useGameAnimation/unitControl/unitControl';
+import type { MotionProps } from 'framer-motion';
 
-interface GameBoardProps {
+export interface GameBoardProps {
 	board: string[];
 	enemies: Unit[];
 	activeUnitStates?: Record<string, ActionType>;
 	visualPositions?: Record<string, { x: number; y: number }>;
 	unitTransforms?: Record<string, UnitTransform>;
-	cameraStyle?: React.CSSProperties;
+	cameraMotion: MotionProps;
 	activeVfxList?: VfxItem[];
 }
 
@@ -28,7 +29,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 	activeUnitStates = {},
 	visualPositions = {},
 	unitTransforms = {},
-	cameraStyle,
+	cameraMotion,
 	activeVfxList = [],
 }) => {
 	const { character } = useCharacter();
@@ -46,7 +47,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 
 	return (
 		<ViewportContainer ref={viewportRef}>
-			<Board style={cameraStyle}>
+			<Board {...cameraMotion}>
 				<BoardCanvas>
 					<StaticLayer board={board} />
 					<ActiveLayer

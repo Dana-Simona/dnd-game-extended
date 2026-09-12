@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import type { Position } from '../../../constants/cameraControl';
+import type { Position } from './cameraControl/cameraControl';
 
 export const VfxTypes = {
 	ALERT_WIN: 'Win',

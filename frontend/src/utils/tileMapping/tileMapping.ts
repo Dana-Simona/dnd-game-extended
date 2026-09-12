@@ -1,12 +1,29 @@
 import { getWallConfigAt } from './wallAutotile';
 import type { SpriteProps } from '../sprite/Sprite';
 import type { Unit } from '../../constants/interfaces/player';
-import { getUnitSpriteConfig } from '../animation/unitAnimations';
+import { getUnitSpriteConfig } from '../animation/spriteAnimations';
 import stairsSpriteSheet from '../../assets/tiles/Texture/TX Struct.png';
 import wallSpriteSheet from '../../assets/tiles/Texture/TX Tileset Wall.png';
 import grassSpriteSheet from '../../assets/tiles/Texture/TX Tileset Grass.png';
 import { getProceduralTileCoords } from './proceduralNoise/useProceduralNoise';
 import stoneGroundSpriteSheet from '../../assets/tiles/Texture/TX Tileset Stone Ground.png';
+import { ActionType } from '../../constants/gameEvent';
+
+export const UnitType = {
+	PLAYER: 'PLAYER',
+	ENEMY: 'ENEMY',
+	TRAP: 'TRAP',
+	TILE: 'TILE',
+} as const;
+
+export type UnitType = (typeof UnitType)[keyof typeof UnitType];
+
+export const getUnitTypeByChar = (char: string): UnitType => {
+	if (char === '@') return UnitType.PLAYER;
+	if (char >= 'A' && char <= 'Z') return UnitType.TRAP;
+	if (char >= 'a' && char <= 'z') return UnitType.ENEMY;
+	return UnitType.TILE;
+};
 
 export type TileConfig =
 	| {
@@ -69,7 +86,7 @@ export const getTileConfig = (
 	x: number = 0,
 	y: number = 0,
 	grid: string[] = [],
-	actionState: string = 'idle',
+	actionState: ActionType = ActionType.IDLE,
 ): TileConfig => {
 	if (char === '#') {
 		const wallData = getWallConfigAt(grid, x, y);
@@ -98,21 +115,13 @@ export const getTileConfig = (
 		};
 	}
 
-	const isUnit = [
-		'@',
-		's',
-		'k',
-		'q',
-		'z',
-		'b',
-		'g',
-		'w',
-		'M',
-		'C',
-		'K',
-	].includes(char);
+	const unitType = getUnitTypeByChar(char);
+	const isSpriteUnit =
+		unitType === UnitType.PLAYER ||
+		unitType === UnitType.ENEMY ||
+		(unitType === UnitType.TRAP && !TILE_CONFIGS[char]);
 
-	if (isUnit) {
+	if (isSpriteUnit) {
 		return {
 			type: 'sprite',
 			...getUnitSpriteConfig({ character: char } as Unit, actionState),

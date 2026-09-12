@@ -1,6 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import type { Position } from '../../../constants/cameraControl';
-import type { Unit, AllPlayerData } from '../../../constants/interfaces/player';
+
+import type { ActionType } from '../../../../constants/gameEvent';
+import type { Position } from '../cameraControl/cameraControl';
+import type {
+	Unit,
+	AllPlayerData,
+} from '../../../../constants/interfaces/player';
 import {
 	combinePlayerAndUnits,
 	updateMissingPositions,
@@ -54,7 +59,7 @@ export const useAnimationControl = (
 	);
 
 	const playUnitAnimation = useCallback(
-		async (unitId: string, action: string): Promise<void> => {
+		async (unitId: string, action: ActionType): Promise<void> => {
 			const targetPos = targetPositionsRef.current[unitId];
 			if (!isUnitInViewport(unitId)) {
 				if (targetPos) {

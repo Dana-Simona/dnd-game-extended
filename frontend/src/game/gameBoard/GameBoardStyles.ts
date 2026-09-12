@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { motion } from 'framer-motion';
 
 export const VIEWPORT_WIDTH_VW = 95;
 export const VIEWPORT_HEIGHT_VH = 60;
@@ -14,11 +15,11 @@ export const ViewportContainer = styled.div`
 	background-color: #000;
 `;
 
-export const Board = styled.div`
+export const Board = styled(motion.div)`
 	position: absolute;
 	top: 0;
 	left: 0;
-	transform-origin: top left;
+	transform-origin: 0 0;
 	image-rendering: pixelated;
 `;
 

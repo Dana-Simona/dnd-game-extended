@@ -37,8 +37,6 @@ public class LevelParser {
         this.chosenPlayer = player;
         this.cellFactory = Map.ofEntries(
                 entry('#', p -> new Wall()),
-                entry('*', p -> new Wall()),
-                entry('~', p -> new Wall()),
                 entry('^', p -> new StairCase(true)),
                 entry('>', p -> new StairCase(false)),
                 entry('.', p -> new Floor()),

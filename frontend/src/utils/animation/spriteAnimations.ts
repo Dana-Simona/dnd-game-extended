@@ -8,7 +8,7 @@ import type { SpriteProps } from '../sprite/Sprite';
 import { SPRITE_MANIFEST, DEFAULT_ANIM_META } from './spriteManifest';
 
 export const sanitize = (str?: string, defaultValue = 'idle'): string =>
-	!str ? defaultValue : str.toLowerCase().replace(/\s+/g, '');
+	!str ? defaultValue : str.toLowerCase().replace(/[\s']+/g, '');
 
 const getDefaultPlayerIdentity = (action: ActionType) => ({
 	manifestKey: 'player_warrior_jonsnow',
@@ -26,7 +26,7 @@ const getPlayerIdentity = (player: Player, action: ActionType) => {
 };
 
 const getEnemyIdentity = (unit: Unit | AllPlayerData, action: ActionType) => {
-	const name = sanitize(unit.name, 'skeleton');
+	const name = sanitize(unit.name, 'knight');
 	const anim = sanitize(action);
 	return {
 		manifestKey: `enemy_${name}`,

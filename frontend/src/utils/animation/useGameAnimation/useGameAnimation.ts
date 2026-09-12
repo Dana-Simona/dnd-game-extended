@@ -1,13 +1,16 @@
 import { useState, useCallback, useEffect } from 'react';
 
-import { useAnimationControl } from './useAnimationControl';
-import { useCameraControl } from './useCameraControl';
 import { useVfxControl } from './useVfxControl';
-import { useUnitControl } from './useUnitControl';
-import type { GameEvent } from '../../../constants/gameEvent';
-import type { Unit, AllPlayerData } from '../../../constants/interfaces/player';
+import { useUnitControl } from './unitControl/useUnitControl';
 import { setupAnimations } from '../setupAnimations';
-import { buildTargetPositions, executeEventSteps } from './animationUtils';
+import type { GameEvent } from '../../../constants/gameEvent';
+import { useCameraControl } from './cameraControl/useCameraControl';
+import type { Unit, AllPlayerData } from '../../../constants/interfaces/player';
+import { useAnimationControl } from './spriteAnimationControl/useAnimationControl';
+import {
+	buildTargetPositions,
+	executeEventSteps,
+} from './spriteAnimationControl/animationUtils';
 
 export const useGameAnimation = (
 	units: Unit[],
@@ -25,13 +28,8 @@ export const useGameAnimation = (
 		playUnitAnimation,
 	} = useAnimationControl(units, player, tileSize, zoom);
 
-	const { triggerCamera, resetCamera, cameraStyle } = useCameraControl(
-		player,
-		units,
-		visualPositions,
-		tileSize,
-		zoom,
-	);
+	const { triggerCamera, resetCamera, cameraMotion, cameraStyle } =
+		useCameraControl(player, units, visualPositions, tileSize, zoom);
 
 	const { spawnVFX, activeVfxList } = useVfxControl(
 		visualPositions,
@@ -85,6 +83,7 @@ export const useGameAnimation = (
 		activeUnitStates,
 		visualPositions,
 		unitTransforms,
+		cameraMotion,
 		cameraStyle,
 		runTurn,
 		activeVfxList,

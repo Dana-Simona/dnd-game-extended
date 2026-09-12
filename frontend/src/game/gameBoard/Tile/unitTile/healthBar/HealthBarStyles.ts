@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const BarContainer = styled.div`
 	position: absolute;
-	top: -10px;
+	top: 20px;
 	left: 50%;
 	transform: translateX(-50%);
 	width: 32px;
@@ -38,7 +38,6 @@ export const HealthText = styled.span`
 	font-family:
 		-apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif;
 	font-size: 5px;
-
 	font-weight: 300;
 	text-align: center;
 	letter-spacing: 0.2px;
