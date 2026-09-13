@@ -28,7 +28,6 @@ public abstract class Unit extends Occupant {
         this.defensePoints = defense;
         this.callback = callback;
         this.stepCounter = stepCounter;
-
     }
 
     /**

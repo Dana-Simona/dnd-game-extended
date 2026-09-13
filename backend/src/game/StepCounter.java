@@ -5,11 +5,11 @@ public class StepCounter {
     private int currentStep;
 
     public StepCounter() {
-        currentStep = 0;
+        currentStep = 2;
     }
 
     public void resetCount() {
-        currentStep = 0;
+        currentStep = 2;
     }
 
     public int getCurrentStep() {

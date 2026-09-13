@@ -12,13 +12,11 @@ public class MovementManager implements CellVisitor, OccupantVisitor {
     private final GameBoard board;
     private final Unit activeUnit;
     private final MessageCallback messageCallback;
-    private final StepCounter stepCounter;
 
-    public MovementManager(GameBoard board, Unit activeUnit, MessageCallback messageCallback, StepCounter stepCounter) {
+    public MovementManager(GameBoard board, Unit activeUnit, MessageCallback messageCallback) {
         this.board = board;
         this.activeUnit = activeUnit;
         this.messageCallback = messageCallback;
-        this.stepCounter = stepCounter;
     }
 
     /**
@@ -41,7 +39,6 @@ public class MovementManager implements CellVisitor, OccupantVisitor {
                 messageCallback.sendEvent(new GameEvent(0, ActionType.MOVE, activeUnit.getId(), null));
             } else {
                 messageCallback.sendEvent(new GameEvent(1, ActionType.MOVE, activeUnit.getId(), null));
-                stepCounter.setCurrentStep(1);
             }
         } else {
             floorOccupant.accept(this);
