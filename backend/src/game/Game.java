@@ -30,14 +30,11 @@ public final class Game {
             String resourcePath = "/game/levels_dir/level" + levelNumber + ".txt";
             if (getClass().getResource(resourcePath) != null) {
                 this.levels.add(resourcePath);
-                System.out.println("Loaded level resource: " + resourcePath);
                 levelNumber++;
             } else {
                 break;
             }
         }
-
-        System.out.println("Total levels loaded: " + this.levels.size());
     }
 
     public List<Player> getAvailablePlayers() {

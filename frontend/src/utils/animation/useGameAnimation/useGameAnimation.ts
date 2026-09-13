@@ -7,10 +7,8 @@ import type { GameEvent } from '../../../constants/gameEvent';
 import { useCameraControl } from './cameraControl/useCameraControl';
 import type { Unit, AllPlayerData } from '../../../constants/interfaces/player';
 import { useAnimationControl } from './spriteAnimationControl/useAnimationControl';
-import {
-	buildTargetPositions,
-	executeEventSteps,
-} from './spriteAnimationControl/animationUtils';
+import { buildTargetPositions } from './spriteAnimationControl/animationUtils';
+import { playTurnSequence } from '../playTurnSequence';
 
 export const useGameAnimation = (
 	units: Unit[],
@@ -60,7 +58,7 @@ export const useGameAnimation = (
 				const targets = buildTargetPositions(nextPlayer, nextEnemies);
 				targetPositionsRef.current = targets;
 
-				await executeEventSteps(events);
+				await playTurnSequence(events);
 
 				setVisualPositions(targets);
 			} finally {

@@ -29,12 +29,14 @@ export const setupAnimations = (controllers: Controllers) => {
 
 	animationRegistry.register(ActionType.DIE, async (event: GameEvent) => {
 		if (!event.sourceId) return;
-		controllers.playUnitAnimation(event.sourceId, ActionType.DIE);
-		await controllers.triggerCamera({
-			type: CameraPreset.SHAKE,
-			intensity: 15,
-			duration: 300,
-		});
+		await Promise.all([
+			controllers.playUnitAnimation(event.sourceId, ActionType.DIE),
+			controllers.triggerCamera({
+				type: CameraPreset.SHAKE,
+				intensity: 15,
+				duration: 300,
+			}),
+		]);
 	});
 
 	animationRegistry.register(ActionType.MELEE, async (event: GameEvent) => {
@@ -95,7 +97,12 @@ export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(
 		ActionType.ABILITY_CAST,
 		async (event: GameEvent) => {
-			if (!event.sourceId || !event.targetIds) return;
+			if (
+				!event.sourceId ||
+				!event.targetIds ||
+				event.targetIds.length === 0
+			)
+				return;
 			await controllers.triggerCamera({
 				type: CameraPreset.ZOOM_IN,
 				targetIds: [event.sourceId],
@@ -192,17 +199,18 @@ export const setupAnimations = (controllers: Controllers) => {
 		ActionType.TAKE_DAMAGE,
 		async (event: GameEvent) => {
 			if (!event.sourceId) return;
+			const attackerId = event.targetIds?.[0];
 			await Promise.all([
 				controllers.spawnVFX(
 					VfxTypes.STAT_DAMAGE,
 					[event.sourceId],
 					event.amount,
 				),
-				event.targetIds?.[0]
+				attackerId
 					? controllers.triggerUnit({
 							type: UnitPreset.KNOCKBACK,
 							targetId: event.sourceId,
-							sourceId: event.targetIds[0],
+							sourceId: attackerId,
 							distancePx: 12,
 							durationMs: 180,
 						})
@@ -224,6 +232,6 @@ export const setupAnimations = (controllers: Controllers) => {
 	);
 
 	animationRegistry.register(ActionType.WIN, async (event: GameEvent) => {
-		if (!event.sourceId || !event.targetIds) return;
+		if (!event.sourceId) return;
 	});
 };

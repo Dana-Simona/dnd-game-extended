@@ -31,7 +31,7 @@ export const SPRITE_MANIFEST: Record<
 	},
 	enemy_knight: {
 		[ActionType.IDLE]: { width: 24, height: 32, frameCount: 11, fps: 12 },
-		[ActionType.MOVE]: { width: 22, height: 32, frameCount: 13, fps: 6 },
+		[ActionType.MOVE]: { width: 22, height: 32, frameCount: 6, fps: 13 },
 		[ActionType.DIE]: {
 			width: 40,
 			height: 32,
@@ -52,7 +52,7 @@ export const SPRITE_MANIFEST: Record<
 			width: 100,
 			height: 100,
 			frameCount: 6,
-			fps: 10,
+			fps: 12,
 			offsetY: 36,
 		},
 		[ActionType.MOVE]: {
@@ -79,8 +79,8 @@ export const SPRITE_MANIFEST: Record<
 		[ActionType.TAKE_DAMAGE]: {
 			width: 40,
 			height: 32,
-			frameCount: 7,
-			fps: 10,
+			frameCount: 6,
+			fps: 12,
 			offsetY: 5,
 		},
 	},
@@ -89,7 +89,7 @@ export const SPRITE_MANIFEST: Record<
 			width: 100,
 			height: 100,
 			frameCount: 6,
-			fps: 10,
+			fps: 12,
 			offsetY: 36,
 		},
 		[ActionType.MOVE]: {
@@ -116,8 +116,8 @@ export const SPRITE_MANIFEST: Record<
 		[ActionType.TAKE_DAMAGE]: {
 			width: 40,
 			height: 32,
-			frameCount: 7,
-			fps: 10,
+			frameCount: 6,
+			fps: 12,
 			offsetY: 5,
 		},
 	},

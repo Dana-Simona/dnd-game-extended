@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 
-import type { ActionType } from '../../../../constants/gameEvent';
+import { ActionType } from '../../../../constants/gameEvent';
 import type { Position } from '../cameraControl/cameraControl';
 import type {
 	Unit,
@@ -71,7 +71,8 @@ export const useAnimationControl = (
 			}
 			const unit = allUnitsRef.current.find((u) => u.id === unitId);
 			const duration = calculateAnimDuration(unit, action);
-			return triggerUnitAnim(
+
+			const animPromise = triggerUnitAnim(
 				unitId,
 				action,
 				duration,
@@ -79,6 +80,25 @@ export const useAnimationControl = (
 				setVisualPositions,
 				setActiveUnitStates,
 			);
+
+			const isMoveAction = action === ActionType.MOVE;
+
+			if (isMoveAction) {
+				const earlyResolveMs = Math.min(
+					Math.floor(duration * 0.6),
+					200,
+				);
+
+				return new Promise<void>((resolve) => {
+					const timer = setTimeout(resolve, earlyResolveMs);
+					animPromise.then(() => {
+						clearTimeout(timer);
+						resolve();
+					});
+				});
+			}
+
+			return animPromise;
 		},
 		[isUnitInViewport],
 	);
