@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
 import type { GameEvent } from '../constants/gameEvent';
@@ -50,6 +50,9 @@ export const useGame = (level?: string) => {
 	const [actionCount, setActionCount] = useState<number>(0);
 	const [enemies, setEnemies] = useState<Unit[]>([]);
 
+	// Lock to prevent concurrent keypresses during network requests and turn processing
+	const isProcessingRef = useRef<boolean>(false);
+
 	const {
 		isAnimating,
 		activeUnitStates,
@@ -78,10 +81,13 @@ export const useGame = (level?: string) => {
 
 	const executeTurn = useCallback(
 		(data: BoardData, enemyList: Unit[]) => {
-			const onDone = () => applyUnitState(data, enemyList);
+			const onDone = () => {
+				applyUnitState(data, enemyList);
+				isProcessingRef.current = false; // Release lock when turn completes
+			};
+
 			if (data.events?.length) {
 				runTurn(data.events, data.player || null, enemyList, onDone);
-				console.log('[EVENTS]: ', data.events);
 			} else {
 				onDone();
 			}
@@ -91,13 +97,18 @@ export const useGame = (level?: string) => {
 
 	const handleKeyPress = useCallback(
 		async (key: string) => {
-			if (isAnimating || !isValidKey(key)) return;
+			// Block input if animating, already processing an action, or key is invalid
+			if (isAnimating || isProcessingRef.current || !isValidKey(key))
+				return;
+
+			isProcessingRef.current = true; // Lock immediately on keypress
 			try {
 				const data = await postApi('action', key.toLowerCase());
 				applyBoardState(data);
 				executeTurn(data, filterEnemies(data.units));
 			} catch (err) {
 				console.error('Failed move:', err);
+				isProcessingRef.current = false; // Release lock on error
 			}
 		},
 		[isAnimating, applyBoardState, executeTurn],
@@ -124,7 +135,10 @@ export const useGame = (level?: string) => {
 	}, [level]);
 
 	useEffect(() => {
-		const onKeyDown = (e: KeyboardEvent) => handleKeyPress(e.key);
+		const onKeyDown = (e: KeyboardEvent) => {
+			if (e.repeat) return;
+			handleKeyPress(e.key);
+		};
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, [handleKeyPress]);
