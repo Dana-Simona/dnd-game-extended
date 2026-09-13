@@ -16,7 +16,7 @@ export const updateMissingPositions = (
 	prev: Record<string, Position>,
 	units: Unit[],
 ): Record<string, Position> => {
-	const missing = units.filter((u) => !prev[u.id]);
+	const missing = units.filter((u) => u?.id && !prev[u.id]);
 	if (missing.length === 0) return prev;
 	const next = { ...prev };
 	missing.forEach((u) => {
@@ -34,19 +34,23 @@ export const getVisibleTileLimits = (
 });
 
 export const checkViewportBoundary = (
-	pos: Position,
-	playerPos: Position,
-	limits: Position,
-): boolean =>
-	Math.abs(pos.x - playerPos.x) <= limits.x &&
-	Math.abs(pos.y - playerPos.y) <= limits.y;
+	pos?: Position,
+	playerPos?: Position,
+	limits?: Position,
+): boolean => {
+	if (!pos || !playerPos || !limits) return true;
+	return (
+		Math.abs(pos.x - playerPos.x) <= limits.x &&
+		Math.abs(pos.y - playerPos.y) <= limits.y
+	);
+};
 
 export const findUnitPosition = (
 	unitId: string,
 	visuals: Record<string, Position>,
 	units: Unit[],
 ): Position | undefined =>
-	visuals[unitId] || units.find((u) => u.id === unitId);
+	visuals[unitId] || units.find((u) => u?.id === unitId);
 
 export const calculateAnimDuration = (
 	unit: Unit | undefined,
@@ -80,10 +84,18 @@ export const triggerUnitAnim = (
 	targetPos: Position | undefined,
 	setVisuals: React.Dispatch<React.SetStateAction<Record<string, Position>>>,
 	setStates: React.Dispatch<React.SetStateAction<Record<string, string>>>,
+	isOffScreen: boolean = false,
 ): Promise<void> =>
 	new Promise((resolve) => {
-		if (targetPos)
+		if (targetPos) {
 			setVisuals((prev) => updateSinglePosition(prev, unitId, targetPos));
+		}
+
+		if (isOffScreen) {
+			resolve();
+			return;
+		}
+
 		setStates((prev) => ({ ...prev, [unitId]: action }));
 		setTimeout(() => {
 			setStates((prev) => removeActiveState(prev, unitId));
@@ -96,9 +108,15 @@ export const buildTargetPositions = (
 	enemies: Unit[] = [],
 ): Record<string, Position> => {
 	const targets: Record<string, Position> = {};
-	if (player) targets[player.id] = { x: player.x, y: player.y };
-	enemies.forEach((e) => {
-		targets[e.id] = { x: e.x, y: e.y };
+	if (player) {
+		const playerId = player.id || 'player';
+		targets[playerId] = { x: player.x, y: player.y };
+	}
+	enemies.forEach((e, index) => {
+		if (e) {
+			const enemyId = e.id || `unit-${index + 1}`;
+			targets[enemyId] = { x: e.x, y: e.y };
+		}
 	});
 	return targets;
 };

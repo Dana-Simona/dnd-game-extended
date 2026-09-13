@@ -21,6 +21,12 @@ public class GameBoard {
 
     public void setCell(Position position, Cell cell) {
         this.board[position.getX()][position.getY()] = cell;
+
+        if (cell != null && cell.getOccupant() instanceof Enemy enemy) {
+            if (!enemies.contains(enemy)) {
+                enemies.add(enemy);
+            }
+        }
     }
 
     public Occupant getOccupant(Position position) {

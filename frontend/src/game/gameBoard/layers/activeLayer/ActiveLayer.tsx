@@ -25,25 +25,42 @@ const ActiveLayer: React.FC<Props> = React.memo(
 		visualPositions = {},
 		unitTransforms = {},
 	}) => {
+		console.log('[ActiveLayer Render]', {
+			unitIds: units.map((u) => u.name),
+			visualPositionKeys: Object.keys(visualPositions),
+			tileSize,
+		});
 		return (
 			<ActiveLayerContainer>
 				{units.map((unit, index) => {
-					const currentX = visualPositions[unit.id]?.x ?? unit.x;
-					const currentY = visualPositions[unit.id]?.y ?? unit.y;
-					const transform = unitTransforms[unit.id] ?? {
+					const unitId =
+						unit.id ||
+						(unit.character === '@'
+							? characterId
+							: `unit-${index}`);
+
+					const currentX = visualPositions[unitId]?.x ?? unit.x;
+					const currentY = visualPositions[unitId]?.y ?? unit.y;
+					const transform = unitTransforms[unitId] ?? {
 						facing: 'right',
 						offset: { x: 0, y: 0 },
 					};
 
+					const targetX = currentX * tileSize + transform.offset.x;
+					const targetY = currentY * tileSize + transform.offset.y;
+
 					return (
 						<AnimatedUnitWrapper
-							key={unit.id ?? `unit-${index}`}
+							key={unitId}
 							$tileSize={tileSize}
-							$zIndex={unit.id === characterId ? 10 : 1}
-							initial={false}
+							$zIndex={unitId === characterId ? 10 : 1}
+							initial={{
+								x: targetX,
+								y: targetY,
+							}}
 							animate={{
-								x: currentX * tileSize + transform.offset.x,
-								y: currentY * tileSize + transform.offset.y,
+								x: targetX,
+								y: targetY,
 							}}
 							transition={{
 								type: 'spring',
@@ -58,7 +75,7 @@ const ActiveLayer: React.FC<Props> = React.memo(
 								grid={board}
 								unit={unit}
 								activeActionState={
-									activeUnitStates[unit.id] as ActionType
+									activeUnitStates[unitId] as ActionType
 								}
 								facing={transform.facing}
 							/>

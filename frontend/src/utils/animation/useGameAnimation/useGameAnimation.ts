@@ -46,6 +46,25 @@ export const useGameAnimation = (
 		});
 	}, [playUnitAnimation, spawnVFX, triggerCamera, triggerUnit]);
 
+	const resetPositions = useCallback(
+		(nextPlayer: Unit | AllPlayerData | null, nextEnemies: Unit[]) => {
+			const targets = buildTargetPositions(
+				nextPlayer as AllPlayerData | null,
+				nextEnemies,
+			);
+			targetPositionsRef.current = targets;
+			setVisualPositions(targets);
+			resetCamera();
+			resetAllTransforms();
+		},
+		[
+			setVisualPositions,
+			targetPositionsRef,
+			resetCamera,
+			resetAllTransforms,
+		],
+	);
+
 	const runTurn = useCallback(
 		async (
 			events: GameEvent[],
@@ -84,6 +103,7 @@ export const useGameAnimation = (
 		cameraMotion,
 		cameraStyle,
 		runTurn,
+		resetPositions,
 		activeVfxList,
 	};
 };

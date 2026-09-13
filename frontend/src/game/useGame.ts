@@ -50,7 +50,6 @@ export const useGame = (level?: string) => {
 	const [actionCount, setActionCount] = useState<number>(0);
 	const [enemies, setEnemies] = useState<Unit[]>([]);
 
-	// Lock to prevent concurrent keypresses during network requests and turn processing
 	const isProcessingRef = useRef<boolean>(false);
 
 	const {
@@ -59,6 +58,7 @@ export const useGame = (level?: string) => {
 		visualPositions,
 		unitTransforms,
 		runTurn,
+		resetPositions,
 		cameraMotion,
 		activeVfxList,
 	} = useGameAnimation(enemies, character);
@@ -75,15 +75,17 @@ export const useGame = (level?: string) => {
 		(data: BoardData, enemyList: Unit[]) => {
 			if (data.player) updateCharacter(data.player);
 			if (data.units) setEnemies(enemyList);
+
+			resetPositions(data.player || null, enemyList);
 		},
-		[updateCharacter],
+		[updateCharacter, resetPositions],
 	);
 
 	const executeTurn = useCallback(
 		(data: BoardData, enemyList: Unit[]) => {
 			const onDone = () => {
 				applyUnitState(data, enemyList);
-				isProcessingRef.current = false; // Release lock when turn completes
+				isProcessingRef.current = false;
 			};
 
 			if (data.events?.length) {
@@ -97,18 +99,17 @@ export const useGame = (level?: string) => {
 
 	const handleKeyPress = useCallback(
 		async (key: string) => {
-			// Block input if animating, already processing an action, or key is invalid
 			if (isAnimating || isProcessingRef.current || !isValidKey(key))
 				return;
 
-			isProcessingRef.current = true; // Lock immediately on keypress
+			isProcessingRef.current = true;
 			try {
 				const data = await postApi('action', key.toLowerCase());
 				applyBoardState(data);
 				executeTurn(data, filterEnemies(data.units));
 			} catch (err) {
 				console.error('Failed move:', err);
-				isProcessingRef.current = false; // Release lock on error
+				isProcessingRef.current = false;
 			}
 		},
 		[isAnimating, applyBoardState, executeTurn],
