@@ -5,9 +5,15 @@ interface HealthBarProps {
 	currentHp: number;
 	maxHp: number;
 	isEnemy: boolean;
+	offsetY: number;
 }
 
-const HealthBar: React.FC<HealthBarProps> = ({ currentHp, maxHp, isEnemy }) => {
+const HealthBar: React.FC<HealthBarProps> = ({
+	currentHp,
+	maxHp,
+	isEnemy,
+	offsetY,
+}) => {
 	if (!isEnemy) {
 		return null;
 	}
@@ -17,7 +23,7 @@ const HealthBar: React.FC<HealthBarProps> = ({ currentHp, maxHp, isEnemy }) => {
 	const percentage = (clampedHp / validMaxHp) * 100;
 
 	return (
-		<BarContainer>
+		<BarContainer $offsetY={offsetY}>
 			<BarFill $percentage={percentage} />
 			<HealthText>
 				{clampedHp}/{validMaxHp}

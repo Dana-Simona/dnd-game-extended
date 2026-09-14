@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
-export const BarContainer = styled.div`
+export const BarContainer = styled.div<{ $offsetY?: number }>`
 	position: absolute;
-	top: 20px;
+	top: ${({ $offsetY = 0 }) => `${-8 + $offsetY}px`};
 	left: 50%;
 	transform: translateX(-50%);
 	width: 32px;

@@ -50,8 +50,8 @@ export const RollVfx: React.FC<Props> = ({ item }) => {
 			$y={item.y}
 			initial={{ opacity: 0, y: 12, scale: 0.3 }}
 			animate={{
-				opacity: [0, 1, 1, 1, 0],
-				y: [12, -36, -30, -30, -46],
+				opacity: [0.5, 1, 1, 1, 0],
+				y: [0, -45, -30, -30, -46],
 				scale: [0.3, 1.25, 1, 1, 0.85],
 			}}
 			transition={{

@@ -25,7 +25,7 @@ export const RollNumber = styled(motion.div).attrs<{ $x: number; $y: number }>(
 	({ $x, $y }) => ({
 		style: {
 			left: $x,
-			top: $y - 12,
+			top: $y - 2,
 		},
 	}),
 )<{ $subType: string; $x: number; $y: number }>`

@@ -32,6 +32,7 @@ const UnitTile: React.FC<UnitTileProps> = ({
 						currentHp={unit.currentHealth}
 						maxHp={unit.health}
 						isEnemy={unit.character !== '@'}
+						offsetY={offsetY}
 					/>
 				)}
 				<SpriteFlipWrapper $isFlipped={facing === 'left'}>
