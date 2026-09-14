@@ -46,6 +46,12 @@ export const SPRITE_MANIFEST: Record<
 			fps: 10,
 			offsetY: 5,
 		},
+		[ActionType.MELEE]: {
+			width: 43,
+			height: 37,
+			frameCount: 18,
+			fps: 18,
+		},
 	},
 	enemy_goldcloak: {
 		[ActionType.IDLE]: {

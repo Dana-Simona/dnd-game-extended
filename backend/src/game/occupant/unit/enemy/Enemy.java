@@ -4,6 +4,7 @@ import game.BoardCallback;
 import game.MessageCallback;
 import game.StepCounter;
 import game.cell.Position;
+import game.occupant.Corpse;
 import game.occupant.OccupantVisitor;
 import game.occupant.unit.OccupantFilterVisitor;
 import game.occupant.unit.Unit;
@@ -31,7 +32,7 @@ public abstract class Enemy extends Unit {
 
     @Override
     public void onDeath() {
-        getBoardCallback().getCell(getPosition()).setOccupant(null);
+        getBoardCallback().getCell(getPosition()).setOccupant(new Corpse(getPosition(), getBoardCallback()));
         getBoardCallback().onEnemyDeath(this);
     }
 

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 export const LogContainer = styled(motion.div)`
 	width: 100%;
 	max-width: 600px;
+	max-height: 30vh;
 	background-color: #1a1a1a;
 	border: 1px solid #333;
 	border-radius: 8px;
@@ -11,7 +12,7 @@ export const LogContainer = styled(motion.div)`
 	flex-direction: column;
 	margin: 1rem 0;
 	font-family: monospace;
-	overflow: hidden;
+	overflow: auto;
 `;
 
 export const LogHeader = styled.div`

@@ -1,6 +1,7 @@
 package game;
 
 import game.cell.*;
+import game.occupant.Corpse;
 import game.occupant.Occupant;
 import game.occupant.OccupantVisitor;
 import game.occupant.unit.Unit;
@@ -55,6 +56,10 @@ public class MovementManager implements CellVisitor, OccupantVisitor {
     @Override
     public void visit(Enemy enemy) {
         activeUnit.interactWith(enemy);
+    }
+
+    @Override
+    public void visit(Corpse corpse) {
     }
 
     /**

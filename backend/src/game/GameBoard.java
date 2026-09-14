@@ -2,6 +2,7 @@ package game;
 
 import game.cell.Cell;
 import game.cell.Position;
+import game.occupant.Corpse;
 import game.occupant.Occupant;
 import game.occupant.unit.OccupantFilterVisitor;
 import game.occupant.unit.enemy.Enemy;
@@ -55,7 +56,7 @@ public class GameBoard {
 
     public void removeEnemy(Enemy enemy) {
         enemies.remove(enemy);
-        if (enemy.getPosition() != null) {
+        if (enemy.getPosition() != null && getOccupant(enemy.getPosition()) == enemy) {
             getCell(enemy.getPosition()).setOccupant(null);
         }
     }
@@ -102,8 +103,19 @@ public class GameBoard {
         }
     }
 
+    private void clearCorpses() {
+        for (Cell[] row : board) {
+            for (Cell cell : row) {
+                if (cell != null && cell.getOccupant() instanceof Corpse) {
+                    cell.setOccupant(null);
+                }
+            }
+        }
+    }
+
     public void tickAll() {
         unflagAllTicks();
+
         for (Cell[] row : board) {
             for (Cell cell : row) {
                 Occupant occupant = cell.getOccupant();
@@ -113,6 +125,8 @@ public class GameBoard {
                 }
             }
         }
+
+        clearCorpses();
     }
 
     public boolean isLevelComplete() {
