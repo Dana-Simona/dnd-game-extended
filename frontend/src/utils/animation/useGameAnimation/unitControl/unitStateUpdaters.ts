@@ -45,3 +45,15 @@ export const resetUnitTransform =
 			offset: { x: 0, y: 0 },
 		},
 	});
+
+export const applyOpacity =
+	(unitId: string, opacity: number) =>
+	(prev: Record<string, UnitTransform>): Record<string, UnitTransform> => ({
+		...prev,
+		[unitId]: {
+			...prev[unitId],
+			facing: prev[unitId]?.facing ?? 'right',
+			offset: prev[unitId]?.offset ?? { x: 0, y: 0 },
+			opacity,
+		},
+	});

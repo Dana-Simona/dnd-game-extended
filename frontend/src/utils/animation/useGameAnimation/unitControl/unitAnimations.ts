@@ -7,6 +7,7 @@ import {
 import {
 	applyFacing,
 	applyOffsetAndFacing,
+	applyOpacity,
 	resetUnitOffset,
 	resetUnitTransform,
 } from './unitStateUpdaters';
@@ -96,6 +97,32 @@ export const executeKnockbackFrom = async (
 	setTransforms(applyOffsetAndFacing(targetId, { x: offsetX, y: offsetY }));
 	await new Promise((resolve) => setTimeout(resolve, durationMs));
 	setTransforms(resetUnitOffset(targetId));
+};
+
+export const executeFadeOut = async (
+    unitId: string,
+    durationMs = 200,
+    delayMs = 0,
+    setTransforms: SetTransforms,
+) => {
+    if (delayMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+    setTransforms(applyOpacity(unitId, 0));
+    await new Promise((resolve) => setTimeout(resolve, durationMs));
+};
+
+export const executeFadeIn = async (
+    unitId: string,
+    durationMs = 200,
+    delayMs = 0,
+    setTransforms: SetTransforms,
+) => {
+    if (delayMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+    setTransforms(applyOpacity(unitId, 1));
+    await new Promise((resolve) => setTimeout(resolve, durationMs));
 };
 
 export const executeResetTransform = (

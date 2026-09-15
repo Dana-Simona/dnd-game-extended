@@ -11,6 +11,8 @@ import {
 	executeDashTowards,
 	executeKnockbackFrom,
 	executeResetTransform,
+	executeFadeOut,
+	executeFadeIn,
 } from './unitAnimations';
 
 export const useUnitControl = (visualPositions: Record<string, Position>) => {
@@ -39,7 +41,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			targetId: string,
 			distancePx = 24,
 			durationMs = 200,
-			delayMs = 0, // Default set to 0
+			delayMs = 0,
 		) => {
 			await executeDashTowards(
 				sourceId,
@@ -60,7 +62,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			sourceId: string,
 			distancePx = 12,
 			durationMs = 200,
-			delayMs = 0, // Default set to 0
+			delayMs = 0,
 		) => {
 			await executeKnockbackFrom(
 				targetId,
@@ -71,6 +73,25 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 				visualPositionsRef.current,
 				setUnitTransforms,
 			);
+		},
+		[],
+	);
+
+	const fadeOut = useCallback(
+		async (unitId: string, durationMs = 200, delayMs = 0) => {
+			await executeFadeOut(
+				unitId,
+				durationMs,
+				delayMs,
+				setUnitTransforms,
+			);
+		},
+		[],
+	);
+
+	const fadeIn = useCallback(
+		async (unitId: string, durationMs = 200, delayMs = 0) => {
+			await executeFadeIn(unitId, durationMs, delayMs, setUnitTransforms);
 		},
 		[],
 	);
@@ -107,17 +128,40 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 						command.delayMs,
 					);
 					break;
+				case UnitPreset.FADE_OUT:
+					await fadeOut(
+						command.unitId,
+						command.durationMs,
+						command.delayMs,
+					);
+					break;
+				case UnitPreset.FADE_IN:
+					await fadeIn(
+						command.unitId,
+						command.durationMs,
+						command.delayMs,
+					);
+					break;
 				case UnitPreset.RESET:
 					await resetTransform(command.unitId);
 					break;
 			}
 		},
-		[faceTarget, dashTowards, knockbackFrom, resetTransform],
+		[
+			faceTarget,
+			dashTowards,
+			knockbackFrom,
+			fadeOut,
+			fadeIn,
+			resetTransform,
+		],
 	);
 
 	return {
 		triggerUnit,
 		unitTransforms,
 		resetAllTransforms,
+		fadeOut,
+		fadeIn,
 	};
 };

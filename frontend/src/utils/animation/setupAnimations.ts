@@ -36,6 +36,12 @@ export const setupAnimations = (controllers: Controllers) => {
 				intensity: 15,
 				duration: 300,
 			}),
+			controllers.triggerUnit({
+				type: UnitPreset.FADE_OUT,
+				unitId: event.sourceId,
+				delayMs: 400,
+				durationMs: 200,
+			}),
 		]);
 	});
 

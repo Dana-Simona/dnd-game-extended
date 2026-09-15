@@ -25,11 +25,6 @@ const ActiveLayer: React.FC<Props> = React.memo(
 		visualPositions = {},
 		unitTransforms = {},
 	}) => {
-		console.log('[ActiveLayer Render]', {
-			unitIds: units.map((u) => u.name),
-			visualPositionKeys: Object.keys(visualPositions),
-			tileSize,
-		});
 		return (
 			<ActiveLayerContainer>
 				{units.map((unit, index) => {
@@ -44,10 +39,12 @@ const ActiveLayer: React.FC<Props> = React.memo(
 					const transform = unitTransforms[unitId] ?? {
 						facing: 'right',
 						offset: { x: 0, y: 0 },
+						opacity: 1,
 					};
 
 					const targetX = currentX * tileSize + transform.offset.x;
 					const targetY = currentY * tileSize + transform.offset.y;
+					const targetOpacity = transform.opacity ?? 1;
 
 					return (
 						<AnimatedUnitWrapper
@@ -57,15 +54,25 @@ const ActiveLayer: React.FC<Props> = React.memo(
 							initial={{
 								x: targetX,
 								y: targetY,
+								opacity: targetOpacity,
 							}}
 							animate={{
 								x: targetX,
 								y: targetY,
+								opacity: targetOpacity,
 							}}
 							transition={{
-								type: 'spring',
-								stiffness: 300,
-								damping: 28,
+								x: {
+									type: 'spring',
+									stiffness: 300,
+									damping: 28,
+								},
+								y: {
+									type: 'spring',
+									stiffness: 300,
+									damping: 28,
+								},
+								opacity: { duration: 0.2, ease: 'easeInOut' },
 							}}
 						>
 							<Tile
