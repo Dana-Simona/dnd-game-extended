@@ -2,10 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 
 import { ActionType } from '../../../../constants/gameEvent';
 import type { Position } from '../cameraControl/cameraControl';
-import type {
-	Unit,
-	AllPlayerData,
-} from '../../../../constants/interfaces/player';
+import type { AllPlayerData } from '../../../../constants/interfaces/player';
 import {
 	combinePlayerAndUnits,
 	updateMissingPositions,
@@ -16,6 +13,7 @@ import {
 	calculateAnimDuration,
 	triggerUnitAnim,
 } from './animationUtils';
+import type { Unit } from '../../../../constants/interfaces/unit';
 
 export const useAnimationControl = (
 	units: Unit[],

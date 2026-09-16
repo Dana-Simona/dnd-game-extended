@@ -4,13 +4,8 @@ import com.sun.net.httpserver.HttpServer;
 import game.Game;
 import game.GameEvent;
 import game.MessageCallback;
-import game.occupant.unit.Unit;
 import game.occupant.unit.enemy.Enemy;
-import game.occupant.unit.player.Hunter;
-import game.occupant.unit.player.Mage;
 import game.occupant.unit.player.Player;
-import game.occupant.unit.player.Rogue;
-import game.occupant.unit.player.Warrior;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -179,11 +174,7 @@ public class MainServer {
         json.append("],");
 
         json.append("\"player\":");
-        if (game.getChosenPlayer() != null) {
-            buildPlayerJson(json, game.getChosenPlayer(), null);
-        } else {
-            json.append("null");
-        }
+        UnitJsonBuilder.buildUnitJson(json, game.getChosenPlayer(), null);
 
         json.append(",\"units\":").append(getUnitsJson());
 
@@ -209,7 +200,7 @@ public class MainServer {
         boolean first = true;
 
         if (game.getChosenPlayer() != null) {
-            buildGenericUnitJson(json, game.getChosenPlayer());
+            UnitJsonBuilder.buildUnitJson(json, game.getChosenPlayer(), null);
             first = false;
         }
 
@@ -218,7 +209,7 @@ public class MainServer {
                 if (!first) {
                     json.append(",");
                 }
-                buildGenericUnitJson(json, enemy);
+                UnitJsonBuilder.buildUnitJson(json, enemy, null);
                 first = false;
             }
         }
@@ -227,81 +218,12 @@ public class MainServer {
         return json.toString();
     }
 
-    private static StringBuilder buildGenericUnitJson(StringBuilder json, Unit unit) {
-        json.append("{")
-                .append("\"name\":\"").append(unit.getName()).append("\",")
-                .append("\"id\":\"").append(unit.getId()).append("\",")
-                .append("\"character\":\"").append(unit.getCharacter()).append("\",")
-                .append("\"x\":").append(unit.getPosition().getX()).append(",")
-                .append("\"y\":").append(unit.getPosition().getY()).append(",")
-                .append("\"health\":").append(unit.getHealthPool()).append(",")
-                .append("\"currentHealth\":").append(unit.getCurrentHealth()).append(",")
-                .append("\"attack\":").append(unit.getAttackPoints()).append(",")
-                .append("\"defense\":").append(unit.getDefensePoints());
-
-        if (unit instanceof Enemy enemy) {
-            json.append(",\"experienceValue\":").append(enemy.getExperienceValue());
-        }
-
-        json.append("}");
-        return json;
-    }
-
-    private static StringBuilder buildPlayerJson(StringBuilder json, Player player, Integer index) {
-        json.append("{");
-
-        if (index != null) {
-            json.append("\"index\":").append(index).append(",");
-        }
-
-        json.append("\"name\":\"").append(player.getName()).append("\",")
-                .append("\"id\":\"").append(player.getId()).append("\",")
-                .append("\"class\":\"").append(player.getClass().getSimpleName()).append("\",")
-                .append("\"character\":\"").append(player.getCharacter()).append("\",")
-                .append("\"x\":").append(player.getPosition().getX()).append(",")
-                .append("\"y\":").append(player.getPosition().getY()).append(",")
-                .append("\"level\":").append(player.getLevel()).append(",")
-                .append("\"health\":").append(player.getHealthPool()).append(",")
-                .append("\"currentHealth\":").append(player.getCurrentHealth()).append(",")
-                .append("\"attack\":").append(player.getAttackPoints()).append(",")
-                .append("\"defense\":").append(player.getDefensePoints());
-
-        switch (player) {
-            case Mage mage ->
-                json.append(",\"manaPool\":").append(mage.getManaPool())
-                        .append(",\"currentMana\":").append(mage.getCurrentMana())
-                        .append(",\"manaCost\":").append(mage.getManaCost())
-                        .append(",\"spellPower\":").append(mage.getSpellPower())
-                        .append(",\"hitCount\":").append(mage.getHitCount())
-                        .append(",\"range\":").append(mage.getAbilityRange());
-
-            case Rogue rogue ->
-                json.append(",\"energy\":").append(100)
-                        .append(",\"currentEnergy\":").append(rogue.getCurrentEnergy())
-                        .append(",\"energyCost\":").append(rogue.getEnergyCost());
-
-            case Warrior warrior ->
-                json.append(",\"cooldown\":").append(warrior.getCooldown())
-                        .append(",\"currentCooldown\":").append(warrior.getRemainingCooldown());
-
-            case Hunter hunter ->
-                json.append(",\"arrowCount\":").append(hunter.getArrowCount())
-                        .append(",\"range\":").append(hunter.getRange());
-
-            default -> {
-            }
-        }
-
-        json.append("}");
-        return json;
-    }
-
     private static String getPlayersJson() {
         List<Player> players = game.getAvailablePlayers();
         StringBuilder json = new StringBuilder("[");
 
         for (int i = 0; i < players.size(); i++) {
-            buildPlayerJson(json, players.get(i), i);
+            UnitJsonBuilder.buildUnitJson(json, players.get(i), i);
             if (i < players.size() - 1) {
                 json.append(",");
             }

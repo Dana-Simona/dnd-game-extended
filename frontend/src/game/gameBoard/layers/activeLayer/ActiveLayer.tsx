@@ -1,8 +1,8 @@
 import React from 'react';
 
 import Tile from '../../Tile/Tile';
+import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
 import type { ActionType } from '../../../../constants/gameEvent';
-import type { Unit } from '../../../../constants/interfaces/player';
 import { ActiveLayerContainer, AnimatedUnitWrapper } from './ActiveLayerStyles';
 import type { UnitTransform } from '../../../../utils/animation/useGameAnimation/unitControl/unitControl';
 
@@ -31,8 +31,7 @@ const ActiveLayer: React.FC<Props> = React.memo(
 		return (
 			<ActiveLayerContainer>
 				{units.map((unit, index) => {
-					const isPlayer =
-						unit.character === '@' || unit.id === characterId;
+					const isPlayer = unit.unitType === UnitType.PLAYER;
 
 					const unitId =
 						unit.id || (isPlayer ? characterId : `unit-${index}`);

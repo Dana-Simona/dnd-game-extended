@@ -69,6 +69,10 @@ public class Boss extends Monster implements HeroicUnit {
         return combatTicks;
     }
 
+    public Integer getAbilityFrequency() {
+        return abilityFrequency;
+    }
+
     @Override
     public void onGameTick() {
         super.onGameTick();

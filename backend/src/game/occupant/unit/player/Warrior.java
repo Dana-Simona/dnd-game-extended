@@ -13,6 +13,7 @@ public class Warrior extends Player {
 
     private final Integer cooldown;
     private Integer remainingCooldown;
+    Integer attackRange = 3;
 
     public Warrior(String name, Integer health, Integer attack, Integer defense, Integer cooldown,
             Position position, MessageCallback callback, BoardCallback boardCallback, StepCounter stepCounter) {
@@ -39,7 +40,6 @@ public class Warrior extends Player {
      * The warrior damages a random enemy on the board within range.
      */
     private void avengersShieldAttack() {
-        Integer attackRange = 3;
         List<Enemy> enemiesWithinRange = getEnemiesInRange(this.getPosition(), attackRange);
 
         if (!enemiesWithinRange.isEmpty()) {
@@ -139,5 +139,10 @@ public class Warrior extends Player {
     @Override
     protected Integer getAddedDefense() {
         return getLevel();
+    }
+
+    @Override
+    public Integer getRange() {
+        return attackRange;
     }
 }

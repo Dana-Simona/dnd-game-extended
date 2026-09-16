@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import type { Unit, AllPlayerData } from '../../constants/interfaces/player';
-import { getUnitSpriteConfig } from './spriteAnimations';
 import { ActionType } from '../../constants/gameEvent';
+import { getUnitSpriteConfig } from './spriteAnimations';
+import type { Unit } from '../../constants/interfaces/unit';
+import type { AllPlayerData } from '../../constants/interfaces/player';
 
 export const usePreloader = (units: Unit[], player: AllPlayerData | null) => {
 	useEffect(() => {

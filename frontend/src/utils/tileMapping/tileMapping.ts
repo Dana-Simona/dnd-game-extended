@@ -1,6 +1,6 @@
 import { getWallConfigAt } from './wallAutotile';
 import type { SpriteProps } from '../sprite/Sprite';
-import type { Unit } from '../../constants/interfaces/player';
+import { UnitType, type Unit } from '../../constants/interfaces/unit';
 import { getUnitSpriteConfig } from '../animation/spriteAnimations';
 import stairsSpriteSheet from '../../assets/tiles/Texture/TX Struct.png';
 import wallSpriteSheet from '../../assets/tiles/Texture/TX Tileset Wall.png';
@@ -9,20 +9,24 @@ import { getProceduralTileCoords } from './proceduralNoise/useProceduralNoise';
 import stoneGroundSpriteSheet from '../../assets/tiles/Texture/TX Tileset Stone Ground.png';
 import { ActionType } from '../../constants/gameEvent';
 
-export const UnitType = {
-	PLAYER: 'PLAYER',
-	ENEMY: 'ENEMY',
-	TRAP: 'TRAP',
-	TILE: 'TILE',
-} as const;
+export const getUnitTypeByChar = (char: string): UnitType | null => {
+	if (char === '@') {
+		return UnitType.PLAYER;
+	}
 
-export type UnitType = (typeof UnitType)[keyof typeof UnitType];
+	if (['M', 'C', 'K'].includes(char)) {
+		return UnitType.BOSS;
+	}
 
-export const getUnitTypeByChar = (char: string): UnitType => {
-	if (char === '@') return UnitType.PLAYER;
-	if (char >= 'A' && char <= 'Z') return UnitType.TRAP;
-	if (char >= 'a' && char <= 'z') return UnitType.ENEMY;
-	return UnitType.TILE;
+	if (char >= 'A' && char <= 'Z') {
+		return UnitType.TRAP;
+	}
+
+	if (char >= 'a' && char <= 'z') {
+		return UnitType.MONSTER;
+	}
+
+	return null;
 };
 
 export type TileConfig =
@@ -116,10 +120,7 @@ export const getTileConfig = (
 	}
 
 	const unitType = getUnitTypeByChar(char);
-	const isSpriteUnit =
-		unitType === UnitType.PLAYER ||
-		unitType === UnitType.ENEMY ||
-		(unitType === UnitType.TRAP && !TILE_CONFIGS[char]);
+	const isSpriteUnit = unitType !== null;
 
 	if (isSpriteUnit) {
 		return {

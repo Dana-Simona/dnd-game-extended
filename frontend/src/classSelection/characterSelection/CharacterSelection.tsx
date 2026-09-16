@@ -10,6 +10,7 @@ import Stats from './Stats/Stats';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import { ActionType } from '../../constants/gameEvent';
 import { getUnitSpriteConfig } from '../../utils/animation/spriteAnimations';
+import { UnitType } from '../../constants/interfaces/unit';
 
 export type Character = AllPlayerData & CharacterDisplayOptions;
 
@@ -53,7 +54,7 @@ export const CharacterSelection: React.FC = () => {
 				const enrichedCharacters: Character[] = data.map(
 					(player, index) => {
 						const spriteConfig = getUnitSpriteConfig(
-							{ ...player, character: '@' },
+							{ ...player, unitType: UnitType.PLAYER},
 							ActionType.IDLE,
 						);
 

@@ -116,4 +116,6 @@ public abstract class Player extends Unit {
     public void accept(OccupantFilterVisitor visitor) {
         visitor.visit(this);
     }
+
+    abstract public Integer getRange();
 }

@@ -5,10 +5,11 @@ import { useUnitControl } from './unitControl/useUnitControl';
 import { setupAnimations } from '../setupAnimations';
 import type { GameEvent } from '../../../constants/gameEvent';
 import { useCameraControl } from './cameraControl/useCameraControl';
-import type { Unit, AllPlayerData } from '../../../constants/interfaces/player';
+import type { AllPlayerData } from '../../../constants/interfaces/player';
 import { useAnimationControl } from './spriteAnimationControl/useAnimationControl';
 import { buildTargetPositions } from './spriteAnimationControl/animationUtils';
 import { playTurnSequence } from '../playTurnSequence';
+import type { Unit } from '../../../constants/interfaces/unit';
 
 export const useGameAnimation = (
 	units: Unit[],

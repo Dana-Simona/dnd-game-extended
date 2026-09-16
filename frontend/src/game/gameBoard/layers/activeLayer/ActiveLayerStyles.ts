@@ -7,7 +7,6 @@ export const ActiveLayerContainer = styled.div`
 	left: 0;
 	width: 100%;
 	height: 100%;
-	pointer-events: none;
 `;
 
 interface AnimatedUnitWrapperProps {
@@ -21,6 +20,5 @@ export const AnimatedUnitWrapper = styled(motion.div)<AnimatedUnitWrapperProps>`
 	left: 0;
 	width: ${(props) => props.$tileSize}px;
 	height: ${(props) => props.$tileSize}px;
-	pointer-events: none;
 	z-index: ${(props) => props.$zIndex};
 `;

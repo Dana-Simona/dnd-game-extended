@@ -48,6 +48,7 @@ public class Hunter extends Player {
         return arrowCount;
     }
 
+    @Override
     public Integer getRange() {
         return range;
     }

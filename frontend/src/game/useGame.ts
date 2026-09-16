@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
 import type { GameEvent } from '../constants/gameEvent';
-import type { AllPlayerData, Unit } from '../constants/interfaces/player';
+import type { AllPlayerData } from '../constants/interfaces/player';
 import { useCharacter } from '../utils/characterContext/CharacterContext';
 import { useGameAnimation } from '../utils/animation/useGameAnimation/useGameAnimation';
 import { usePreloader } from '../utils/animation/usePreloader';
+import { UnitType, type Unit } from '../constants/interfaces/unit';
 
 export interface BoardData {
 	grid: string[];
@@ -20,7 +21,7 @@ export const isValidKey = (key: string): boolean =>
 	VALID_KEYS.has(key.toLowerCase());
 
 export const filterEnemies = (units: AllPlayerData[] = []): Unit[] =>
-	units.filter((unit) => unit.character !== '@') as Unit[];
+	units.filter((unit) => unit.unitType !== UnitType.PLAYER) as Unit[];
 
 export const postApi = async (
 	path: string,

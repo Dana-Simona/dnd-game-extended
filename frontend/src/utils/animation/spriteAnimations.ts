@@ -1,11 +1,11 @@
 import type {
-	Unit,
 	AllPlayerData,
 	Player,
 } from '../../constants/interfaces/player';
 import { ActionType } from '../../constants/gameEvent';
 import type { SpriteProps } from '../sprite/Sprite';
 import { SPRITE_MANIFEST, DEFAULT_ANIM_META } from './spriteManifest';
+import { UnitType, type Unit } from '../../constants/interfaces/unit';
 
 export const sanitize = (str?: string, defaultValue = 'idle'): string =>
 	!str ? defaultValue : str.toLowerCase().replace(/[\s']+/g, '');
@@ -39,7 +39,7 @@ export const resolveSpriteIdentity = (
 	action: ActionType,
 ) => {
 	if (!unit) return getDefaultPlayerIdentity(action);
-	if (unit.character === '@')
+	if (unit.unitType === UnitType.PLAYER)
 		return getPlayerIdentity(unit as Player, action);
 	return getEnemyIdentity(unit, action);
 };

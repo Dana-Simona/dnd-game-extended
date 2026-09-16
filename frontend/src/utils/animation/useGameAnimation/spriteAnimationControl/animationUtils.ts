@@ -2,10 +2,8 @@ import { getUnitSpriteConfig } from '../../spriteAnimations';
 import { animationRegistry } from '../../animationRegistry';
 import type { Position } from '../cameraControl/cameraControl';
 import type { ActionType, GameEvent } from '../../../../constants/gameEvent';
-import type {
-	Unit,
-	AllPlayerData,
-} from '../../../../constants/interfaces/player';
+import type { AllPlayerData } from '../../../../constants/interfaces/player';
+import type { Unit } from '../../../../constants/interfaces/unit';
 
 export const combinePlayerAndUnits = (
 	player: Unit | AllPlayerData | null,

@@ -34,7 +34,6 @@ export const PositionedSpriteContainer = styled.div<PositionedSpriteProps>`
 				${(props) => props.$offsetY || 0}px
 		)
 	);
-	pointer-events: none;
 `;
 
 export const SpriteFlipWrapper = styled.div<SpriteFlipProps>`

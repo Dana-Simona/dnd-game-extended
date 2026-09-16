@@ -14,6 +14,7 @@ import { ROUTES } from '../constants/routes';
 import { useCharacter } from '../utils/characterContext/CharacterContext';
 import { getUnitSpriteConfig } from '../utils/animation/spriteAnimations';
 import { ActionType } from '../constants/gameEvent';
+import { UnitType } from '../constants/interfaces/unit';
 
 const levelImages = import.meta.glob<{ default: string }>(
 	'/src/assets/levelThumbnails/level*.jpg',
@@ -33,7 +34,10 @@ const LevelSelection: React.FC = () => {
 	const { character } = useCharacter();
 
 	const spriteProps = character
-		? getUnitSpriteConfig({ ...character, character: '@' }, ActionType.IDLE)
+		? getUnitSpriteConfig(
+				{ ...character, unitType: UnitType.PLAYER },
+				ActionType.IDLE,
+			)
 		: null;
 
 	const onBackClick = () => {

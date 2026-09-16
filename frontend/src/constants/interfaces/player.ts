@@ -1,17 +1,9 @@
-export interface Unit {
-	id: string;
-	character: string;
-	name: string;
-	attack: number;
-	defense: number;
-	health: number;
-	currentHealth: number;
-	x: number;
-	y: number;
-}
+import type { Unit } from './unit';
+
 export interface Player extends Unit {
 	class: string;
 	level: number;
+	range: number;
 }
 
 export interface Warrior extends Player {
@@ -25,7 +17,6 @@ export interface Mage extends Player {
 	manaCost: number;
 	spellPower: number;
 	hitCount: number;
-	range: number;
 }
 
 export interface Rogue extends Player {
@@ -35,7 +26,6 @@ export interface Rogue extends Player {
 }
 
 export interface Hunter extends Player {
-	range: number;
 	arrowCount: number;
 }
 

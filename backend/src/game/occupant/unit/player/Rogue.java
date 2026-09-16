@@ -14,6 +14,7 @@ public class Rogue extends Player {
     private Integer currentEnergy;
     private final Integer cost;
     private final Integer maxEnergy = 100;
+    Integer attackRange = 2;
 
     public Rogue(String name, Integer health, Integer attack, Integer defense, Position position,
             Integer energyCost, MessageCallback callback, BoardCallback boardCallback, StepCounter stepCounter) {
@@ -29,10 +30,10 @@ public class Rogue extends Player {
      */
     public void fanOfKnives() {
         sendMessage(getName() + " cast Fan of Knives.");
-        Integer attackRange = 2;
+
         List<Enemy> enemiesWithinRange = getEnemiesInRange(this.getPosition(), attackRange);
         List<String> targetIds = enemiesWithinRange.stream().map(Enemy::getId).toList();
-        
+
         int damageAmount = getAttackPoints();
         for (Enemy enemy : enemiesWithinRange) {
             sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), targetIds, null));
@@ -114,5 +115,10 @@ public class Rogue extends Player {
     @Override
     protected Integer getAddedDefense() {
         return 0;
+    }
+
+    @Override
+    public Integer getRange() {
+        return attackRange;
     }
 }

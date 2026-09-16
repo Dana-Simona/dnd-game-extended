@@ -119,4 +119,9 @@ public class Mage extends Player {
     protected Integer getAddedDefense() {
         return 0;
     }
+
+    @Override
+    public Integer getRange() {
+        return this.abilityRange;
+    }
 }

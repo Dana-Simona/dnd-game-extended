@@ -1,10 +1,10 @@
 import type { MotionProps } from 'framer-motion';
 import { useState, useCallback, useMemo } from 'react';
 
-import type {
-	Unit,
-	AllPlayerData,
-} from '../../../../constants/interfaces/player';
+import { runCameraShake, runThump } from './cameraAnimations';
+import type { Unit } from '../../../../constants/interfaces/unit';
+import { buildCameraMotion, buildCameraStyle } from './cameraStyleBuilders';
+import type { AllPlayerData } from '../../../../constants/interfaces/player';
 import {
 	CameraPreset,
 	type CameraCommand,
@@ -23,8 +23,6 @@ import {
 	resetCameraState,
 	focusTwoTargetsState,
 } from './cameraStateUpdaters';
-import { runCameraShake, runThump } from './cameraAnimations';
-import { buildCameraMotion, buildCameraStyle } from './cameraStyleBuilders';
 
 export interface UseCameraControlReturn {
 	triggerCamera: (command: CameraCommand) => Promise<void>;

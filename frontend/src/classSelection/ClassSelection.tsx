@@ -11,6 +11,7 @@ import AbilityDescription from './abilityDescription/AbilityDescription';
 import { ActionType } from '../constants/gameEvent';
 import { getUnitSpriteConfig } from '../utils/animation/spriteAnimations';
 import type { AllPlayerData } from '../constants/interfaces/player';
+import { UnitType } from '../constants/interfaces/unit';
 
 const getInitialClassIndex = (classes: CharacterDisplayOptions[]): number => {
 	const savedClass = sessionStorage.getItem('selectedClass');
@@ -34,7 +35,7 @@ const ClassSelection: React.FC = () => {
 					{
 						name: 'jonsnow',
 						class: ClassTypes.WARRIOR,
-						character: '@',
+						unitType: UnitType.PLAYER,
 					} as AllPlayerData,
 					ActionType.ABILITY_CAST,
 				),
@@ -57,7 +58,7 @@ const ClassSelection: React.FC = () => {
 					{
 						name: 'melisandre',
 						class: ClassTypes.MAGE,
-						character: '@',
+						unitType: UnitType.PLAYER,
 					} as AllPlayerData,
 					ActionType.ABILITY_CAST,
 				),
@@ -80,7 +81,7 @@ const ClassSelection: React.FC = () => {
 					{
 						name: 'aryastark',
 						class: ClassTypes.ROGUE,
-						character: '@',
+						unitType: UnitType.PLAYER,
 					} as AllPlayerData,
 					ActionType.ABILITY_CAST,
 				),
@@ -103,7 +104,7 @@ const ClassSelection: React.FC = () => {
 					{
 						name: 'ygritte',
 						class: ClassTypes.HUNTER,
-						character: '@',
+						unitType: UnitType.PLAYER,
 					} as AllPlayerData,
 					ActionType.ABILITY_CAST,
 				),
