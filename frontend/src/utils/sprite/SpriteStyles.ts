@@ -1,28 +1,38 @@
 import styled, { keyframes, css } from 'styled-components';
 
 interface StyledBoxProps {
-    $imagePath: string;
-    $width: number;
-    $height: number;
-    $totalWidth: number;
-    $frameCount: number;
-    $duration: number;
+	$imagePath: string;
+	$width: number;
+	$height: number;
+	$startFrame: number;
+	$frameCount: number;
+	$duration: number;
+	$loop: boolean;
 }
 
-const moveSprite = (totalWidth: number) => keyframes`
-    from { background-position-x: 0px; }
-    to { background-position-x: -${totalWidth}px; }
+const moveSprite = (
+	startFrame: number,
+	frameCount: number,
+	width: number,
+) => keyframes`
+    from { background-position-x: -${startFrame * width}px; }
+    to { background-position-x: -${(startFrame + frameCount) * width}px; }
 `;
 
 export const SpriteBox = styled.div<StyledBoxProps>`
-    width: ${(p) => p.$width}px;
-    height: ${(p) => p.$height}px;
-    background-image: url(${(p) => p.$imagePath});
-    background-repeat: no-repeat;
-    background-position-y: 0px;
-    image-rendering: pixelated;
-    animation: ${(p) =>
-        css`
-            ${moveSprite(p.$totalWidth)} ${p.$duration}s steps(${p.$frameCount}) infinite
-        `};
+	width: ${(p) => p.$width}px;
+	height: ${(p) => p.$height}px;
+	background-image: url(${(p) => p.$imagePath});
+	background-repeat: no-repeat;
+	background-position-y: 0px;
+	image-rendering: pixelated;
+	animation: ${(p) => css`
+		${moveSprite(
+			p.$startFrame,
+			p.$frameCount,
+			p.$width,
+		)} ${p.$duration}s steps(${p.$frameCount}) ${p.$loop
+			? 'infinite'
+			: 'forwards'}
+	`};
 `;

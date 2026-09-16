@@ -8,10 +8,12 @@ import {
 } from './LevelSelectionStyles';
 import LevelOption from './levelOption/LevelOption';
 import Sprite from '../utils/sprite/Sprite';
-import Idle from '../assets/The Female Adventurer - Free/Idle/Idle.png';
 import Button from '../utils/button/Button';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../constants/routes';
+import { useCharacter } from '../utils/characterContext/CharacterContext';
+import { getUnitSpriteConfig } from '../utils/animation/spriteAnimations';
+import { ActionType } from '../constants/gameEvent';
 
 const levelImages = import.meta.glob<{ default: string }>(
 	'/src/assets/levelThumbnails/level*.jpg',
@@ -28,6 +30,11 @@ const LEVELS = [1, 2, 3, 4, 5, 6].map((num) => {
 
 const LevelSelection: React.FC = () => {
 	const navigate = useNavigate();
+	const { character } = useCharacter();
+
+	const spriteProps = character
+		? getUnitSpriteConfig({ ...character, character: '@' }, ActionType.IDLE)
+		: null;
 
 	const onBackClick = () => {
 		navigate(ROUTES.CHARACTER_SELECTION);
@@ -53,15 +60,11 @@ const LevelSelection: React.FC = () => {
 						levelNum={level.id}
 					/>
 				))}
-				<CharacterWrapper>
-					<Sprite
-						imagePath={Idle}
-						width={48}
-						height={64}
-						frameCount={8}
-						fps={4}
-					/>
-				</CharacterWrapper>
+				{spriteProps && (
+					<CharacterWrapper>
+						<Sprite {...spriteProps} />
+					</CharacterWrapper>
+				)}
 			</Grid>
 		</Container>
 	);

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 interface StaticTileProps {
 	$imagePath: string;
@@ -13,6 +13,7 @@ interface PositionedSpriteProps {
 
 interface SpriteFlipProps {
 	$isFlipped?: boolean;
+	$isPlayer?: boolean;
 }
 
 export const SpriteTileWrapper = styled.div`
@@ -37,8 +38,18 @@ export const PositionedSpriteContainer = styled.div<PositionedSpriteProps>`
 `;
 
 export const SpriteFlipWrapper = styled.div<SpriteFlipProps>`
-	transform: scaleX(${(props) => (props.$isFlipped ? -1 : 1)});
+	transform-origin: bottom center;
 	transition: transform 0.15s ease-in-out;
+
+	${({ $isFlipped, $isPlayer }) => {
+		const scaleX = $isFlipped ? -1 : 1;
+		const baseScale = $isPlayer ? 0.6 : 1;
+		const finalScaleX = baseScale * scaleX;
+
+		return css`
+			transform: scale(${finalScaleX}, ${baseScale});
+		`;
+	}}
 `;
 
 export const StaticTile = styled.div<StaticTileProps>`

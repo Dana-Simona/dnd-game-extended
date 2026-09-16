@@ -5,13 +5,12 @@ import CharacterDisplay, {
 	type CharacterDisplayOptions,
 } from './characterSelection/characterDisplay/CharacterDisplay';
 import { Container } from './ClassSelectionStyles';
-import idleDownImg from '../assets/The Female Adventurer - Free/Idle/Idle_Down.png';
-import idleUpImg from '../assets/The Female Adventurer - Free/Idle/Idle_Right_Up.png';
-import idleRightImg from '../assets/The Female Adventurer - Free/Idle/Idle_Right_Down.png';
-import idleLeftImg from '../assets/The Female Adventurer - Free/Idle/Idle_Left_Down.png';
 import { ClassAbilityDescription, ClassTypes } from '../constants/classTypes';
 import { ButtonContainer } from './characterSelection/CharacterSelectionStyles';
 import AbilityDescription from './abilityDescription/AbilityDescription';
+import { ActionType } from '../constants/gameEvent';
+import { getUnitSpriteConfig } from '../utils/animation/spriteAnimations';
+import type { AllPlayerData } from '../constants/interfaces/player';
 
 const ClassSelection: React.FC = () => {
 	const navigate = useNavigate();
@@ -19,10 +18,18 @@ const ClassSelection: React.FC = () => {
 	const characterClasses: CharacterDisplayOptions[] = [
 		{
 			title: ClassTypes.WARRIOR,
-			imagePath: idleDownImg,
-			onConfirm: () => {
-				navigate(ClassTypes.WARRIOR);
+			spriteProps: {
+				...getUnitSpriteConfig(
+					{
+						name: 'jonsnow',
+						class: ClassTypes.WARRIOR,
+						character: '@',
+					} as AllPlayerData,
+					ActionType.ABILITY_CAST,
+				),
+				loop: true,
 			},
+			onConfirm: () => navigate(ClassTypes.WARRIOR),
 			description: (
 				<AbilityDescription
 					description={ClassAbilityDescription.WARRIOR}
@@ -31,10 +38,18 @@ const ClassSelection: React.FC = () => {
 		},
 		{
 			title: ClassTypes.MAGE,
-			imagePath: idleRightImg,
-			onConfirm: () => {
-				navigate(ClassTypes.MAGE);
+			spriteProps: {
+				...getUnitSpriteConfig(
+					{
+						name: 'melisandre',
+						class: ClassTypes.MAGE,
+						character: '@',
+					} as AllPlayerData,
+					ActionType.ABILITY_CAST,
+				),
+				loop: true,
 			},
+			onConfirm: () => navigate(ClassTypes.MAGE),
 			description: (
 				<AbilityDescription
 					description={ClassAbilityDescription.MAGE}
@@ -43,10 +58,18 @@ const ClassSelection: React.FC = () => {
 		},
 		{
 			title: ClassTypes.ROGUE,
-			imagePath: idleUpImg,
-			onConfirm: () => {
-				navigate(ClassTypes.ROGUE);
+			spriteProps: {
+				...getUnitSpriteConfig(
+					{
+						name: 'aryastark',
+						class: ClassTypes.ROGUE,
+						character: '@',
+					} as AllPlayerData,
+					ActionType.ABILITY_CAST,
+				),
+				loop: true,
 			},
+			onConfirm: () => navigate(ClassTypes.ROGUE),
 			description: (
 				<AbilityDescription
 					description={ClassAbilityDescription.ROGUE}
@@ -55,10 +78,18 @@ const ClassSelection: React.FC = () => {
 		},
 		{
 			title: ClassTypes.HUNTER,
-			imagePath: idleLeftImg,
-			onConfirm: () => {
-				navigate(ClassTypes.HUNTER);
+			spriteProps: {
+				...getUnitSpriteConfig(
+					{
+						name: 'ygritte',
+						class: ClassTypes.HUNTER,
+						character: '@',
+					} as AllPlayerData,
+					ActionType.ABILITY_CAST,
+				),
+				loop: true,
 			},
+			onConfirm: () => navigate(ClassTypes.HUNTER),
 			description: (
 				<AbilityDescription
 					description={ClassAbilityDescription.HUNTER}
@@ -66,6 +97,7 @@ const ClassSelection: React.FC = () => {
 			),
 		},
 	];
+
 	const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
 	const onBackClick = () => {

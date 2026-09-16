@@ -1,12 +1,7 @@
 import { ActionType } from '../../constants/gameEvent';
+import type { SpriteProps } from '../sprite/Sprite';
 
-export interface AnimMeta {
-	width: number;
-	height: number;
-	frameCount: number;
-	fps: number;
-	offsetY?: number;
-}
+type AnimMeta = Omit<SpriteProps, 'imagePath'>;
 
 export const DEFAULT_ANIM_META: AnimMeta = {
 	width: 24,
@@ -20,17 +15,68 @@ export const SPRITE_MANIFEST: Record<
 	Partial<Record<ActionType, AnimMeta>>
 > = {
 	player_warrior_jonsnow: {
-		[ActionType.IDLE]: { width: 48, height: 48, frameCount: 8, fps: 4 },
-		[ActionType.MOVE]: { width: 48, height: 48, frameCount: 6, fps: 8 },
+		[ActionType.IDLE]: {
+			width: 130,
+			height: 100,
+			frameCount: 8,
+			fps: 4,
+			loop: true,
+		},
+		[ActionType.MOVE]: { width: 130, height: 100, frameCount: 6, fps: 4 },
 		[ActionType.MELEE]: {
-			width: 48,
-			height: 48,
+			width: 130,
+			height: 100,
 			frameCount: 11,
-			fps: 12,
+			fps: 4,
+		},
+	},
+	player_mage_melisandre: {
+		[ActionType.IDLE]: {
+			width: 130,
+			height: 100,
+			frameCount: 8,
+			fps: 4,
+			loop: true,
+		},
+		[ActionType.MOVE]: { width: 130, height: 100, frameCount: 6, fps: 4 },
+		[ActionType.MELEE]: {
+			width: 130,
+			height: 100,
+			frameCount: 8,
+			fps: 4,
+		},
+		[ActionType.ABILITY_CAST]: {
+			width: 130,
+			height: 100,
+			frameCount: 12,
+			fps: 4,
+			loopStartFrame: 2,
+		},
+	},
+	player_mage_thorosofmyr: {
+		[ActionType.IDLE]: {
+			width: 130,
+			height: 100,
+			frameCount: 8,
+			fps: 4,
+			loop: true,
+		},
+		[ActionType.MOVE]: { width: 130, height: 100, frameCount: 6, fps: 4 },
+		[ActionType.MELEE]: {
+			width: 130,
+			height: 100,
+			frameCount: 8,
+			fps: 4,
 		},
 	},
 	enemy_knight: {
-		[ActionType.IDLE]: { width: 24, height: 32, frameCount: 11, fps: 12 },
+		[ActionType.IDLE]: {
+			width: 24,
+			height: 32,
+			frameCount: 11,
+			fps: 12,
+			loop: true,
+		},
 		[ActionType.MOVE]: { width: 22, height: 32, frameCount: 6, fps: 13 },
 		[ActionType.DIE]: {
 			width: 40,
@@ -60,6 +106,7 @@ export const SPRITE_MANIFEST: Record<
 			frameCount: 6,
 			fps: 12,
 			offsetY: 36,
+			loop: true,
 		},
 		[ActionType.MOVE]: {
 			width: 100,
@@ -97,6 +144,7 @@ export const SPRITE_MANIFEST: Record<
 			frameCount: 6,
 			fps: 12,
 			offsetY: 36,
+			loop: true,
 		},
 		[ActionType.MOVE]: {
 			width: 100,

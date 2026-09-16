@@ -52,7 +52,7 @@ export const ArrowButton = styled.button`
 `;
 
 export const SpriteScaler = styled.div`
-	transform: scale(8);
+	transform: scale(4);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -83,11 +83,15 @@ export const CharacterWrapper = styled.div`
 export const MainCharacter = styled.div`
 	position: relative;
 	z-index: 2;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding-bottom: 10%;
 `;
 
 export const Reflection = styled.div`
 	position: absolute;
-	top: 135%;
+	top: 160%;
 	left: 0;
 	width: 100%;
 	z-index: 10;
@@ -98,13 +102,15 @@ export const Reflection = styled.div`
 
 	mask-image: linear-gradient(
 		to bottom,
-		rgba(0, 0, 0, 1) 0%,
-		rgba(0, 0, 0, 0) 80%
+		rgba(0, 0, 0, 0) 0%,
+		rgba(0, 0, 0, 0.1) 50%,
+		rgba(0, 0, 0, 0.5) 100%
 	);
 	-webkit-mask-image: linear-gradient(
 		to bottom,
-		rgba(0, 0, 0, 1) 0%,
-		rgba(0, 0, 0, 0) 80%
+		rgba(0, 0, 0, 0) 0%,
+		rgba(0, 0, 0, 0.1) 50%,
+		rgba(0, 0, 0, 0.5) 100%
 	);
 `;
 

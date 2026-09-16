@@ -21,6 +21,8 @@ const UnitTile: React.FC<UnitTileProps> = ({
 	offsetY,
 	facing = 'right',
 }) => {
+	const isPlayer = unit?.character === '@';
+
 	return (
 		<SpriteTileWrapper>
 			<PositionedSpriteContainer
@@ -31,11 +33,14 @@ const UnitTile: React.FC<UnitTileProps> = ({
 					<HealthBar
 						currentHp={unit.currentHealth}
 						maxHp={unit.health}
-						isEnemy={unit.character !== '@'}
+						isEnemy={!isPlayer}
 						offsetY={offsetY}
 					/>
 				)}
-				<SpriteFlipWrapper $isFlipped={facing === 'left'}>
+				<SpriteFlipWrapper
+					$isFlipped={facing === 'left'}
+					$isPlayer={isPlayer}
+				>
 					<Sprite {...spriteProps} />
 				</SpriteFlipWrapper>
 			</PositionedSpriteContainer>

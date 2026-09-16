@@ -35,16 +35,18 @@ export const Grid = styled.div`
 
 export const CharacterWrapper = styled.div`
 	position: absolute;
-	bottom: 9%;
+	bottom: -5%;
+	transform-origin: bottom;
 	left: 50%;
-	transform: scale(10) scaleX(-1);
+	transform: scale(5) scaleX(-1);
 	z-index: 10;
 	pointer-events: none;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	filter: brightness(0) drop-shadow(-0.5px 0px 0px #9eaaa9)
-		drop-shadow(1px 0px 0px #ffcdf4) drop-shadow(-0.5px 0px 1px #f4fffd7c) drop-shadow(1px 0px 1px #ffffff7a) blur(0.5px);
+		drop-shadow(1px 0px 0px #ffcdf4) drop-shadow(-0.5px 0px 1px #f4fffd7c)
+		drop-shadow(1px 0px 1px #ffffff7a) blur(0.5px);
 `;
 
 export const ButtonContainer = styled.div`

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ButtonContainer, DisplayContainer } from './CharacterSelectionStyles';
-import idleRightImg from '../../assets/The Female Adventurer - Free/Idle/Idle_Right_Down.png';
 import CharacterDisplay, {
 	type CharacterDisplayOptions,
 } from './characterDisplay/CharacterDisplay';
@@ -9,6 +8,8 @@ import type { AllPlayerData } from '../../constants/interfaces/player';
 import Button from '../../utils/button/Button';
 import Stats from './Stats/Stats';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
+import { ActionType } from '../../constants/gameEvent';
+import { getUnitSpriteConfig } from '../../utils/animation/spriteAnimations';
 
 export type Character = AllPlayerData & CharacterDisplayOptions;
 
@@ -45,15 +46,15 @@ export const CharacterSelection: React.FC = () => {
 			.then((data: AllPlayerData[]) => {
 				const enrichedCharacters: Character[] = data.map(
 					(player, index) => {
+						const spriteConfig = getUnitSpriteConfig(
+							{ ...player, character: '@' },
+							ActionType.IDLE,
+						);
+
 						return {
 							...player,
+							spriteProps: spriteConfig,
 							title: player.name,
-							imagePath: idleRightImg,
-							//TODO: the character animations will be fetched dynamically:
-							// imagePath: new URL(
-							// 	`../../assets/player/${player.class.toLowerCase()}/${player.name.toLowerCase()}/idle.png`,
-							// 	import.meta.url,
-							// ).href,
 							onConfirm: () =>
 								handleConfirmSelection(player, index),
 							description: (

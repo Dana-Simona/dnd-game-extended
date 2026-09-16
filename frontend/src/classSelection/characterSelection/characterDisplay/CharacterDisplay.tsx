@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
-import Sprite from '../../../utils/sprite/Sprite';
+import Sprite, { type SpriteProps } from '../../../utils/sprite/Sprite';
 import Button from '../../../utils/button/Button';
 import clickSoundFile from '../../../assets/audio/menu/page_transition.mp3';
 import useSound from '../../../utils/useSound/useSound';
@@ -22,9 +22,9 @@ const CONFIRM = 'Confirm';
 
 export interface CharacterDisplayOptions {
 	title: string;
-	imagePath: string;
 	onConfirm: () => void;
 	description?: React.ReactElement;
+	spriteProps: SpriteProps;
 }
 
 interface Props<T extends CharacterDisplayOptions> {
@@ -221,25 +221,13 @@ export const CharacterDisplay = <T extends CharacterDisplayOptions>({
 										<CharacterWrapper>
 											<MainCharacter>
 												<Sprite
-													imagePath={
-														currentOption.imagePath
-													}
-													width={48}
-													height={64}
-													frameCount={8}
-													fps={4}
+													{...currentOption.spriteProps}
 												/>
 											</MainCharacter>
 
 											<Reflection>
 												<Sprite
-													imagePath={
-														currentOption.imagePath
-													}
-													width={48}
-													height={64}
-													frameCount={8}
-													fps={4}
+													{...currentOption.spriteProps}
 												/>
 											</Reflection>
 										</CharacterWrapper>

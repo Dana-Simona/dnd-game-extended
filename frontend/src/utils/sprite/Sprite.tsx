@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { SpriteBox } from './SpriteStyles';
 
 export interface SpriteProps {
@@ -8,6 +8,8 @@ export interface SpriteProps {
 	frameCount: number;
 	fps?: number;
 	offsetY?: number;
+	loop?: boolean;
+	loopStartFrame?: number;
 }
 
 const Sprite: React.FC<SpriteProps> = ({
@@ -16,19 +18,42 @@ const Sprite: React.FC<SpriteProps> = ({
 	height,
 	frameCount,
 	fps = 8,
+	loop = false,
+	loopStartFrame = 0,
 }) => {
-	const totalWidth = width * frameCount;
-	const duration = frameCount / fps;
+	const [isLoopingPhase, setIsLoopingPhase] = useState(false);
+
+	useEffect(() => {
+		setIsLoopingPhase(false);
+	}, [imagePath, loopStartFrame]);
+
+	const hasCustomLoop = loop && loopStartFrame > 0;
+	const isLooping = isLoopingPhase && hasCustomLoop;
+
+	const currentStartFrame = isLooping ? loopStartFrame : 0;
+	const currentFrameCount = isLooping
+		? frameCount - loopStartFrame
+		: frameCount;
+	const duration = currentFrameCount / fps;
+	const isInfinite = loop && (!hasCustomLoop || isLoopingPhase);
+
+	const handleAnimationEnd = () => {
+		if (hasCustomLoop && !isLoopingPhase) {
+			setIsLoopingPhase(true);
+		}
+	};
 
 	return (
 		<SpriteBox
-			key={`${imagePath}-${frameCount}`}
+			key={`${imagePath}-${currentStartFrame}-${currentFrameCount}`}
 			$imagePath={imagePath}
 			$width={width}
 			$height={height}
-			$totalWidth={totalWidth}
-			$frameCount={frameCount}
+			$startFrame={currentStartFrame}
+			$frameCount={currentFrameCount}
 			$duration={duration}
+			$loop={isInfinite}
+			onAnimationEnd={handleAnimationEnd}
 		/>
 	);
 };

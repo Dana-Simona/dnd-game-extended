@@ -207,6 +207,10 @@ export const setupAnimations = (controllers: Controllers) => {
 			if (!event.sourceId) return;
 			const attackerId = event.targetIds?.[0];
 			await Promise.all([
+				controllers.playUnitAnimation(
+					event.sourceId,
+					ActionType.TAKE_DAMAGE,
+				),
 				controllers.spawnVFX(
 					VfxTypes.STAT_DAMAGE,
 					[event.sourceId],
@@ -229,11 +233,17 @@ export const setupAnimations = (controllers: Controllers) => {
 		ActionType.TAKE_DAMAGE_FROM_ABILITY,
 		async (event: GameEvent) => {
 			if (!event.sourceId) return;
-			await controllers.spawnVFX(
-				VfxTypes.STAT_DAMAGE,
-				[event.sourceId],
-				event.amount,
-			);
+			await Promise.all([
+				controllers.playUnitAnimation(
+					event.sourceId,
+					ActionType.TAKE_DAMAGE,
+				),
+				controllers.spawnVFX(
+					VfxTypes.STAT_DAMAGE,
+					[event.sourceId],
+					event.amount,
+				),
+			]);
 		},
 	);
 
