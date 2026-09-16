@@ -39,6 +39,7 @@ public abstract class Player extends Unit {
         addAttackPoints(overallAddedAttack);
         addDefensePoints(overallAddedDefense);
         this.sendMessage(this.getName() + " reached level " + level + ": +" + overallAddedHealth + " Health, +" + overallAddedAttack + " Attack, +" + overallAddedDefense + " Defense");
+        this.sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.LEVEL_UP, this.getId(), this.level));
     }
 
     private Integer calculateSumToAdd(Integer addedIndividually, Integer addedDefaultly) {
