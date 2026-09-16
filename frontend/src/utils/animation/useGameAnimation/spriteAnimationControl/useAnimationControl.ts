@@ -84,7 +84,7 @@ export const useAnimationControl = (
 			const isMoveAction = action === ActionType.MOVE;
 
 			if (isMoveAction) {
-				const earlyResolveMs = Math.floor(duration * 0.6);
+				const earlyResolveMs = Math.floor(duration * 0.5);
 				return new Promise<void>((resolve) => {
 					const timer = setTimeout(resolve, earlyResolveMs);
 					animPromise.then(() => {
