@@ -41,6 +41,12 @@ export const CharacterSelection: React.FC = () => {
 	};
 
 	useEffect(() => {
+		if (classType) {
+			sessionStorage.setItem('selectedClass', classType);
+		}
+	}, [classType]);
+
+	useEffect(() => {
 		fetch('http://localhost:8080/api/players')
 			.then((res) => res.json())
 			.then((data: AllPlayerData[]) => {

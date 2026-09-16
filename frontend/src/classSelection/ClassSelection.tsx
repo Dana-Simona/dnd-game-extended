@@ -12,6 +12,17 @@ import { ActionType } from '../constants/gameEvent';
 import { getUnitSpriteConfig } from '../utils/animation/spriteAnimations';
 import type { AllPlayerData } from '../constants/interfaces/player';
 
+const getInitialClassIndex = (classes: CharacterDisplayOptions[]): number => {
+	const savedClass = sessionStorage.getItem('selectedClass');
+	if (!savedClass) return 0;
+
+	const savedIndex = classes.findIndex(
+		(c) => c.title.toLowerCase() === savedClass.toLowerCase(),
+	);
+
+	return savedIndex !== -1 ? savedIndex : 0;
+};
+
 const ClassSelection: React.FC = () => {
 	const navigate = useNavigate();
 
@@ -29,7 +40,10 @@ const ClassSelection: React.FC = () => {
 				),
 				loop: true,
 			},
-			onConfirm: () => navigate(ClassTypes.WARRIOR),
+			onConfirm: () => {
+				sessionStorage.setItem('selectedClass', ClassTypes.WARRIOR);
+				navigate(ClassTypes.WARRIOR);
+			},
 			description: (
 				<AbilityDescription
 					description={ClassAbilityDescription.WARRIOR}
@@ -49,7 +63,10 @@ const ClassSelection: React.FC = () => {
 				),
 				loop: true,
 			},
-			onConfirm: () => navigate(ClassTypes.MAGE),
+			onConfirm: () => {
+				sessionStorage.setItem('selectedClass', ClassTypes.MAGE);
+				navigate(ClassTypes.MAGE);
+			},
 			description: (
 				<AbilityDescription
 					description={ClassAbilityDescription.MAGE}
@@ -69,7 +86,10 @@ const ClassSelection: React.FC = () => {
 				),
 				loop: true,
 			},
-			onConfirm: () => navigate(ClassTypes.ROGUE),
+			onConfirm: () => {
+				sessionStorage.setItem('selectedClass', ClassTypes.ROGUE);
+				navigate(ClassTypes.ROGUE);
+			},
 			description: (
 				<AbilityDescription
 					description={ClassAbilityDescription.ROGUE}
@@ -89,7 +109,10 @@ const ClassSelection: React.FC = () => {
 				),
 				loop: true,
 			},
-			onConfirm: () => navigate(ClassTypes.HUNTER),
+			onConfirm: () => {
+				sessionStorage.setItem('selectedClass', ClassTypes.HUNTER);
+				navigate(ClassTypes.HUNTER);
+			},
 			description: (
 				<AbilityDescription
 					description={ClassAbilityDescription.HUNTER}
@@ -98,7 +121,20 @@ const ClassSelection: React.FC = () => {
 		},
 	];
 
-	const [selectedIndex, setSelectedIndex] = useState<number>(0);
+	const [selectedIndex, setSelectedIndex] = useState<number>(() =>
+		getInitialClassIndex(characterClasses),
+	);
+
+	const handleSetSelectedIndex = (action: React.SetStateAction<number>) => {
+		const nextIndex =
+			typeof action === 'function' ? action(selectedIndex) : action;
+		setSelectedIndex(nextIndex);
+
+		const targetClass = characterClasses[nextIndex]?.title;
+		if (targetClass) {
+			sessionStorage.setItem('selectedClass', targetClass);
+		}
+	};
 
 	const onBackClick = () => {
 		navigate('..', { relative: 'path' });
@@ -116,7 +152,7 @@ const ClassSelection: React.FC = () => {
 			</ButtonContainer>
 			<CharacterDisplay
 				options={characterClasses}
-				setSelectedIndex={setSelectedIndex}
+				setSelectedIndex={handleSetSelectedIndex}
 				selectedIndex={selectedIndex}
 			/>
 		</Container>
