@@ -77,6 +77,13 @@ export const removeActiveState = (
 	return next;
 };
 
+interface ActiveAnimation {
+	timer: ReturnType<typeof setTimeout>;
+	resolve: () => void;
+}
+
+const runningAnimations = new Map<string, ActiveAnimation>();
+
 export const triggerUnitAnim = (
 	unitId: string,
 	action: string,
@@ -85,23 +92,47 @@ export const triggerUnitAnim = (
 	setVisuals: React.Dispatch<React.SetStateAction<Record<string, Position>>>,
 	setStates: React.Dispatch<React.SetStateAction<Record<string, string>>>,
 	isOffScreen: boolean = false,
-): Promise<void> =>
-	new Promise((resolve) => {
-		if (targetPos) {
-			setVisuals((prev) => updateSinglePosition(prev, unitId, targetPos));
-		}
+): Promise<void> => {
+	if (targetPos) {
+		setVisuals((prev) => updateSinglePosition(prev, unitId, targetPos));
+	}
 
-		if (isOffScreen) {
-			resolve();
-			return;
-		}
+	if (isOffScreen) {
+		return Promise.resolve();
+	}
 
+	const existing = runningAnimations.get(unitId);
+	if (existing) {
+		clearTimeout(existing.timer);
+		existing.resolve();
+		runningAnimations.delete(unitId);
+	}
+
+	const startAnimation = (resolve: () => void) => {
 		setStates((prev) => ({ ...prev, [unitId]: action }));
-		setTimeout(() => {
+
+		const timer = setTimeout(() => {
 			setStates((prev) => removeActiveState(prev, unitId));
+			runningAnimations.delete(unitId);
 			resolve();
 		}, duration);
+
+		runningAnimations.set(unitId, { timer, resolve });
+	};
+
+	if (existing) {
+		setStates((prev) => removeActiveState(prev, unitId));
+		return new Promise((resolve) => {
+			requestAnimationFrame(() => {
+				startAnimation(resolve);
+			});
+		});
+	}
+
+	return new Promise((resolve) => {
+		startAnimation(resolve);
 	});
+};
 
 export const buildTargetPositions = (
 	player: AllPlayerData | null,

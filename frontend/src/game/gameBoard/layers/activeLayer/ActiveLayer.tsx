@@ -1,9 +1,10 @@
 import React from 'react';
+
 import Tile from '../../Tile/Tile';
-import type { Unit } from '../../../../constants/interfaces/player';
-import type { UnitTransform } from '../../../../utils/animation/useGameAnimation/unitControl/unitControl';
-import { ActiveLayerContainer, AnimatedUnitWrapper } from './ActiveLayerStyles';
 import type { ActionType } from '../../../../constants/gameEvent';
+import type { Unit } from '../../../../constants/interfaces/player';
+import { ActiveLayerContainer, AnimatedUnitWrapper } from './ActiveLayerStyles';
+import type { UnitTransform } from '../../../../utils/animation/useGameAnimation/unitControl/unitControl';
 
 interface Props {
 	units: Unit[];
@@ -14,6 +15,8 @@ interface Props {
 	visualPositions?: Record<string, { x: number; y: number }>;
 	unitTransforms?: Record<string, UnitTransform>;
 }
+
+const PLAYER_MOVEMENT_DELAY = 0.3;
 
 const ActiveLayer: React.FC<Props> = React.memo(
 	({
@@ -28,11 +31,11 @@ const ActiveLayer: React.FC<Props> = React.memo(
 		return (
 			<ActiveLayerContainer>
 				{units.map((unit, index) => {
+					const isPlayer =
+						unit.character === '@' || unit.id === characterId;
+
 					const unitId =
-						unit.id ||
-						(unit.character === '@'
-							? characterId
-							: `unit-${index}`);
+						unit.id || (isPlayer ? characterId : `unit-${index}`);
 
 					const currentX = visualPositions[unitId]?.x ?? unit.x;
 					const currentY = visualPositions[unitId]?.y ?? unit.y;
@@ -46,11 +49,13 @@ const ActiveLayer: React.FC<Props> = React.memo(
 					const targetY = currentY * tileSize + transform.offset.y;
 					const targetOpacity = transform.opacity ?? 1;
 
+					const moveDelay = isPlayer ? PLAYER_MOVEMENT_DELAY : 0;
+
 					return (
 						<AnimatedUnitWrapper
 							key={unitId}
 							$tileSize={tileSize}
-							$zIndex={unitId === characterId ? 10 : 1}
+							$zIndex={isPlayer ? 10 : 1}
 							initial={{
 								x: targetX,
 								y: targetY,
@@ -66,11 +71,13 @@ const ActiveLayer: React.FC<Props> = React.memo(
 									type: 'spring',
 									stiffness: 300,
 									damping: 28,
+									delay: moveDelay,
 								},
 								y: {
 									type: 'spring',
 									stiffness: 300,
 									damping: 28,
+									delay: moveDelay,
 								},
 								opacity: { duration: 0.2, ease: 'easeInOut' },
 							}}

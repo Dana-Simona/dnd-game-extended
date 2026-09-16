@@ -8,6 +8,8 @@ interface StyledBoxProps {
 	$frameCount: number;
 	$duration: number;
 	$loop: boolean;
+	$shadow?: boolean;
+	$offsetY?: number;
 }
 
 const moveSprite = (
@@ -20,6 +22,7 @@ const moveSprite = (
 `;
 
 export const SpriteBox = styled.div<StyledBoxProps>`
+	position: relative;
 	width: ${(p) => p.$width}px;
 	height: ${(p) => p.$height}px;
 	background-image: url(${(p) => p.$imagePath});
@@ -35,4 +38,27 @@ export const SpriteBox = styled.div<StyledBoxProps>`
 			? 'infinite'
 			: 'forwards'}
 	`};
+
+	${(p) =>
+		p.$shadow &&
+		css`
+			&::before {
+				content: '';
+				position: absolute;
+				bottom: ${(p.$offsetY ?? 0) - 2}px;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 40px;
+				height: 20px;
+				background: radial-gradient(
+					ellipse at center,
+					rgba(58, 58, 35, 0.5) 0%,
+					rgba(58, 58, 35, 0) 90%
+				);
+				filter: blur(2px);
+				border-radius: 50%;
+				z-index: -1;
+				pointer-events: none;
+			}
+		`}
 `;

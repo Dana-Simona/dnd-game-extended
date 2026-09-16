@@ -109,23 +109,29 @@ export const setupAnimations = (controllers: Controllers) => {
 				event.targetIds.length === 0
 			)
 				return;
+
 			await controllers.triggerCamera({
 				type: CameraPreset.ZOOM_IN,
 				targetIds: [event.sourceId],
 			});
+
 			await controllers.playUnitAnimation(
 				event.sourceId,
 				ActionType.ABILITY_CAST,
 			);
-			await controllers.triggerCamera({
-				type: CameraPreset.FOCUS_TARGET,
-				targetIds: event.targetIds,
-			});
-			await controllers.spawnVFX(
-				VfxTypes.ABILITY_CAST,
-				event.targetIds,
-				event.amount,
-			);
+
+			for (const targetId of event.targetIds) {
+				await controllers.triggerCamera({
+					type: CameraPreset.FOCUS_TARGET,
+					targetIds: [targetId],
+				});
+
+				await controllers.spawnVFX(
+					VfxTypes.ABILITY_CAST,
+					[targetId],
+					event.amount,
+				);
+			}
 		},
 	);
 

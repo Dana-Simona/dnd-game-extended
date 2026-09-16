@@ -34,10 +34,15 @@ public class Mage extends Player {
         int hits = 0;
         List<Enemy> enemies = getEnemiesInRange(getPosition(), abilityRange);
 
+        List<String> enemyIds = enemies.stream()
+                .map(Enemy::getId)
+                .toList();
+
+        sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), enemyIds, null));
+
         while (hits < this.hitsCount && !enemies.isEmpty()) {
             int randomEnemyPlace = (int) (Math.random() * enemies.size());
             Enemy randomEnemy = enemies.get(randomEnemyPlace);
-            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), randomEnemy.getId(), null));
 
             randomEnemy.takeDamageFromAbility(this.spellPower, this.getName());
             handleEnemyIfDead(randomEnemy);

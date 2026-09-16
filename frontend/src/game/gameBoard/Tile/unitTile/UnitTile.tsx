@@ -41,7 +41,7 @@ const UnitTile: React.FC<UnitTileProps> = ({
 					$isFlipped={facing === 'left'}
 					$isPlayer={isPlayer}
 				>
-					<Sprite {...spriteProps} />
+					<Sprite {...spriteProps} shadow/>
 				</SpriteFlipWrapper>
 			</PositionedSpriteContainer>
 		</SpriteTileWrapper>
