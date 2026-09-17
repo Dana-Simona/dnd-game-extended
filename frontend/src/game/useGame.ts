@@ -56,6 +56,7 @@ export const useGame = (level?: string) => {
 	const {
 		isAnimating,
 		activeUnitStates,
+		activeUnitPhases,
 		visualPositions,
 		unitTransforms,
 		runTurn,
@@ -150,6 +151,7 @@ export const useGame = (level?: string) => {
 		actionCount,
 		enemies,
 		activeUnitStates,
+		activeUnitPhases,
 		visualPositions,
 		unitTransforms,
 		cameraMotion,

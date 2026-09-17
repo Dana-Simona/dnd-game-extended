@@ -1,15 +1,15 @@
 import { useState, useCallback, useEffect } from 'react';
 
 import { useVfxControl } from './useVfxControl';
-import { useUnitControl } from './unitControl/useUnitControl';
 import { setupAnimations } from '../setupAnimations';
+import { playTurnSequence } from '../playTurnSequence';
+import { useUnitControl } from './unitControl/useUnitControl';
 import type { GameEvent } from '../../../constants/gameEvent';
+import type { Unit } from '../../../constants/interfaces/unit';
 import { useCameraControl } from './cameraControl/useCameraControl';
 import type { AllPlayerData } from '../../../constants/interfaces/player';
-import { useAnimationControl } from './spriteAnimationControl/useAnimationControl';
 import { buildTargetPositions } from './spriteAnimationControl/animationUtils';
-import { playTurnSequence } from '../playTurnSequence';
-import type { Unit } from '../../../constants/interfaces/unit';
+import { useAnimationControl } from './spriteAnimationControl/useAnimationControl';
 
 export const useGameAnimation = (
 	units: Unit[],
@@ -21,6 +21,7 @@ export const useGameAnimation = (
 
 	const {
 		activeUnitStates,
+		activeUnitPhases,
 		visualPositions,
 		setVisualPositions,
 		targetPositionsRef,
@@ -99,6 +100,7 @@ export const useGameAnimation = (
 	return {
 		isAnimating,
 		activeUnitStates,
+		activeUnitPhases,
 		visualPositions,
 		unitTransforms,
 		cameraMotion,

@@ -4,6 +4,7 @@ import type { Position } from '../cameraControl/cameraControl';
 import type { ActionType, GameEvent } from '../../../../constants/gameEvent';
 import type { AllPlayerData } from '../../../../constants/interfaces/player';
 import type { Unit } from '../../../../constants/interfaces/unit';
+import { AnimationPhase } from '../../../sprite/Sprite';
 
 export const combinePlayerAndUnits = (
 	player: Unit | AllPlayerData | null,
@@ -53,11 +54,21 @@ export const findUnitPosition = (
 export const calculateAnimDuration = (
 	unit: Unit | undefined,
 	action: ActionType,
+	phase: AnimationPhase = AnimationPhase.FULL,
 ): number => {
 	const config = getUnitSpriteConfig(unit, action);
 	const fps = config?.fps || 8;
-	const frameCount = config?.frameCount || 4;
-	return (frameCount / fps) * 1000;
+	const totalFrames = config?.frameCount || 4;
+	const impactFrame = config?.impactFrame;
+
+	let framesToPlay = totalFrames;
+	if (phase === AnimationPhase.WINDUP && impactFrame !== undefined) {
+		framesToPlay = impactFrame;
+	} else if (phase === AnimationPhase.FOLLOW_THROUGH && impactFrame !== undefined) {
+		framesToPlay = totalFrames - impactFrame;
+	}
+
+	return (framesToPlay / fps) * 1000;
 };
 
 export const updateSinglePosition = (
@@ -75,6 +86,15 @@ export const removeActiveState = (
 	return next;
 };
 
+export const removeActivePhase = (
+	prev: Record<string, AnimationPhase>,
+	unitId: string,
+) => {
+	const next = { ...prev };
+	delete next[unitId];
+	return next;
+};
+
 interface ActiveAnimation {
 	timer: ReturnType<typeof setTimeout>;
 	resolve: () => void;
@@ -85,10 +105,14 @@ const runningAnimations = new Map<string, ActiveAnimation>();
 export const triggerUnitAnim = (
 	unitId: string,
 	action: string,
+	phase: AnimationPhase,
 	duration: number,
 	targetPos: Position | undefined,
 	setVisuals: React.Dispatch<React.SetStateAction<Record<string, Position>>>,
 	setStates: React.Dispatch<React.SetStateAction<Record<string, string>>>,
+	setPhases: React.Dispatch<
+		React.SetStateAction<Record<string, AnimationPhase>>
+	>,
 	isOffScreen: boolean = false,
 ): Promise<void> => {
 	if (targetPos) {
@@ -108,9 +132,13 @@ export const triggerUnitAnim = (
 
 	const startAnimation = (resolve: () => void) => {
 		setStates((prev) => ({ ...prev, [unitId]: action }));
+		setPhases((prev) => ({ ...prev, [unitId]: phase }));
 
 		const timer = setTimeout(() => {
-			setStates((prev) => removeActiveState(prev, unitId));
+			if (phase === AnimationPhase.FULL|| phase === AnimationPhase.FOLLOW_THROUGH) {
+				setStates((prev) => removeActiveState(prev, unitId));
+				setPhases((prev) => removeActivePhase(prev, unitId));
+			}
 			runningAnimations.delete(unitId);
 			resolve();
 		}, duration);
@@ -120,6 +148,7 @@ export const triggerUnitAnim = (
 
 	if (existing) {
 		setStates((prev) => removeActiveState(prev, unitId));
+		setPhases((prev) => removeActivePhase(prev, unitId));
 		return new Promise((resolve) => {
 			requestAnimationFrame(() => {
 				startAnimation(resolve);

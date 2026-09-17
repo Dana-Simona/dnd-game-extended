@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import HealthBar from './healthBar/HealthBar';
-import Sprite from '../../../../utils/sprite/Sprite';
+import Sprite, { type AnimationPhase } from '../../../../utils/sprite/Sprite';
 import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
 import {
 	PositionedSpriteContainer,
@@ -14,6 +14,7 @@ import type { Monster } from '../../../../constants/interfaces/monster';
 interface UnitTileProps {
 	unit?: Unit;
 	spriteProps: any;
+	phase?: AnimationPhase;
 	offsetY: number;
 	facing?: 'left' | 'right';
 	visionRange?: number;
@@ -31,6 +32,7 @@ const ringAnimation = {
 const UnitTile: React.FC<UnitTileProps> = ({
 	unit,
 	spriteProps,
+	phase,
 	offsetY,
 	facing = 'right',
 	visionRange: visionRangeProp,
@@ -52,6 +54,13 @@ const UnitTile: React.FC<UnitTileProps> = ({
 		(isPlayer
 			? ((unit as any)?.range ?? (unit as any)?.abilityRange)
 			: undefined);
+
+	console.log('UnitTile Render:', {
+		unitId: unit?.id,
+		phase,
+		activeSpritePath: spriteProps?.imagePath,
+		impactFrame: spriteProps?.impactFrame,
+	});
 
 	return (
 		<SpriteTileWrapper
@@ -94,6 +103,7 @@ const UnitTile: React.FC<UnitTileProps> = ({
 				>
 					<Sprite
 						{...spriteProps}
+						phase={phase}
 						shadow
 					/>
 				</SpriteFlipWrapper>

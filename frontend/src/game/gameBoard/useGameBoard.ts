@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
-import type { Unit } from '../../constants/interfaces/player';
+
+import type { Unit } from '../../constants/interfaces/unit';
 
 export interface Position {
 	x: number;

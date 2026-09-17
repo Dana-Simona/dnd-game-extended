@@ -1,6 +1,7 @@
 import { animationRegistry } from './animationRegistry';
 import { VfxTypes } from './useGameAnimation/useVfxControl';
 import { ActionType, type GameEvent } from '../../constants/gameEvent';
+import type { PlayUnitAnimationFn } from './useGameAnimation/spriteAnimationControl/useAnimationControl';
 import {
 	CameraPreset,
 	type CameraCommand,
@@ -9,9 +10,10 @@ import {
 	UnitPreset,
 	type TriggerUnit,
 } from './useGameAnimation/unitControl/unitControl';
+import { AnimationPhase } from '../sprite/Sprite';
 
 export interface Controllers {
-	playUnitAnimation: (unitId: string, anim: ActionType) => Promise<void>;
+	playUnitAnimation: PlayUnitAnimationFn;
 	spawnVFX: (
 		type: VfxTypes,
 		targetIds: string[],
@@ -62,21 +64,34 @@ export const setupAnimations = (controllers: Controllers) => {
 			}),
 		]);
 
-		const spriteAnimationPromise = controllers.playUnitAnimation(
+		await controllers.playUnitAnimation(
 			event.sourceId,
 			ActionType.MELEE,
+			AnimationPhase.WINDUP,
 		);
 
-		const dashPromise = controllers.triggerUnit({
-			type: UnitPreset.DASH,
-			sourceId: event.sourceId,
-			targetId,
-			distancePx: 30,
-			durationMs: 180,
-			delayMs: 300,
-		});
+		await Promise.all([
+			new Promise((resolve) => setTimeout(resolve, 1000)),
+		]);
+		await controllers.playUnitAnimation(
+			event.sourceId,
+			ActionType.MELEE,
+			AnimationPhase.FOLLOW_THROUGH,
+		);
 
-		await Promise.all([spriteAnimationPromise, dashPromise]);
+		//face each other
+		//attacker - start animation
+		//attacker - on impact frame - pause animation
+		//attacker - on impact frame - camera shake
+		//defender - on impact frame - play take damage animation
+		//defender - on impact frame - spawn directional particles
+		//defender - recoil - slide back (ease out)
+		//defender - recoil - squash unit
+		//defender - recovery - slide back to position
+
+		//damage taken section
+		//defender - spawn damage taken stat
+		//defender - health bar drop (with yellow ghost)
 	});
 
 	animationRegistry.register(ActionType.COMBAT, async (event: GameEvent) => {

@@ -38,12 +38,25 @@ export const SPRITE_MANIFEST: Record<
 			fps: 5,
 			loop: true,
 		},
-		[ActionType.MOVE]: { width: 130, height: 100, frameCount: 6, fps: 6 },
+		[ActionType.MOVE]: {
+			width: 130,
+			height: 100,
+			frameCount: 6,
+			fps: 6,
+		},
 		[ActionType.MELEE]: {
 			width: 130,
 			height: 100,
 			frameCount: 8,
 			fps: 4,
+			impactFrame: 3,
+		},
+		[ActionType.TAKE_DAMAGE]: {
+			width: 130,
+			height: 100,
+			frameCount: 7,
+			fps: 4,
+			impactFrame: 3,
 		},
 		[ActionType.ABILITY_CAST]: {
 			width: 130,
@@ -136,6 +149,7 @@ export const SPRITE_MANIFEST: Record<
 			frameCount: 6,
 			fps: 12,
 			offsetY: 36,
+			impactFrame: 4,
 		},
 		[ActionType.TAKE_DAMAGE]: {
 			width: 40,
@@ -143,6 +157,7 @@ export const SPRITE_MANIFEST: Record<
 			frameCount: 6,
 			fps: 12,
 			offsetY: 5,
+			impactFrame: 2,
 		},
 	},
 	enemy_queensguard: {

@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { SpriteBox } from './SpriteStyles';
 
+export const AnimationPhase = {
+	FULL: 'full',
+	WINDUP: 'windup',
+	FOLLOW_THROUGH: 'followThrough',
+} as const;
+
+export type AnimationPhase =
+	(typeof AnimationPhase)[keyof typeof AnimationPhase];
+
 export interface SpriteProps {
 	imagePath: string;
 	width: number;
@@ -11,6 +20,8 @@ export interface SpriteProps {
 	loop?: boolean;
 	loopStartFrame?: number;
 	shadow?: boolean;
+	impactFrame?: number;
+	phase?: AnimationPhase;
 }
 
 const Sprite: React.FC<SpriteProps> = ({
@@ -23,32 +34,49 @@ const Sprite: React.FC<SpriteProps> = ({
 	loop = false,
 	loopStartFrame = 0,
 	shadow = false,
+	impactFrame,
+	phase = AnimationPhase.FULL,
 }) => {
 	const [isLoopingPhase, setIsLoopingPhase] = useState(false);
 
 	useEffect(() => {
 		setIsLoopingPhase(false);
-	}, [imagePath, loopStartFrame]);
+	}, [imagePath, loopStartFrame, phase]);
 
 	const hasCustomLoop = loop && loopStartFrame > 0;
 	const isLooping = isLoopingPhase && hasCustomLoop;
 
-	const currentStartFrame = isLooping ? loopStartFrame : 0;
-	const currentFrameCount = isLooping
+	let currentStartFrame = isLooping ? loopStartFrame : 0;
+	let currentFrameCount = isLooping
 		? frameCount - loopStartFrame
 		: frameCount;
+
+	if (phase === AnimationPhase.WINDUP && impactFrame !== undefined) {
+		currentStartFrame = 0;
+		currentFrameCount = impactFrame;
+	} else if (
+		phase === AnimationPhase.FOLLOW_THROUGH &&
+		impactFrame !== undefined
+	) {
+		currentStartFrame = impactFrame;
+		currentFrameCount = frameCount - impactFrame;
+	}
+
 	const duration = currentFrameCount / fps;
-	const isInfinite = loop && (!hasCustomLoop || isLoopingPhase);
+	const isInfinite =
+		loop &&
+		(!hasCustomLoop || isLoopingPhase) &&
+		phase === AnimationPhase.FULL;
 
 	const handleAnimationEnd = () => {
-		if (hasCustomLoop && !isLoopingPhase) {
+		if (hasCustomLoop && !isLoopingPhase && phase === AnimationPhase.FULL) {
 			setIsLoopingPhase(true);
 		}
 	};
 
 	return (
 		<SpriteBox
-			key={`${imagePath}-${currentStartFrame}-${currentFrameCount}`}
+			key={`${imagePath}-${currentStartFrame}-${currentFrameCount}-${phase}`}
 			$imagePath={imagePath}
 			$width={width}
 			$height={height}

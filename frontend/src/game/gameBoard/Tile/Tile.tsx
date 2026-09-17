@@ -1,11 +1,12 @@
 import React from 'react';
-import type { Unit } from '../../../constants/interfaces/player';
-import { getTileConfig } from '../../../utils/tileMapping/tileMapping';
-import { getUnitSpriteConfig } from '../../../utils/animation/spriteAnimations';
 import UnitTile from './unitTile/UnitTile';
 import LayeredTile from './layeredTile/LayeredTile';
-import BaseStaticTile from './baseStaticTile/BaseStaticTile';
 import { ActionType } from '../../../constants/gameEvent';
+import BaseStaticTile from './baseStaticTile/BaseStaticTile';
+import { AnimationPhase } from '../../../utils/sprite/Sprite';
+import type { Unit } from '../../../constants/interfaces/unit';
+import { getTileConfig } from '../../../utils/tileMapping/tileMapping';
+import { getUnitSpriteConfig } from '../../../utils/animation/spriteAnimations';
 
 interface Props {
 	char: string;
@@ -15,6 +16,7 @@ interface Props {
 	unit?: Unit;
 	activeActionState?: ActionType;
 	facing?: 'left' | 'right';
+	phase?: AnimationPhase;
 }
 
 const Tile: React.FC<Props> = ({
@@ -25,6 +27,7 @@ const Tile: React.FC<Props> = ({
 	unit,
 	activeActionState = ActionType.IDLE,
 	facing = 'right',
+	phase,
 }) => {
 	if (unit) {
 		const spriteProps = getUnitSpriteConfig(
@@ -39,6 +42,7 @@ const Tile: React.FC<Props> = ({
 				spriteProps={spriteProps}
 				offsetY={offsetY}
 				facing={facing}
+				phase={phase}
 			/>
 		);
 	}

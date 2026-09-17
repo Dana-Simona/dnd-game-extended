@@ -1,8 +1,9 @@
 import React from 'react';
 
 import Tile from '../../Tile/Tile';
-import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
 import type { ActionType } from '../../../../constants/gameEvent';
+import type { AnimationPhase } from '../../../../utils/sprite/Sprite';
+import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
 import { ActiveLayerContainer, AnimatedUnitWrapper } from './ActiveLayerStyles';
 import type { UnitTransform } from '../../../../utils/animation/useGameAnimation/unitControl/unitControl';
 
@@ -12,6 +13,7 @@ interface Props {
 	tileSize: number;
 	board: string[];
 	activeUnitStates?: Record<string, ActionType>;
+	activeUnitPhases?: Record<string, AnimationPhase>;
 	visualPositions?: Record<string, { x: number; y: number }>;
 	unitTransforms?: Record<string, UnitTransform>;
 }
@@ -25,6 +27,7 @@ const ActiveLayer: React.FC<Props> = React.memo(
 		tileSize,
 		board,
 		activeUnitStates = {},
+		activeUnitPhases = {},
 		visualPositions = {},
 		unitTransforms = {},
 	}) => {
@@ -91,6 +94,7 @@ const ActiveLayer: React.FC<Props> = React.memo(
 									activeUnitStates[unitId] as ActionType
 								}
 								facing={transform.facing}
+								phase={activeUnitPhases[unitId]}
 							/>
 						</AnimatedUnitWrapper>
 					);

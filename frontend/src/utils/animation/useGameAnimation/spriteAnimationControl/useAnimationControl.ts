@@ -1,7 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 
+import { AnimationPhase } from '../../../sprite/Sprite';
 import { ActionType } from '../../../../constants/gameEvent';
 import type { Position } from '../cameraControl/cameraControl';
+import type { Unit } from '../../../../constants/interfaces/unit';
 import type { AllPlayerData } from '../../../../constants/interfaces/player';
 import {
 	combinePlayerAndUnits,
@@ -13,7 +15,6 @@ import {
 	calculateAnimDuration,
 	triggerUnitAnim,
 } from './animationUtils';
-import type { Unit } from '../../../../constants/interfaces/unit';
 
 export const useAnimationControl = (
 	units: Unit[],
@@ -24,6 +25,11 @@ export const useAnimationControl = (
 	const [activeUnitStates, setActiveUnitStates] = useState<
 		Record<string, string>
 	>({});
+
+	const [activeUnitPhases, setActiveUnitPhases] = useState<
+		Record<string, AnimationPhase>
+	>({});
+
 	const [visualPositions, setVisualPositions] = useState<
 		Record<string, Position>
 	>({});
@@ -57,7 +63,11 @@ export const useAnimationControl = (
 	);
 
 	const playUnitAnimation = useCallback(
-		async (unitId: string, action: ActionType): Promise<void> => {
+		async (
+			unitId: string,
+			action: ActionType,
+			phase: AnimationPhase = AnimationPhase.FULL,
+		): Promise<void> => {
 			const targetPos = targetPositionsRef.current[unitId];
 			if (!isUnitInViewport(unitId)) {
 				if (targetPos) {
@@ -68,18 +78,20 @@ export const useAnimationControl = (
 				return;
 			}
 			const unit = allUnitsRef.current.find((u) => u.id === unitId);
-			const duration = calculateAnimDuration(unit, action);
+			const duration = calculateAnimDuration(unit, action, phase);
 
 			const animPromise = triggerUnitAnim(
 				unitId,
 				action,
+				phase,
 				duration,
 				targetPos,
 				setVisualPositions,
 				setActiveUnitStates,
+				setActiveUnitPhases,
 			);
 
-			const isMoveAction = action === ActionType.MOVE;
+			const isMoveAction = action === ActionType.MOVE && phase === AnimationPhase.FULL;
 
 			if (isMoveAction) {
 				const earlyResolveMs = Math.floor(duration * 0.5);
@@ -99,9 +111,14 @@ export const useAnimationControl = (
 
 	return {
 		activeUnitStates,
+		activeUnitPhases,
 		visualPositions,
 		setVisualPositions,
 		targetPositionsRef,
 		playUnitAnimation,
 	};
 };
+
+export type UseAnimationControlReturn = ReturnType<typeof useAnimationControl>;
+export type PlayUnitAnimationFn =
+	UseAnimationControlReturn['playUnitAnimation'];
