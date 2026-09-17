@@ -41,7 +41,7 @@ public final class Game {
         List<Player> availablePlayers = new ArrayList<>();
         availablePlayers.add(new Warrior("Jon Snow", 300, 300, 4, 3, new Position(0, 0), messageCallback, null, stepCounter));
         availablePlayers.add(new Warrior("The Hound", 400, 20, 6, 5, new Position(0, 0), messageCallback, null, stepCounter));
-        availablePlayers.add(new Mage("Melisandre", 100, 5, 1, new Position(0, 0), messageCallback, 300, 30, 15, 5, 6, null, stepCounter));
+        availablePlayers.add(new Mage("Melisandre", 100, 50, 1, new Position(0, 0), messageCallback, 300, 30, 15, 5, 6, null, stepCounter));
         availablePlayers.add(new Mage("Thoros of Myr", 250, 25, 4, new Position(0, 0), messageCallback, 150, 20, 20, 3, 4, null, stepCounter));
         availablePlayers.add(new Rogue("Arya Stark", 150, 40, 2, new Position(0, 0), 20, messageCallback, null, stepCounter));
         availablePlayers.add(new Rogue("Bronn", 250, 35, 3, new Position(0, 0), 50, messageCallback, null, stepCounter));

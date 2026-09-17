@@ -8,8 +8,7 @@ import {
 } from './unitControl';
 import {
 	executeFaceTarget,
-	executeDashTowards,
-	executeKnockbackFrom,
+	executeDash,
 	executeResetTransform,
 	executeFadeOut,
 	executeFadeIn,
@@ -35,7 +34,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		[],
 	);
 
-	const dashTowards = useCallback(
+	const dash = useCallback(
 		async (
 			sourceId: string,
 			targetId: string,
@@ -43,30 +42,9 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			durationMs = 200,
 			delayMs = 0,
 		) => {
-			await executeDashTowards(
+			await executeDash(
 				sourceId,
 				targetId,
-				distancePx,
-				durationMs,
-				delayMs,
-				visualPositionsRef.current,
-				setUnitTransforms,
-			);
-		},
-		[],
-	);
-
-	const knockbackFrom = useCallback(
-		async (
-			targetId: string,
-			sourceId: string,
-			distancePx = 12,
-			durationMs = 200,
-			delayMs = 0,
-		) => {
-			await executeKnockbackFrom(
-				targetId,
-				sourceId,
 				distancePx,
 				durationMs,
 				delayMs,
@@ -111,18 +89,9 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 					await faceTarget(command.sourceId, command.targetId);
 					break;
 				case UnitPreset.DASH:
-					await dashTowards(
+					await dash(
 						command.sourceId,
 						command.targetId,
-						command.distancePx,
-						command.durationMs,
-						command.delayMs,
-					);
-					break;
-				case UnitPreset.KNOCKBACK:
-					await knockbackFrom(
-						command.targetId,
-						command.sourceId,
 						command.distancePx,
 						command.durationMs,
 						command.delayMs,
@@ -147,20 +116,14 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 					break;
 			}
 		},
-		[
-			faceTarget,
-			dashTowards,
-			knockbackFrom,
-			fadeOut,
-			fadeIn,
-			resetTransform,
-		],
+		[faceTarget, dash, fadeOut, fadeIn, resetTransform],
 	);
 
 	return {
 		triggerUnit,
 		unitTransforms,
 		resetAllTransforms,
+		dash,
 		fadeOut,
 		fadeIn,
 	};

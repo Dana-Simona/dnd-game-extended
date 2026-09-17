@@ -1,13 +1,13 @@
-export interface UnitTransform {
-	facing: 'left' | 'right';
-	offset: { x: number; y: number };
-	opacity?: number;
-}
+import type { TargetAndTransition } from 'framer-motion';
+
+export type UnitTransform = Omit<TargetAndTransition, 'offset'> & {
+	facing?: 'left' | 'right';
+	offset?: { x: number; y: number };
+};
 
 export const UnitPreset = {
 	FACE: 'FACE',
 	DASH: 'DASH',
-	KNOCKBACK: 'KNOCKBACK',
 	RESET: 'RESET',
 	FADE_OUT: 'FADE_OUT',
 	FADE_IN: 'FADE_IN',
@@ -21,14 +21,6 @@ export type UnitCommand =
 			type: typeof UnitPreset.DASH;
 			sourceId: string;
 			targetId: string;
-			distancePx?: number;
-			durationMs?: number;
-			delayMs?: number;
-	  }
-	| {
-			type: typeof UnitPreset.KNOCKBACK;
-			targetId: string;
-			sourceId: string;
 			distancePx?: number;
 			durationMs?: number;
 			delayMs?: number;

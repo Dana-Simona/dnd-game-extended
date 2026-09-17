@@ -19,7 +19,6 @@ export interface SpriteProps {
 	offsetY?: number;
 	loop?: boolean;
 	loopStartFrame?: number;
-	shadow?: boolean;
 	impactFrame?: number;
 	phase?: AnimationPhase;
 }
@@ -33,7 +32,6 @@ const Sprite: React.FC<SpriteProps> = ({
 	fps = 8,
 	loop = false,
 	loopStartFrame = 0,
-	shadow = false,
 	impactFrame,
 	phase = AnimationPhase.FULL,
 }) => {
@@ -84,7 +82,6 @@ const Sprite: React.FC<SpriteProps> = ({
 			$frameCount={currentFrameCount}
 			$duration={duration}
 			$loop={isInfinite}
-			$shadow={shadow}
 			$offsetY={offsetY}
 			onAnimationEnd={handleAnimationEnd}
 		/>

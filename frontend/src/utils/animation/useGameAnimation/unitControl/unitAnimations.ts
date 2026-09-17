@@ -1,16 +1,9 @@
-import type { UnitTransform } from './unitControl';
 import {
 	calculateFacing,
 	calculateVectorOffset,
 	type Position,
 } from './unitCalculations';
-import {
-	applyFacing,
-	applyOffsetAndFacing,
-	applyOpacity,
-	resetUnitOffset,
-	resetUnitTransform,
-} from './unitStateUpdaters';
+import type { UnitTransform } from './unitControl';
 
 type SetTransforms = React.Dispatch<
 	React.SetStateAction<Record<string, UnitTransform>>
@@ -27,10 +20,18 @@ export const executeFaceTarget = (
 	if (!sourcePos || !targetPos) return;
 
 	const facing = calculateFacing(sourcePos, targetPos);
-	setTransforms(applyFacing(sourceId, facing));
+
+	setTransforms((prev) => ({
+		...prev,
+		[sourceId]: {
+			...prev[sourceId],
+			scaleX: facing === 'left' ? -1 : 1,
+			transition: { duration: 0.1, ease: 'easeOut' },
+		},
+	}));
 };
 
-export const executeDashTowards = async (
+export const executeDash = async (
 	sourceId: string,
 	targetId: string,
 	distancePx = 24,
@@ -60,74 +61,95 @@ export const executeDashTowards = async (
 	);
 	const facing = calculateFacing(sourcePos, targetPos);
 
-	const halfDuration = Math.floor(durationMs / 2);
+	const dashVariant: UnitTransform = {
+		x: offsetX,
+		y: offsetY,
+		scaleX: facing === 'left' ? -1 : 1,
+		transition: {
+			duration: durationMs / 1000,
+			ease: [0, 0.85, 0.15, 1.0]
+		},
+	};
 
-	setTransforms(
-		applyOffsetAndFacing(sourceId, { x: offsetX, y: offsetY }, facing),
-	);
-	await new Promise((resolve) => setTimeout(resolve, halfDuration));
+	setTransforms((prev) => ({
+		...prev,
+		[sourceId]: dashVariant,
+	}));
 
-	setTransforms(resetUnitOffset(sourceId, facing));
-	await new Promise((resolve) => setTimeout(resolve, halfDuration));
+	await new Promise((resolve) => setTimeout(resolve, durationMs));
 };
 
-export const executeKnockbackFrom = async (
-	targetId: string,
-	sourceId: string,
-	distancePx = 12,
+export const executeFadeOut = async (
+	unitId: string,
 	durationMs = 200,
 	delayMs = 0,
-	positions: Record<string, Position>,
 	setTransforms: SetTransforms,
 ) => {
-	const targetPos = positions[targetId];
-	const sourcePos = positions[sourceId];
-	if (!targetPos || !sourcePos) return;
-
 	if (delayMs > 0) {
 		await new Promise((resolve) => setTimeout(resolve, delayMs));
 	}
 
-	const { offsetX, offsetY } = calculateVectorOffset(
-		sourcePos,
-		targetPos,
-		distancePx,
-	);
+	const fadeOutVariant: UnitTransform = {
+		opacity: 0,
+		transition: {
+			duration: durationMs / 1000,
+			ease: 'easeIn',
+		},
+	};
 
-	setTransforms(applyOffsetAndFacing(targetId, { x: offsetX, y: offsetY }));
+	setTransforms((prev) => ({
+		...prev,
+		[unitId]: { ...prev[unitId], ...fadeOutVariant },
+	}));
+
 	await new Promise((resolve) => setTimeout(resolve, durationMs));
-	setTransforms(resetUnitOffset(targetId));
-};
-
-export const executeFadeOut = async (
-    unitId: string,
-    durationMs = 200,
-    delayMs = 0,
-    setTransforms: SetTransforms,
-) => {
-    if (delayMs > 0) {
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
-    }
-    setTransforms(applyOpacity(unitId, 0));
-    await new Promise((resolve) => setTimeout(resolve, durationMs));
 };
 
 export const executeFadeIn = async (
-    unitId: string,
-    durationMs = 200,
-    delayMs = 0,
-    setTransforms: SetTransforms,
+	unitId: string,
+	durationMs = 200,
+	delayMs = 0,
+	setTransforms: SetTransforms,
 ) => {
-    if (delayMs > 0) {
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
-    }
-    setTransforms(applyOpacity(unitId, 1));
-    await new Promise((resolve) => setTimeout(resolve, durationMs));
+	if (delayMs > 0) {
+		await new Promise((resolve) => setTimeout(resolve, delayMs));
+	}
+
+	const fadeInVariant: UnitTransform = {
+		opacity: 1,
+		transition: {
+			duration: durationMs / 1000,
+			ease: 'easeOut',
+		},
+	};
+
+	setTransforms((prev) => ({
+		...prev,
+		[unitId]: { ...prev[unitId], ...fadeInVariant },
+	}));
+
+	await new Promise((resolve) => setTimeout(resolve, durationMs));
 };
 
 export const executeResetTransform = (
 	unitId: string,
 	setTransforms: SetTransforms,
 ) => {
-	setTransforms(resetUnitTransform(unitId));
+	const resetVariant: UnitTransform = {
+		x: 0,
+		y: 0,
+		opacity: 1,
+		transition: {
+			duration: 0.15,
+			ease: 'anticipate',
+		},
+	};
+
+	setTransforms((prev) => ({
+		...prev,
+		[unitId]: {
+			...prev[unitId],
+			...resetVariant,
+		},
+	}));
 };

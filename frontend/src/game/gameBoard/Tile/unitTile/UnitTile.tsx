@@ -55,13 +55,6 @@ const UnitTile: React.FC<UnitTileProps> = ({
 			? ((unit as any)?.range ?? (unit as any)?.abilityRange)
 			: undefined);
 
-	console.log('UnitTile Render:', {
-		unitId: unit?.id,
-		phase,
-		activeSpritePath: spriteProps?.imagePath,
-		impactFrame: spriteProps?.impactFrame,
-	});
-
 	return (
 		<SpriteTileWrapper
 			onMouseEnter={() => setIsHovered(true)}
@@ -104,7 +97,6 @@ const UnitTile: React.FC<UnitTileProps> = ({
 					<Sprite
 						{...spriteProps}
 						phase={phase}
-						shadow
 					/>
 				</SpriteFlipWrapper>
 			</PositionedSpriteContainer>

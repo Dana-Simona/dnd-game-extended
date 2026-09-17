@@ -48,36 +48,64 @@ export const setupAnimations = (controllers: Controllers) => {
 	});
 
 	animationRegistry.register(ActionType.MELEE, async (event: GameEvent) => {
-		const targetId = event.targetIds?.[0];
-		if (!event.sourceId || !targetId) return;
+		const defender = event.targetIds?.[0];
+		const attacker = event.sourceId;
+		if (!event.sourceId || !defender) return;
 
 		await Promise.all([
 			controllers.triggerUnit({
 				type: UnitPreset.FACE,
-				sourceId: event.sourceId,
-				targetId,
+				sourceId: attacker,
+				targetId: defender,
 			}),
 			controllers.triggerUnit({
 				type: UnitPreset.FACE,
-				sourceId: targetId,
-				targetId: event.sourceId,
+				sourceId: defender,
+				targetId: attacker,
 			}),
 		]);
 
-		await controllers.playUnitAnimation(
-			event.sourceId,
-			ActionType.MELEE,
-			AnimationPhase.WINDUP,
-		);
+		await Promise.all([
+			controllers.playUnitAnimation(
+				attacker,
+				ActionType.MELEE,
+				AnimationPhase.WINDUP,
+			),
+			controllers.playUnitAnimation(
+				defender,
+				ActionType.TAKE_DAMAGE,
+				AnimationPhase.WINDUP,
+			),
+		]);
 
 		await Promise.all([
-			new Promise((resolve) => setTimeout(resolve, 1000)),
+			controllers.playUnitAnimation(
+				defender,
+				ActionType.TAKE_DAMAGE,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			controllers.triggerCamera({ type: CameraPreset.SHAKE }),
+			// controllers.spawnVFX(VfxTypes.ABILITY_CAST, [targetId]), //change vfx
+			controllers.triggerUnit({
+				sourceId: defender,
+				type: UnitPreset.DASH,
+				targetId: attacker,
+				distancePx: -25,
+				durationMs: 1000,
+			}),
+			//defender - recoil - squash unit
 		]);
-		await controllers.playUnitAnimation(
-			event.sourceId,
-			ActionType.MELEE,
-			AnimationPhase.FOLLOW_THROUGH,
-		);
+		await Promise.all([
+			controllers.playUnitAnimation(
+				attacker,
+				ActionType.MELEE,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			controllers.triggerUnit({
+				type: UnitPreset.RESET,
+				unitId: defender,
+			}),
+		]);
 
 		//face each other
 		//attacker - start animation
@@ -226,27 +254,11 @@ export const setupAnimations = (controllers: Controllers) => {
 		ActionType.TAKE_DAMAGE,
 		async (event: GameEvent) => {
 			if (!event.sourceId) return;
-			const attackerId = event.targetIds?.[0];
-			await Promise.all([
-				controllers.playUnitAnimation(
-					event.sourceId,
-					ActionType.TAKE_DAMAGE,
-				),
-				controllers.spawnVFX(
-					VfxTypes.STAT_DAMAGE,
-					[event.sourceId],
-					event.amount,
-				),
-				attackerId
-					? controllers.triggerUnit({
-							type: UnitPreset.KNOCKBACK,
-							targetId: event.sourceId,
-							sourceId: attackerId,
-							distancePx: 12,
-							durationMs: 180,
-						})
-					: Promise.resolve(),
-			]);
+			await controllers.spawnVFX(
+				VfxTypes.STAT_DAMAGE,
+				[event.sourceId],
+				event.amount,
+			);
 		},
 	);
 
@@ -254,17 +266,17 @@ export const setupAnimations = (controllers: Controllers) => {
 		ActionType.TAKE_DAMAGE_FROM_ABILITY,
 		async (event: GameEvent) => {
 			if (!event.sourceId) return;
-			await Promise.all([
-				controllers.playUnitAnimation(
-					event.sourceId,
-					ActionType.TAKE_DAMAGE,
-				),
-				controllers.spawnVFX(
-					VfxTypes.STAT_DAMAGE,
-					[event.sourceId],
-					event.amount,
-				),
-			]);
+			// await Promise.all([
+			// 	controllers.playUnitAnimation(
+			// 		event.sourceId,
+			// 		ActionType.TAKE_DAMAGE,
+			// 	),
+			// 	controllers.spawnVFX(
+			// 		VfxTypes.STAT_DAMAGE,
+			// 		[event.sourceId],
+			// 		event.amount,
+			// 	),
+			// ]);
 		},
 	);
 

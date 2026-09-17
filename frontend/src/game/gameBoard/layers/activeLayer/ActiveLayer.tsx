@@ -1,5 +1,5 @@
 import React from 'react';
-
+import type { Transition } from 'framer-motion';
 import Tile from '../../Tile/Tile';
 import type { ActionType } from '../../../../constants/gameEvent';
 import type { AnimationPhase } from '../../../../utils/sprite/Sprite';
@@ -35,23 +35,45 @@ const ActiveLayer: React.FC<Props> = React.memo(
 			<ActiveLayerContainer>
 				{units.map((unit, index) => {
 					const isPlayer = unit.unitType === UnitType.PLAYER;
-
 					const unitId =
 						unit.id || (isPlayer ? characterId : `unit-${index}`);
 
 					const currentX = visualPositions[unitId]?.x ?? unit.x;
 					const currentY = visualPositions[unitId]?.y ?? unit.y;
-					const transform = unitTransforms[unitId] ?? {
-						facing: 'right',
-						offset: { x: 0, y: 0 },
-						opacity: 1,
-					};
+					const transform = unitTransforms[unitId] ?? {};
 
-					const targetX = currentX * tileSize + transform.offset.x;
-					const targetY = currentY * tileSize + transform.offset.y;
+					const offsetX =
+						typeof transform.x === 'number'
+							? transform.x
+							: (transform.offset?.x ?? 0);
+					const offsetY =
+						typeof transform.y === 'number'
+							? transform.y
+							: (transform.offset?.y ?? 0);
+
+					const targetX = currentX * tileSize + offsetX;
+					const targetY = currentY * tileSize + offsetY;
 					const targetOpacity = transform.opacity ?? 1;
 
 					const moveDelay = isPlayer ? PLAYER_MOVEMENT_DELAY : 0;
+
+					const defaultGridTransition: Transition = {
+						type: 'spring',
+						stiffness: 300,
+						damping: 28,
+						delay: moveDelay,
+					};
+
+					const transitionConfig: Transition =
+						(transform.transition as Transition) ?? {
+							x: defaultGridTransition,
+							y: defaultGridTransition,
+							opacity: { duration: 0.2, ease: 'easeInOut' },
+						};
+
+					const facing =
+						transform.facing ??
+						(transform.scaleX === -1 ? 'left' : 'right');
 
 					return (
 						<AnimatedUnitWrapper
@@ -68,21 +90,7 @@ const ActiveLayer: React.FC<Props> = React.memo(
 								y: targetY,
 								opacity: targetOpacity,
 							}}
-							transition={{
-								x: {
-									type: 'spring',
-									stiffness: 300,
-									damping: 28,
-									delay: moveDelay,
-								},
-								y: {
-									type: 'spring',
-									stiffness: 300,
-									damping: 28,
-									delay: moveDelay,
-								},
-								opacity: { duration: 0.2, ease: 'easeInOut' },
-							}}
+							transition={transitionConfig}
 						>
 							<Tile
 								char={unit.character}
@@ -93,7 +101,7 @@ const ActiveLayer: React.FC<Props> = React.memo(
 								activeActionState={
 									activeUnitStates[unitId] as ActionType
 								}
-								facing={transform.facing}
+								facing={facing}
 								phase={activeUnitPhases[unitId]}
 							/>
 						</AnimatedUnitWrapper>
