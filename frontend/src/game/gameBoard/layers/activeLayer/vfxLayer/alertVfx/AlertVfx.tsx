@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import WinVfx from './alerts/WinVfx';
-import LoseVfx from './alerts/LoseVfx';
-import LevelUpVfx from './alerts/LevelUpVfx';
-import NextLevelVfx from './alerts/NextLevel';
+import WinVfx from './banners/WinVfx';
+import LoseVfx from './banners/LoseVfx';
+import LevelUpVfx from './banners/LevelUpVfx';
+import NextLevelVfx from './banners/NextLevel';
 import { AlertOverlay } from './AlertVfxStyles';
-import type { VfxItem } from '../../../../../../utils/animation/useGameAnimation/useVfxControl';
+import type { VfxItem } from '../../../../../../utils/animation/useGameAnimation/vfxControl/vfxTypes';
 
-interface AlertVfxProps {
+interface Props {
 	item: VfxItem;
 }
 
@@ -19,7 +19,7 @@ const ALERT_COMPONENTS: Record<string, React.ComponentType> = {
 	NextLevel: NextLevelVfx,
 };
 
-export const AlertVfx: React.FC<AlertVfxProps> = ({ item }) => {
+const BannerVfx: React.FC<Props> = ({ item }) => {
 	const AlertComponent = ALERT_COMPONENTS[item.type];
 
 	if (!AlertComponent) return null;
@@ -31,3 +31,5 @@ export const AlertVfx: React.FC<AlertVfxProps> = ({ item }) => {
 		document.body,
 	);
 };
+
+export default BannerVfx;

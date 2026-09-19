@@ -1,12 +1,12 @@
 import React from 'react';
-import type { VfxItem } from '../../../../../../utils/animation/useGameAnimation/useVfxControl';
 import { useCharacter } from '../../../../../../utils/characterContext/CharacterContext';
 import { AbilityVfxContainer } from './AbilityVfxStyles';
 import type { SpriteProps } from '../../../../../../utils/sprite/Sprite';
 import { ClassTypes } from '../../../../../../constants/classTypes';
 import Sprite from '../../../../../../utils/sprite/Sprite';
+import type { VfxItem } from '../../../../../../utils/animation/useGameAnimation/vfxControl/vfxTypes';
 
-interface AbilityVfxProps {
+interface Props {
 	item: VfxItem;
 }
 
@@ -52,7 +52,7 @@ const DEFAULT_ABILITY_SPRITE: AbilitySpriteConfig = {
 	fps: 8,
 };
 
-export const AbilityVfx: React.FC<AbilityVfxProps> = ({ item }) => {
+export const AbilityVfx: React.FC<Props> = ({ item }) => {
 	const { character } = useCharacter();
 	const classType = character?.class as ClassTypes | undefined;
 

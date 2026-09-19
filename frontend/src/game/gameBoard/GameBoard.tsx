@@ -10,8 +10,8 @@ import type { AnimationPhase } from '../../utils/sprite/Sprite';
 import { VfxLayer } from './layers/activeLayer/vfxLayer/VfxLayer';
 import { ViewportContainer, Board, BoardCanvas } from './GameBoardStyles';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
-import type { VfxItem } from '../../utils/animation/useGameAnimation/useVfxControl';
 import type { UnitTransform } from '../../utils/animation/useGameAnimation/unitControl/unitControl';
+import type { VfxItem } from '../../utils/animation/useGameAnimation/vfxControl/vfxTypes';
 
 export interface Props {
 	board: string[];

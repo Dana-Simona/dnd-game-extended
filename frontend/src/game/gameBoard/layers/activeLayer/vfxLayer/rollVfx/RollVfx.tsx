@@ -1,13 +1,13 @@
 import { Swords, Shield } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import React, { useState, useEffect } from 'react';
-import type { VfxItem } from '../../../../../../utils/animation/useGameAnimation/useVfxControl';
 import {
 	RollNumber,
 	RollValueContainer,
 	IconWrapper,
 	RollValueNumber,
 } from './RollVfxStyles';
+import type { VfxItem } from '../../../../../../utils/animation/useGameAnimation/vfxControl/vfxTypes';
 
 interface Props {
 	item: VfxItem;

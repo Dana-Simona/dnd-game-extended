@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 
-import { useVfxControl } from './useVfxControl';
+import { useVfxControl } from './vfxControl/useVfxControl';
 import { setupAnimations } from '../setupAnimations';
 import { playTurnSequence } from '../playTurnSequence';
 import { useUnitControl } from './unitControl/useUnitControl';

@@ -1,6 +1,8 @@
+import { AnimationPhase } from '../sprite/Sprite';
 import { animationRegistry } from './animationRegistry';
-import { VfxTypes } from './useGameAnimation/useVfxControl';
+import { VfxTypes } from './useGameAnimation/vfxControl/vfxTypes';
 import { ActionType, type GameEvent } from '../../constants/gameEvent';
+import type { SpawnVfxFn } from './useGameAnimation/vfxControl/useVfxControl';
 import type { PlayUnitAnimationFn } from './useGameAnimation/spriteAnimationControl/useAnimationControl';
 import {
 	CameraPreset,
@@ -10,15 +12,10 @@ import {
 	UnitPreset,
 	type TriggerUnit,
 } from './useGameAnimation/unitControl/unitControl';
-import { AnimationPhase } from '../sprite/Sprite';
 
 export interface Controllers {
 	playUnitAnimation: PlayUnitAnimationFn;
-	spawnVFX: (
-		type: VfxTypes,
-		targetIds: string[],
-		amount?: number,
-	) => Promise<void>;
+	spawnVFX: SpawnVfxFn;
 	triggerCamera: (command: CameraCommand) => Promise<void>;
 	triggerUnit: TriggerUnit;
 }
@@ -85,7 +82,12 @@ export const setupAnimations = (controllers: Controllers) => {
 				AnimationPhase.FOLLOW_THROUGH,
 			),
 			controllers.triggerCamera({ type: CameraPreset.SHAKE }),
-			// controllers.spawnVFX(VfxTypes.ABILITY_CAST, [targetId]), //change vfx
+			controllers.spawnVFX(
+				VfxTypes.PARTICLES_DAMAGE,
+				[defender],
+				0,
+				attacker,
+			),
 			controllers.triggerUnit({
 				sourceId: defender,
 				type: UnitPreset.DASH,
@@ -170,7 +172,7 @@ export const setupAnimations = (controllers: Controllers) => {
 				});
 
 				await controllers.spawnVFX(
-					VfxTypes.ABILITY_CAST,
+					VfxTypes.EFFECTS_ABILITY_CAST,
 					[targetId],
 					event.amount,
 				);
@@ -201,7 +203,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		async (event: GameEvent) => {
 			if (!event.sourceId) return;
 			await controllers.spawnVFX(
-				VfxTypes.ALERT_LEVEL_UP,
+				VfxTypes.BANNER_LEVEL_UP,
 				[event.sourceId],
 				event.amount,
 			);
@@ -213,7 +215,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		await controllers.triggerCamera({ type: CameraPreset.ZOOM_IN });
 		await controllers.triggerCamera({ type: CameraPreset.THUMP });
 		await controllers.spawnVFX(
-			VfxTypes.ALERT_LOSE,
+			VfxTypes.BANNER_LOSE,
 			[event.sourceId],
 			event.amount,
 		);

@@ -1,36 +1,15 @@
 import { useState, useCallback, useRef } from 'react';
-import type { Position } from './cameraControl/cameraControl';
+import type { Position } from '../cameraControl/cameraControl';
+import { VfxCategory, VfxTypeToCategoryMap } from './vfxTypes';
+import type { VfxItem, VfxTypes } from './vfxTypes';
 
-export const VfxTypes = {
-	ALERT_WIN: 'Win',
-	ALERT_LEVEL_UP: 'LevelUp',
-	ALERT_NEXT_LEVEL: 'NextLevel',
-	ALERT_LOSE: 'Lose',
-	ABILITY_CAST: 'AbilityCast',
-	ROLL_ATTACK: 'RollAttack',
-	ROLL_DEFENSE: 'RollDefense',
-	STAT_DAMAGE: 'Damage',
-	STAT_HEAL: 'Heal',
-	STAT_EXP: 'Exp',
-} as const;
-
-export type VfxTypes = (typeof VfxTypes)[keyof typeof VfxTypes];
-
-export interface VfxItem {
-	id: string;
-	type: VfxTypes;
-	category: 'ALERT' | 'STAT' | 'ROLL' | 'ABILITY';
-	targetId?: string;
-	amount?: number;
-	x: number;
-	y: number;
-}
-
-const CATEGORY_DURATIONS = {
-	ALERT: 1600,
-	STAT: 900,
-	ROLL: 1000,
-	ABILITY: 500,
+const CATEGORY_DURATIONS: Record<VfxCategory, number> = {
+	[VfxCategory.BANNER]: 1600,
+	[VfxCategory.STAT]: 900,
+	[VfxCategory.ROLL]: 1000,
+	[VfxCategory.EFFECTS]: 500,
+	[VfxCategory.PARTICLES]: 500,
+	[VfxCategory.PROJECTILES]: 500,
 };
 
 export const useVfxControl = (
@@ -40,22 +19,23 @@ export const useVfxControl = (
 	const [activeVfxList, setActiveVfxList] = useState<VfxItem[]>([]);
 	const nextIdRef = useRef(0);
 
-	const getCategory = (type: VfxTypes): VfxItem['category'] => {
-		if (type.startsWith('Roll')) return 'ROLL';
-		if (type === 'Damage' || type === 'Heal' || type === 'Exp')
-			return 'STAT';
-		if (type === 'AbilityCast') return 'ABILITY';
-		return 'ALERT';
-	};
-
 	const spawnVFX = useCallback(
 		async (
 			type: VfxTypes,
 			targetIds: string[],
 			amount?: number,
+			sourceId?: string,  
 		): Promise<void> => {
-			const category = getCategory(type);
+			const category = VfxTypeToCategoryMap[type];
 			const duration = CATEGORY_DURATIONS[category];
+
+			const sourcePos = sourceId ? visualPositions[sourceId] : undefined;
+			const sourceX = sourcePos
+				? (sourcePos.x + 0.5) * tileSize
+				: undefined;
+			const sourceY = sourcePos
+				? (sourcePos.y + 0.5) * tileSize
+				: undefined;
 
 			const targets = targetIds.length > 0 ? targetIds : ['screen'];
 
@@ -66,6 +46,9 @@ export const useVfxControl = (
 					type,
 					category,
 					targetId,
+					sourceId,
+					sourceX,
+					sourceY,
 					amount,
 					x: (pos.x + 0.5) * tileSize,
 					y: (pos.y + 0.5) * tileSize,
@@ -91,3 +74,6 @@ export const useVfxControl = (
 
 	return { spawnVFX, activeVfxList };
 };
+
+export type UseVfxControlReturn = ReturnType<typeof useVfxControl>;
+export type SpawnVfxFn = UseVfxControlReturn['spawnVFX'];

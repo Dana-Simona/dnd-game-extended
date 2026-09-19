@@ -1,5 +1,5 @@
 import React from 'react';
-import type { VfxItem } from '../../../../../../utils/animation/useGameAnimation/useVfxControl';
+import type { VfxItem } from '../../../../../../utils/animation/useGameAnimation/vfxControl/useVfxControl';
 import { StatNumber } from './StatVfxStyles';
 
 interface StatVfxProps {

@@ -1,50 +1,63 @@
 import React from 'react';
-import type { VfxItem } from '../../../../../utils/animation/useGameAnimation/useVfxControl';
-import { VfxViewportLayer } from './vfxStyles';
-import { AlertVfx } from './alertVfx/AlertVfx';
+import BannerVfx from './alertVfx/AlertVfx';
 import { RollVfx } from './rollVfx/RollVfx';
-import { AbilityVfx } from './abilityVfx/AbilityVfx';
 import { StatVfx } from './statVfx/StatVfx';
+import { VfxViewportLayer } from './vfxStyles';
+import { AbilityVfx } from './abilityVfx/AbilityVfx';
+import {
+	VfxCategory,
+	type VfxItem,
+} from '../../../../../utils/animation/useGameAnimation/vfxControl/vfxTypes';
+import ParticlesVfx from './particlesVfx/ParticlesVfx';
 
-interface VfxLayerProps {
+interface Props {
 	vfxList: VfxItem[];
 }
 
-export const VfxLayer: React.FC<VfxLayerProps> = ({ vfxList }) => {
+export const VfxLayer: React.FC<Props> = ({ vfxList }) => {
 	if (!vfxList.length) return null;
 
 	return (
 		<VfxViewportLayer>
 			{vfxList.map((item) => {
 				switch (item.category) {
-					case 'ALERT':
+					case VfxCategory.BANNER:
 						return (
-							<AlertVfx
+							<BannerVfx
 								key={item.id}
 								item={item}
 							/>
 						);
-					case 'STAT':
+					case VfxCategory.STAT:
 						return (
 							<StatVfx
 								key={item.id}
 								item={item}
 							/>
 						);
-					case 'ROLL':
+					case VfxCategory.ROLL:
 						return (
 							<RollVfx
 								key={item.id}
 								item={item}
 							/>
 						);
-					case 'ABILITY':
+					case VfxCategory.EFFECTS:
 						return (
 							<AbilityVfx
 								key={item.id}
 								item={item}
 							/>
 						);
+					case VfxCategory.PARTICLES:
+						return (
+							<ParticlesVfx
+								key={item.id}
+								item={item}
+							/>
+						);
+					case VfxCategory.PROJECTILES:
+						return null;
 					default:
 						return null;
 				}
