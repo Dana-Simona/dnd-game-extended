@@ -7,6 +7,7 @@ import { AnimationPhase } from '../../../utils/sprite/Sprite';
 import type { Unit } from '../../../constants/interfaces/unit';
 import { getTileConfig } from '../../../utils/tileMapping/tileMapping';
 import { getUnitSpriteConfig } from '../../../utils/animation/spriteAnimations';
+import type { HpState } from '../../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
 
 interface Props {
 	char: string;
@@ -17,6 +18,7 @@ interface Props {
 	activeActionState?: ActionType;
 	facing?: 'left' | 'right';
 	phase?: AnimationPhase;
+	hpState?: HpState;
 }
 
 const Tile: React.FC<Props> = ({
@@ -28,6 +30,7 @@ const Tile: React.FC<Props> = ({
 	activeActionState = ActionType.IDLE,
 	facing = 'right',
 	phase,
+	hpState,
 }) => {
 	if (unit) {
 		const spriteProps = getUnitSpriteConfig(
@@ -43,6 +46,7 @@ const Tile: React.FC<Props> = ({
 				offsetY={offsetY}
 				facing={facing}
 				phase={phase}
+				hpState={hpState}
 			/>
 		);
 	}

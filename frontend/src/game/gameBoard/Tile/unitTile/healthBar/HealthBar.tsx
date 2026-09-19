@@ -1,32 +1,77 @@
 import React from 'react';
-import { BarContainer, BarFill, HealthText } from './HealthBarStyles';
+import type { HpState } from '../../../../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
+import {
+	BarContainer,
+	BarFill,
+	PreviewBarFill,
+	HealthText,
+} from './HealthBarStyles';
 
 interface HealthBarProps {
-	currentHp: number;
-	maxHp: number;
+	currentHp?: number;
+	previewHp?: number;
+	maxHp?: number;
 	isEnemy: boolean;
 	offsetY: number;
+	hpState?: HpState;
 }
 
+const barTransition = {
+	type: 'spring' as const,
+	stiffness: 250,
+	damping: 25,
+};
+
 const HealthBar: React.FC<HealthBarProps> = ({
-	currentHp,
-	maxHp,
+	currentHp: propCurrentHp,
+	previewHp: propPreviewHp,
+	maxHp: propMaxHp,
 	isEnemy,
 	offsetY,
+	hpState,
 }) => {
 	if (!isEnemy) {
 		return null;
 	}
 
+	const currentHp = hpState?.currentHp ?? propCurrentHp ?? 0;
+	const previewHp = hpState?.previewHp ?? propPreviewHp;
+	const maxHp = hpState?.maxHp ?? propMaxHp ?? 1;
+
 	const validMaxHp = Math.max(1, maxHp);
-	const clampedHp = Math.max(0, Math.min(currentHp, validMaxHp));
-	const percentage = (clampedHp / validMaxHp) * 100;
+	const safeCurrentHp = Math.max(0, Math.min(currentHp, validMaxHp));
+	const targetPreviewHp = previewHp !== undefined ? previewHp : safeCurrentHp;
+	const safePreviewHp = Math.max(0, Math.min(targetPreviewHp, safeCurrentHp));
+
+	const mainPercentage = (safePreviewHp / validMaxHp) * 100;
+	const previewPercentage = Math.max(
+		0,
+		((safeCurrentHp - safePreviewHp) / validMaxHp) * 100,
+	);
+
+	const hasPreview = previewPercentage > 0;
 
 	return (
 		<BarContainer $offsetY={offsetY}>
-			<BarFill $percentage={percentage} />
+			<BarFill
+				$hasPreview={hasPreview}
+				initial={false}
+				animate={{ width: `${mainPercentage}%` }}
+				transition={barTransition}
+			/>
+
+			<PreviewBarFill
+				initial={false}
+				animate={{
+					left: `${mainPercentage}%`,
+					width: `${previewPercentage}%`,
+					opacity: hasPreview ? 1 : 0,
+				}}
+				transition={barTransition}
+			/>
+
 			<HealthText>
-				{clampedHp}/{validMaxHp}
+				{safeCurrentHp}/{validMaxHp}
 			</HealthText>
 		</BarContainer>
 	);

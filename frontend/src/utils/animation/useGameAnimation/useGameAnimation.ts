@@ -10,6 +10,7 @@ import { useCameraControl } from './cameraControl/useCameraControl';
 import type { AllPlayerData } from '../../../constants/interfaces/player';
 import { buildTargetPositions } from './spriteAnimationControl/animationUtils';
 import { useAnimationControl } from './spriteAnimationControl/useAnimationControl';
+import { useHpBarControl } from './hpBarControl/useHpBarControl';
 
 export const useGameAnimation = (
 	units: Unit[],
@@ -39,14 +40,24 @@ export const useGameAnimation = (
 	const { triggerUnit, unitTransforms, resetAllTransforms } =
 		useUnitControl(visualPositions);
 
+	const {
+		hpStates,
+		triggerHpBar,
+		showDamagePreview,
+		depleteHp,
+		clearPreview,
+		resetHpStates,
+	} = useHpBarControl(units, player);
+
 	useEffect(() => {
 		setupAnimations({
 			playUnitAnimation,
 			spawnVFX,
 			triggerCamera,
 			triggerUnit,
+			triggerHpBar,
 		});
-	}, [playUnitAnimation, spawnVFX, triggerCamera, triggerUnit]);
+	}, [playUnitAnimation, spawnVFX, triggerCamera, triggerUnit, triggerHpBar]);
 
 	const resetPositions = useCallback(
 		(nextPlayer: Unit | AllPlayerData | null, nextEnemies: Unit[]) => {
@@ -58,12 +69,14 @@ export const useGameAnimation = (
 			setVisualPositions(targets);
 			resetCamera();
 			resetAllTransforms();
+			resetHpStates(nextPlayer, nextEnemies);
 		},
 		[
 			setVisualPositions,
 			targetPositionsRef,
 			resetCamera,
 			resetAllTransforms,
+			resetHpStates,
 		],
 	);
 
@@ -85,6 +98,7 @@ export const useGameAnimation = (
 			} finally {
 				resetCamera();
 				resetAllTransforms();
+				resetHpStates(nextPlayer, nextEnemies);
 				setIsAnimating(false);
 				onComplete();
 			}
@@ -94,6 +108,7 @@ export const useGameAnimation = (
 			setVisualPositions,
 			targetPositionsRef,
 			resetAllTransforms,
+			resetHpStates,
 		],
 	);
 
@@ -108,5 +123,10 @@ export const useGameAnimation = (
 		runTurn,
 		resetPositions,
 		activeVfxList,
+		hpStates,
+		triggerHpBar,
+		showDamagePreview,
+		depleteHp,
+		clearPreview,
 	};
 };

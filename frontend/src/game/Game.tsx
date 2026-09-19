@@ -24,6 +24,7 @@ export const Game: React.FC = () => {
 				cameraMotion={game.cameraMotion}
 				activeVfxList={game.activeVfxList}
 				activeUnitPhases={game.activeUnitPhases}
+				hpStates={game.hpStates}
 			/>
 			<Stats>
 				<GameLog actionTrigger={game.actionCount} />

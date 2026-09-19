@@ -6,6 +6,7 @@ import type { AnimationPhase } from '../../../../utils/sprite/Sprite';
 import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
 import { ActiveLayerContainer, AnimatedUnitWrapper } from './ActiveLayerStyles';
 import type { UnitTransform } from '../../../../utils/animation/useGameAnimation/unitControl/unitControl';
+import type { HpStateMap } from '../../../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
 
 interface Props {
 	units: Unit[];
@@ -16,6 +17,7 @@ interface Props {
 	activeUnitPhases?: Record<string, AnimationPhase>;
 	visualPositions?: Record<string, { x: number; y: number }>;
 	unitTransforms?: Record<string, UnitTransform>;
+	hpStates?: HpStateMap;
 }
 
 const PLAYER_MOVEMENT_DELAY = 0.3;
@@ -30,6 +32,7 @@ const ActiveLayer: React.FC<Props> = React.memo(
 		activeUnitPhases = {},
 		visualPositions = {},
 		unitTransforms = {},
+		hpStates = {},
 	}) => {
 		return (
 			<ActiveLayerContainer>
@@ -103,6 +106,7 @@ const ActiveLayer: React.FC<Props> = React.memo(
 								}
 								facing={facing}
 								phase={activeUnitPhases[unitId]}
+								hpState={hpStates[unitId]}
 							/>
 						</AnimatedUnitWrapper>
 					);

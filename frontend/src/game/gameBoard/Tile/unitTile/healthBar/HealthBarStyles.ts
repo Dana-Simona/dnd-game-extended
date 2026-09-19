@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { motion } from 'framer-motion';
 
 export const BarContainer = styled.div<{ $offsetY?: number }>`
 	position: absolute;
@@ -18,18 +19,22 @@ export const BarContainer = styled.div<{ $offsetY?: number }>`
 	user-select: none;
 `;
 
-export const BarFill = styled.div<{ $percentage: number }>`
+export const BarFill = styled(motion.div)<{ $hasPreview?: boolean }>`
 	position: absolute;
 	top: 0;
 	left: 0;
 	height: 100%;
-	width: ${({ $percentage }) => $percentage}%;
-	border-radius: 1px;
+	border-radius: ${({ $hasPreview }) =>
+		$hasPreview ? '1px 0 0 1px' : '1px'};
 	background-color: #ef4444;
+`;
 
-	transition:
-		width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-		background 0.3s ease;
+export const PreviewBarFill = styled(motion.div)`
+	position: absolute;
+	top: 0;
+	height: 100%;
+	border-radius: 0 1px 1px 0;
+	background-color: #ffcc33;
 `;
 
 export const HealthText = styled.span`

@@ -12,16 +12,18 @@ import { ViewportContainer, Board, BoardCanvas } from './GameBoardStyles';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import type { UnitTransform } from '../../utils/animation/useGameAnimation/unitControl/unitControl';
 import type { VfxItem } from '../../utils/animation/useGameAnimation/vfxControl/vfxTypes';
+import type { HpStateMap } from '../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
 
 export interface Props {
 	board: string[];
 	enemies: Unit[];
 	activeUnitStates?: Record<string, ActionType>;
-	activeUnitPhases?: Record<string, AnimationPhase>; 
+	activeUnitPhases?: Record<string, AnimationPhase>;
 	visualPositions?: Record<string, { x: number; y: number }>;
 	unitTransforms?: Record<string, UnitTransform>;
 	cameraMotion: MotionProps;
 	activeVfxList?: VfxItem[];
+	hpStates: HpStateMap;
 }
 
 const TILE_SIZE = 32;
@@ -35,6 +37,7 @@ export const GameBoard: React.FC<Props> = ({
 	unitTransforms = {},
 	cameraMotion,
 	activeVfxList = [],
+	hpStates,
 }) => {
 	const { character } = useCharacter();
 	const { viewportRef } = useViewport();
@@ -63,6 +66,7 @@ export const GameBoard: React.FC<Props> = ({
 						activeUnitPhases={activeUnitPhases}
 						visualPositions={visualPositions}
 						unitTransforms={unitTransforms}
+						hpStates={hpStates}
 					/>
 					<VfxLayer vfxList={activeVfxList} />
 				</BoardCanvas>

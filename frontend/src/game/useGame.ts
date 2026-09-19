@@ -63,6 +63,7 @@ export const useGame = (level?: string) => {
 		resetPositions,
 		cameraMotion,
 		activeVfxList,
+		hpStates,
 	} = useGameAnimation(enemies, character);
 
 	usePreloader(enemies, character);
@@ -156,5 +157,6 @@ export const useGame = (level?: string) => {
 		unitTransforms,
 		cameraMotion,
 		activeVfxList,
+		hpStates,
 	};
 };

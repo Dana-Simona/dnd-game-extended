@@ -12,12 +12,17 @@ import {
 	UnitPreset,
 	type TriggerUnit,
 } from './useGameAnimation/unitControl/unitControl';
+import {
+	HpBarPreset,
+	type TriggerHpBar,
+} from './useGameAnimation/hpBarControl/useHpBarControl';
 
 export interface Controllers {
 	playUnitAnimation: PlayUnitAnimationFn;
 	spawnVFX: SpawnVfxFn;
 	triggerCamera: (command: CameraCommand) => Promise<void>;
 	triggerUnit: TriggerUnit;
+	triggerHpBar: TriggerHpBar;
 }
 
 export const setupAnimations = (controllers: Controllers) => {
@@ -73,6 +78,11 @@ export const setupAnimations = (controllers: Controllers) => {
 				ActionType.TAKE_DAMAGE,
 				AnimationPhase.WINDUP,
 			),
+			controllers.triggerHpBar?.({
+				type: HpBarPreset.SHOW_DAMAGE_PREVIEW,
+				unitId: defender,
+				damage: event.amount || 0,
+			}),
 		]);
 
 		await Promise.all([
@@ -85,7 +95,7 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.spawnVFX(
 				VfxTypes.PARTICLES_DAMAGE,
 				[defender],
-				0,
+				event.amount,
 				attacker,
 			),
 			controllers.triggerUnit({
@@ -95,8 +105,8 @@ export const setupAnimations = (controllers: Controllers) => {
 				distancePx: -25,
 				durationMs: 1000,
 			}),
-			//defender - recoil - squash unit
 		]);
+
 		await Promise.all([
 			controllers.playUnitAnimation(
 				attacker,
@@ -107,21 +117,11 @@ export const setupAnimations = (controllers: Controllers) => {
 				type: UnitPreset.RESET,
 				unitId: defender,
 			}),
+			controllers.triggerHpBar?.({
+				type: HpBarPreset.DEPLETE_HP,
+				unitId: defender,
+			}),
 		]);
-
-		//face each other
-		//attacker - start animation
-		//attacker - on impact frame - pause animation
-		//attacker - on impact frame - camera shake
-		//defender - on impact frame - play take damage animation
-		//defender - on impact frame - spawn directional particles
-		//defender - recoil - slide back (ease out)
-		//defender - recoil - squash unit
-		//defender - recovery - slide back to position
-
-		//damage taken section
-		//defender - spawn damage taken stat
-		//defender - health bar drop (with yellow ghost)
 	});
 
 	animationRegistry.register(ActionType.COMBAT, async (event: GameEvent) => {
@@ -166,6 +166,14 @@ export const setupAnimations = (controllers: Controllers) => {
 			);
 
 			for (const targetId of event.targetIds) {
+				if (event.amount) {
+					controllers.triggerHpBar?.({
+						type: HpBarPreset.SHOW_DAMAGE_PREVIEW,
+						unitId: targetId,
+						damage: event.amount,
+					});
+				}
+
 				await controllers.triggerCamera({
 					type: CameraPreset.FOCUS_TARGET,
 					targetIds: [targetId],
@@ -176,6 +184,11 @@ export const setupAnimations = (controllers: Controllers) => {
 					[targetId],
 					event.amount,
 				);
+
+				controllers.triggerHpBar?.({
+					type: HpBarPreset.DEPLETE_HP,
+					unitId: targetId,
+				});
 			}
 		},
 	);
@@ -191,6 +204,10 @@ export const setupAnimations = (controllers: Controllers) => {
 
 	animationRegistry.register(ActionType.HEAL, async (event: GameEvent) => {
 		if (!event.sourceId) return;
+		controllers.triggerHpBar?.({
+			type: HpBarPreset.DEPLETE_HP,
+			unitId: event.sourceId,
+		});
 		await controllers.spawnVFX(
 			VfxTypes.STAT_HEAL,
 			[event.sourceId],
@@ -268,17 +285,26 @@ export const setupAnimations = (controllers: Controllers) => {
 		ActionType.TAKE_DAMAGE_FROM_ABILITY,
 		async (event: GameEvent) => {
 			if (!event.sourceId) return;
-			// await Promise.all([
-			// 	controllers.playUnitAnimation(
-			// 		event.sourceId,
-			// 		ActionType.TAKE_DAMAGE,
-			// 	),
-			// 	controllers.spawnVFX(
-			// 		VfxTypes.STAT_DAMAGE,
-			// 		[event.sourceId],
-			// 		event.amount,
-			// 	),
-			// ]);
+			await Promise.all([
+				controllers.playUnitAnimation(
+					event.sourceId,
+					ActionType.TAKE_DAMAGE,
+				),
+				controllers.spawnVFX(
+					VfxTypes.STAT_DAMAGE,
+					[event.sourceId],
+					event.amount,
+				),
+				controllers.triggerHpBar({
+					type: HpBarPreset.SHOW_DAMAGE_PREVIEW,
+					unitId: event.sourceId,
+					damage: event.amount || 0,
+				}),
+			]);
+			controllers.triggerHpBar({
+				type: HpBarPreset.DEPLETE_HP,
+				unitId: event.sourceId,
+			});
 		},
 	);
 

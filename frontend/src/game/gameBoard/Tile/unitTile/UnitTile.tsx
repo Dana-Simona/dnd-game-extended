@@ -10,8 +10,9 @@ import {
 } from '../TileStyles';
 import { VisionRangeRing, AbilityRangeRing } from './UnitTileStyles';
 import type { Monster } from '../../../../constants/interfaces/monster';
+import type { HpState } from '../../../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
 
-interface UnitTileProps {
+interface Props {
 	unit?: Unit;
 	spriteProps: any;
 	phase?: AnimationPhase;
@@ -20,6 +21,7 @@ interface UnitTileProps {
 	visionRange?: number;
 	abilityRange?: number;
 	tileSize?: number;
+	hpState?: HpState;
 }
 
 const ringAnimation = {
@@ -29,7 +31,7 @@ const ringAnimation = {
 	transition: { duration: 0.2, ease: 'easeOut' },
 } as const;
 
-const UnitTile: React.FC<UnitTileProps> = ({
+const UnitTile: React.FC<Props> = ({
 	unit,
 	spriteProps,
 	phase,
@@ -38,6 +40,7 @@ const UnitTile: React.FC<UnitTileProps> = ({
 	visionRange: visionRangeProp,
 	abilityRange: abilityRangeProp,
 	tileSize = 32,
+	hpState,
 }) => {
 	const [isHovered, setIsHovered] = useState(false);
 
@@ -54,6 +57,13 @@ const UnitTile: React.FC<UnitTileProps> = ({
 		(isPlayer
 			? ((unit as any)?.range ?? (unit as any)?.abilityRange)
 			: undefined);
+
+	const currentHp =
+		hpState?.currentHp ?? unit?.currentHealth ?? (unit as any)?.hp ?? 0;
+
+	const maxHp = hpState?.maxHp ?? unit?.health ?? (unit as any)?.maxHp ?? 1;
+
+	const previewHp = hpState?.previewHp;
 
 	return (
 		<SpriteTileWrapper
@@ -84,10 +94,12 @@ const UnitTile: React.FC<UnitTileProps> = ({
 			>
 				{unit && (
 					<HealthBar
-						currentHp={unit.currentHealth}
-						maxHp={unit.health}
+						currentHp={currentHp}
+						previewHp={previewHp}
+						maxHp={maxHp}
 						isEnemy={!isPlayer}
 						offsetY={offsetY}
+						hpState={hpState}
 					/>
 				)}
 				<SpriteFlipWrapper
