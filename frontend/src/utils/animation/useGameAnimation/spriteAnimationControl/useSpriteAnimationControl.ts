@@ -21,7 +21,7 @@ import {
 } from './animationUtils';
 import {
 	AnimationPhase,
-	type SpritePresets,
+	SpritePresets,
 } from '../../../../constants/animationStates/spriteStates';
 import type { Position } from '../unitControl/unitCalculations';
 
@@ -96,15 +96,14 @@ export const useSpriteAnimationControl = (
 				duration,
 				targetPos,
 				setVisualPositions,
-				setActiveSpriteStates as unknown as Dispatch<
+				setActiveSpriteStates as Dispatch<
 					SetStateAction<Record<string, string>>
 				>,
 				setActiveUnitPhases,
 			);
 
 			const isMoveAction =
-				(action as string).toLowerCase() === 'move' &&
-				phase === AnimationPhase.FULL;
+				action === SpritePresets.MOVE && phase === AnimationPhase.FULL;
 
 			if (isMoveAction) {
 				const earlyResolveMs = Math.floor(duration * 0.5);

@@ -18,8 +18,7 @@ interface BoardData {
 
 const VALID_KEYS = new Set(['w', 'a', 's', 'd', 'e', 'q']);
 
-const isValidKey = (key: string): boolean =>
-	VALID_KEYS.has(key.toLowerCase());
+const isValidKey = (key: string): boolean => VALID_KEYS.has(key.toLowerCase());
 
 export const filterEnemies = (units: AllPlayerData[] = []): Unit[] =>
 	units.filter((unit) => unit.unitType !== UnitType.PLAYER) as Unit[];
@@ -62,7 +61,9 @@ export const useGame = (level?: string) => {
 		unitTransforms,
 		runTurn,
 		resetPositions,
-		cameraMotion,
+		panZoomMotion,
+		effectMotion,
+		effectKey,
 		activeVfxList,
 		hpStates,
 	} = useGameAnimation(enemies, character);
@@ -156,7 +157,9 @@ export const useGame = (level?: string) => {
 		activeUnitPhases,
 		visualPositions,
 		unitTransforms,
-		cameraMotion,
+		panZoomMotion,
+		effectMotion,
+		effectKey,
 		activeVfxList,
 		hpStates,
 	};

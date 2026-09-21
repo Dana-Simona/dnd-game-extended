@@ -19,7 +19,9 @@ export const Game: React.FC = () => {
 				activeSpriteStates={game.activeSpriteStates}
 				visualPositions={game.visualPositions}
 				unitTransforms={game.unitTransforms}
-				cameraMotion={game.cameraMotion}
+				panZoomMotion={game.panZoomMotion}
+				effectMotion={game.effectMotion}
+				effectKey={game.effectKey}
 				activeVfxList={game.activeVfxList}
 				activeUnitPhases={game.activeUnitPhases}
 				hpStates={game.hpStates}

@@ -23,6 +23,10 @@ export const Board = styled(motion.div)`
 	image-rendering: pixelated;
 `;
 
+export const BoardEffectLayer = styled(motion.div)`
+	transform-origin: center center;
+`;
+
 export const BoardCanvas = styled.div`
 	position: relative;
 `;

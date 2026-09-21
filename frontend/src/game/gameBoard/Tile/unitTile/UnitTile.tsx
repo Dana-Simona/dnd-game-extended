@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 
 import HealthBar from './healthBar/HealthBar';
 import RangeRing from './rangeRing/RangeRing';
-import Sprite from '../../../../utils/sprite/Sprite';
+import Sprite, { type SpriteProps } from '../../../../utils/sprite/Sprite';
 import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
+import { UnitFacing } from '../../../../constants/animationStates/unitStates';
 import type { AnimationPhase } from '../../../../constants/animationStates/spriteStates';
 import type { HpState } from '../../../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
 import {
@@ -11,11 +12,10 @@ import {
 	SpriteTileWrapper,
 	SpriteFlipWrapper,
 } from '../TileStyles';
-import { UnitFacing } from '../../../../constants/animationStates/unitStates';
 
 interface Props {
 	unit?: Unit;
-	spriteProps: any;
+	spriteProps: SpriteProps;
 	phase?: AnimationPhase;
 	offsetY: number;
 	facing?: UnitFacing;

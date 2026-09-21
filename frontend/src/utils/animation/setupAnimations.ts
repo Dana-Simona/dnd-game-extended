@@ -21,6 +21,7 @@ import {
 	CameraPreset,
 	type TriggerCamera,
 } from '../../constants/animationStates/cameraStates';
+import { UnitType, type Unit } from '../../constants/interfaces/unit';
 
 interface Controllers {
 	triggerSpriteAnimation: TriggerSpriteAnimation;
@@ -28,11 +29,13 @@ interface Controllers {
 	triggerCamera: TriggerCamera;
 	triggerUnit: TriggerUnit;
 	triggerHpBar: TriggerHpBar;
+	getUnitById: (id: string) => Unit | undefined;
 }
 
 export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(ActionType.MOVE, async (event: GameEvent) => {
 		if (!event.sourceId) return;
+
 		await controllers.triggerSpriteAnimation({
 			type: SpritePresets.MOVE,
 			unitId: event.sourceId,

@@ -7,14 +7,19 @@ import type { Unit } from '../../constants/interfaces/unit';
 import { useViewport, combineUnits } from './useGameBoard';
 import { VfxLayer } from './layers/activeLayer/vfxLayer/VfxLayer';
 import type { VfxItem } from '../../constants/animationStates/vfxStates';
-import { ViewportContainer, Board, BoardCanvas } from './GameBoardStyles';
+import {
+	ViewportContainer,
+	Board,
+	BoardEffectLayer,
+	BoardCanvas,
+} from './GameBoardStyles';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import type { UnitTransform } from '../../constants/animationStates/unitStates';
+import type { HpStateMap } from '../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
 import type {
 	SpritePresets,
 	AnimationPhase,
 } from '../../constants/animationStates/spriteStates';
-import type { HpStateMap } from '../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
 
 export interface Props {
 	board: string[];
@@ -23,7 +28,8 @@ export interface Props {
 	activeUnitPhases?: Record<string, AnimationPhase>;
 	visualPositions?: Record<string, { x: number; y: number }>;
 	unitTransforms?: Record<string, UnitTransform>;
-	cameraMotion: MotionProps;
+	panZoomMotion: MotionProps;
+	effectMotion: MotionProps;
 	activeVfxList?: VfxItem[];
 	hpStates: HpStateMap;
 }
@@ -37,7 +43,8 @@ export const GameBoard: React.FC<Props> = ({
 	activeUnitPhases = {},
 	visualPositions = {},
 	unitTransforms = {},
-	cameraMotion,
+	panZoomMotion,
+	effectMotion,
 	activeVfxList = [],
 	hpStates,
 }) => {
@@ -56,22 +63,24 @@ export const GameBoard: React.FC<Props> = ({
 
 	return (
 		<ViewportContainer ref={viewportRef}>
-			<Board {...cameraMotion}>
-				<BoardCanvas>
-					<StaticLayer board={board} />
-					<ActiveLayer
-						units={allUnits}
-						characterId={character.id}
-						tileSize={TILE_SIZE}
-						board={board}
-						activeSpriteStates={activeSpriteStates}
-						activeSpritePhases={activeUnitPhases}
-						visualPositions={visualPositions}
-						unitTransforms={unitTransforms}
-						hpStates={hpStates}
-					/>
-					<VfxLayer vfxList={activeVfxList} />
-				</BoardCanvas>
+			<Board {...panZoomMotion}>
+				<BoardEffectLayer {...effectMotion}>
+					<BoardCanvas>
+						<StaticLayer board={board} />
+						<ActiveLayer
+							units={allUnits}
+							characterId={character.id}
+							tileSize={TILE_SIZE}
+							board={board}
+							activeSpriteStates={activeSpriteStates}
+							activeSpritePhases={activeUnitPhases}
+							visualPositions={visualPositions}
+							unitTransforms={unitTransforms}
+							hpStates={hpStates}
+						/>
+						<VfxLayer vfxList={activeVfxList} />
+					</BoardCanvas>
+				</BoardEffectLayer>
 			</Board>
 		</ViewportContainer>
 	);
