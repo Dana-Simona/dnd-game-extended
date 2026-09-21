@@ -1,31 +1,30 @@
-import type { UnitTransform } from './unitControl';
+import {
+	UnitFacing,
+	type UnitTransform,
+} from '../../../../constants/animationStates/unitStates';
 
 type TransformMap = Record<string, UnitTransform>;
 
 export const applyFacing =
-	(unitId: string, facing: 'left' | 'right') =>
+	(unitId: string, facing: UnitFacing) =>
 	(prev: TransformMap): TransformMap => ({
 		...prev,
 		[unitId]: {
 			...prev[unitId],
-			scaleX: facing === 'left' ? -1 : 1,
+			scaleX: facing === UnitFacing.LEFT ? -1 : 1,
 			transition: { duration: 0.1, ease: 'easeOut' },
 		},
 	});
 
 export const applyOffsetAndFacing =
-	(
-		unitId: string,
-		offset: { x: number; y: number },
-		facing?: 'left' | 'right',
-	) =>
+	(unitId: string, offset: { x: number; y: number }, facing?: UnitFacing) =>
 	(prev: TransformMap): TransformMap => ({
 		...prev,
 		[unitId]: {
 			...prev[unitId],
 			x: offset.x,
 			y: offset.y,
-			...(facing && { scaleX: facing === 'left' ? -1 : 1 }),
+			...(facing && { scaleX: facing === UnitFacing.LEFT ? -1 : 1 }),
 			transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] },
 		},
 	});

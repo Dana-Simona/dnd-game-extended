@@ -2,20 +2,15 @@ import type { MotionProps } from 'framer-motion';
 import { useState, useCallback, useMemo } from 'react';
 
 import { runCameraShake, runThump } from './cameraAnimations';
+import type { Position } from '../unitControl/unitCalculations';
 import type { Unit } from '../../../../constants/interfaces/unit';
+import { getTargetCoords, calculateOffsets } from './cameraCalculations';
 import { buildCameraMotion, buildCameraStyle } from './cameraStyleBuilders';
 import type { AllPlayerData } from '../../../../constants/interfaces/player';
-import {
-	CameraPreset,
-	type CameraCommand,
-	type CameraState,
-	type Position,
-} from './cameraControl';
 import {
 	combinePlayerAndUnits,
 	findUnitPosition,
 } from '../spriteAnimationControl/animationUtils';
-import { getTargetCoords, calculateOffsets } from './cameraCalculations';
 import {
 	applyCameraStateWithDelay,
 	focusOn,
@@ -23,6 +18,11 @@ import {
 	resetCameraState,
 	focusTwoTargetsState,
 } from './cameraStateUpdaters';
+import {
+	type CameraCommand,
+	type CameraState,
+	CameraPreset,
+} from '../../../../constants/animationStates/cameraStates';
 
 export interface UseCameraControlReturn {
 	triggerCamera: (command: CameraCommand) => Promise<void>;

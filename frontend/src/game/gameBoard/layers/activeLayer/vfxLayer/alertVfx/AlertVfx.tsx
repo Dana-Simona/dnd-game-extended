@@ -6,7 +6,7 @@ import LoseVfx from './banners/LoseVfx';
 import LevelUpVfx from './banners/LevelUpVfx';
 import NextLevelVfx from './banners/NextLevel';
 import { AlertOverlay } from './AlertVfxStyles';
-import type { VfxItem } from '../../../../../../utils/animation/useGameAnimation/vfxControl/vfxTypes';
+import type { VfxItem } from '../../../../../../constants/animationStates/vfxStates';
 
 interface Props {
 	item: VfxItem;

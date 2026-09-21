@@ -1,4 +1,4 @@
-import { ActionType } from '../../constants/gameEvent';
+import { SpritePresets } from '../../constants/animationStates/spriteStates';
 import type { SpriteProps } from '../sprite/Sprite';
 
 type AnimMeta = Omit<SpriteProps, 'imagePath'>;
@@ -12,18 +12,23 @@ export const DEFAULT_ANIM_META: AnimMeta = {
 
 export const SPRITE_MANIFEST: Record<
 	string,
-	Partial<Record<ActionType, AnimMeta>>
+	Partial<Record<SpritePresets, AnimMeta>>
 > = {
 	player_warrior_jonsnow: {
-		[ActionType.IDLE]: {
+		[SpritePresets.IDLE]: {
 			width: 130,
 			height: 100,
 			frameCount: 8,
 			fps: 4,
 			loop: true,
 		},
-		[ActionType.MOVE]: { width: 130, height: 100, frameCount: 6, fps: 4 },
-		[ActionType.MELEE]: {
+		[SpritePresets.MOVE]: {
+			width: 130,
+			height: 100,
+			frameCount: 6,
+			fps: 4,
+		},
+		[SpritePresets.MELEE]: {
 			width: 130,
 			height: 100,
 			frameCount: 11,
@@ -31,41 +36,41 @@ export const SPRITE_MANIFEST: Record<
 		},
 	},
 	player_mage_melisandre: {
-		[ActionType.IDLE]: {
+		[SpritePresets.IDLE]: {
 			width: 130,
 			height: 100,
 			frameCount: 8,
 			fps: 5,
 			loop: true,
 		},
-		[ActionType.MOVE]: {
+		[SpritePresets.MOVE]: {
 			width: 130,
 			height: 100,
 			frameCount: 6,
 			fps: 6,
 		},
-		[ActionType.MELEE]: {
+		[SpritePresets.MELEE]: {
 			width: 130,
 			height: 100,
 			frameCount: 7,
 			fps: 4,
 			impactFrame: 2,
 		},
-		[ActionType.TAKE_DAMAGE]: {
+		[SpritePresets.TAKE_DAMAGE]: {
 			width: 130,
 			height: 100,
 			frameCount: 7,
 			fps: 4,
 			impactFrame: 3,
 		},
-		[ActionType.ABILITY_CAST]: {
+		[SpritePresets.ABILITY_CAST]: {
 			width: 130,
 			height: 100,
 			frameCount: 12,
 			fps: 6,
 			loopStartFrame: 2,
 		},
-		[ActionType.DIE]: {
+		[SpritePresets.DIE]: {
 			width: 130,
 			height: 100,
 			frameCount: 26,
@@ -75,15 +80,20 @@ export const SPRITE_MANIFEST: Record<
 		},
 	},
 	player_mage_thorosofmyr: {
-		[ActionType.IDLE]: {
+		[SpritePresets.IDLE]: {
 			width: 130,
 			height: 100,
 			frameCount: 8,
 			fps: 4,
 			loop: true,
 		},
-		[ActionType.MOVE]: { width: 130, height: 100, frameCount: 6, fps: 4 },
-		[ActionType.MELEE]: {
+		[SpritePresets.MOVE]: {
+			width: 130,
+			height: 100,
+			frameCount: 6,
+			fps: 4,
+		},
+		[SpritePresets.MELEE]: {
 			width: 130,
 			height: 100,
 			frameCount: 8,
@@ -91,7 +101,7 @@ export const SPRITE_MANIFEST: Record<
 		},
 	},
 	enemy_knight: {
-		[ActionType.IDLE]: {
+		[SpritePresets.IDLE]: {
 			width: 24,
 			height: 32,
 			frameCount: 11,
@@ -99,21 +109,21 @@ export const SPRITE_MANIFEST: Record<
 			loop: true,
 			offsetY: -5,
 		},
-		[ActionType.MOVE]: {
+		[SpritePresets.MOVE]: {
 			width: 22,
 			height: 32,
 			frameCount: 6,
 			fps: 13,
 			offsetY: -5,
 		},
-		[ActionType.DIE]: {
+		[SpritePresets.DIE]: {
 			width: 40,
 			height: 32,
 			frameCount: 7,
 			fps: 10,
 			offsetY: -5,
 		},
-		[ActionType.TAKE_DAMAGE]: {
+		[SpritePresets.TAKE_DAMAGE]: {
 			width: 30,
 			height: 32,
 			frameCount: 7,
@@ -121,7 +131,7 @@ export const SPRITE_MANIFEST: Record<
 			impactFrame: 1,
 			offsetY: -5,
 		},
-		[ActionType.MELEE]: {
+		[SpritePresets.MELEE]: {
 			width: 43,
 			height: 37,
 			frameCount: 18,
@@ -131,7 +141,7 @@ export const SPRITE_MANIFEST: Record<
 		},
 	},
 	enemy_goldcloak: {
-		[ActionType.IDLE]: {
+		[SpritePresets.IDLE]: {
 			width: 100,
 			height: 100,
 			frameCount: 6,
@@ -139,21 +149,21 @@ export const SPRITE_MANIFEST: Record<
 			offsetY: 36,
 			loop: true,
 		},
-		[ActionType.MOVE]: {
+		[SpritePresets.MOVE]: {
 			width: 100,
 			height: 100,
 			frameCount: 6,
 			fps: 12,
 			offsetY: 36,
 		},
-		[ActionType.DIE]: {
+		[SpritePresets.DIE]: {
 			width: 100,
 			height: 100,
 			frameCount: 6,
 			fps: 6,
 			offsetY: 36,
 		},
-		[ActionType.MELEE]: {
+		[SpritePresets.MELEE]: {
 			width: 100,
 			height: 100,
 			frameCount: 6,
@@ -161,17 +171,16 @@ export const SPRITE_MANIFEST: Record<
 			impactFrame: 4,
 			offsetY: 36,
 		},
-		[ActionType.TAKE_DAMAGE]: {
+		[SpritePresets.TAKE_DAMAGE]: {
 			width: 40,
 			height: 32,
 			frameCount: 4,
 			fps: 6,
 			impactFrame: 2,
-			// offsetY: 36,
 		},
 	},
 	enemy_queensguard: {
-		[ActionType.IDLE]: {
+		[SpritePresets.IDLE]: {
 			width: 100,
 			height: 100,
 			frameCount: 6,
@@ -179,28 +188,28 @@ export const SPRITE_MANIFEST: Record<
 			offsetY: 36,
 			loop: true,
 		},
-		[ActionType.MOVE]: {
+		[SpritePresets.MOVE]: {
 			width: 100,
 			height: 100,
 			frameCount: 6,
 			fps: 12,
 			offsetY: 36,
 		},
-		[ActionType.DIE]: {
+		[SpritePresets.DIE]: {
 			width: 100,
 			height: 100,
 			frameCount: 6,
 			fps: 6,
 			offsetY: 36,
 		},
-		[ActionType.MELEE]: {
+		[SpritePresets.MELEE]: {
 			width: 100,
 			height: 100,
 			frameCount: 6,
 			fps: 12,
 			offsetY: 36,
 		},
-		[ActionType.TAKE_DAMAGE]: {
+		[SpritePresets.TAKE_DAMAGE]: {
 			width: 40,
 			height: 32,
 			frameCount: 6,

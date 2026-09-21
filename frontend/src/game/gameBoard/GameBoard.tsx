@@ -4,20 +4,22 @@ import type { MotionProps } from 'framer-motion';
 import ActiveLayer from './layers/activeLayer/ActiveLayer';
 import StaticLayer from './layers/staticLayer/StaticLayer';
 import type { Unit } from '../../constants/interfaces/unit';
-import type { ActionType } from '../../constants/gameEvent';
 import { useViewport, combineUnits } from './useGameBoard';
-import type { AnimationPhase } from '../../utils/sprite/Sprite';
 import { VfxLayer } from './layers/activeLayer/vfxLayer/VfxLayer';
+import type { VfxItem } from '../../constants/animationStates/vfxStates';
 import { ViewportContainer, Board, BoardCanvas } from './GameBoardStyles';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
-import type { UnitTransform } from '../../utils/animation/useGameAnimation/unitControl/unitControl';
-import type { VfxItem } from '../../utils/animation/useGameAnimation/vfxControl/vfxTypes';
+import type { UnitTransform } from '../../constants/animationStates/unitStates';
+import type {
+	SpritePresets,
+	AnimationPhase,
+} from '../../constants/animationStates/spriteStates';
 import type { HpStateMap } from '../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
 
 export interface Props {
 	board: string[];
 	enemies: Unit[];
-	activeUnitStates?: Record<string, ActionType>;
+	activeSpriteStates?: Record<string, SpritePresets>;
 	activeUnitPhases?: Record<string, AnimationPhase>;
 	visualPositions?: Record<string, { x: number; y: number }>;
 	unitTransforms?: Record<string, UnitTransform>;
@@ -31,7 +33,7 @@ const TILE_SIZE = 32;
 export const GameBoard: React.FC<Props> = ({
 	board,
 	enemies,
-	activeUnitStates = {},
+	activeSpriteStates = {},
 	activeUnitPhases = {},
 	visualPositions = {},
 	unitTransforms = {},
@@ -62,8 +64,8 @@ export const GameBoard: React.FC<Props> = ({
 						characterId={character.id}
 						tileSize={TILE_SIZE}
 						board={board}
-						activeUnitStates={activeUnitStates}
-						activeUnitPhases={activeUnitPhases}
+						activeSpriteStates={activeSpriteStates}
+						activeSpritePhases={activeUnitPhases}
 						visualPositions={visualPositions}
 						unitTransforms={unitTransforms}
 						hpStates={hpStates}

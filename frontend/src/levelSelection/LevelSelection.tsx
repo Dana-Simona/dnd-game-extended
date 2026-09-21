@@ -1,4 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import Sprite from '../utils/sprite/Sprite';
+import Button from '../utils/button/Button';
+import { ROUTES } from '../constants/routes';
+import LevelOption from './levelOption/LevelOption';
+import { UnitType } from '../constants/interfaces/unit';
+import { useCharacter } from '../utils/characterContext/CharacterContext';
+import { SpritePresets } from '../constants/animationStates/spriteStates';
+import { getUnitSpriteConfig } from '../utils/animation/spriteAnimations';
 import {
 	Container,
 	Grid,
@@ -6,15 +16,6 @@ import {
 	CharacterWrapper,
 	ButtonContainer,
 } from './LevelSelectionStyles';
-import LevelOption from './levelOption/LevelOption';
-import Sprite from '../utils/sprite/Sprite';
-import Button from '../utils/button/Button';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '../constants/routes';
-import { useCharacter } from '../utils/characterContext/CharacterContext';
-import { getUnitSpriteConfig } from '../utils/animation/spriteAnimations';
-import { ActionType } from '../constants/gameEvent';
-import { UnitType } from '../constants/interfaces/unit';
 
 const levelImages = import.meta.glob<{ default: string }>(
 	'/src/assets/levelThumbnails/level*.jpg',
@@ -36,7 +37,7 @@ const LevelSelection: React.FC = () => {
 	const spriteProps = character
 		? getUnitSpriteConfig(
 				{ ...character, unitType: UnitType.PLAYER },
-				ActionType.IDLE,
+				SpritePresets.IDLE,
 			)
 		: null;
 

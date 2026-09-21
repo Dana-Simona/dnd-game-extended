@@ -1,9 +1,10 @@
 import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+
 import { useGameLogs } from './useGameLogs';
+import { colorizeLog } from './GameLogColors';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import { LogBody, LogContainer, LogEntry, LogHeader } from './GameLogStyles';
-import { colorizeLog } from './GameLogColors';
 
 interface GameLogProps {
 	actionTrigger?: number | string;

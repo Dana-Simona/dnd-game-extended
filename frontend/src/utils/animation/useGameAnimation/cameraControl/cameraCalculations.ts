@@ -1,6 +1,7 @@
-import type { Position, CameraState } from './cameraControl';
+import type { Position } from '../unitControl/unitCalculations';
 import type { Unit } from '../../../../constants/interfaces/unit';
 import type { AllPlayerData } from '../../../../constants/interfaces/player';
+import type { CameraState } from '../../../../constants/animationStates/cameraStates';
 
 export const calcTwoTargetCamera = (pos1: Position, pos2: Position) => {
 	const midX = (pos1.x + pos2.x) / 2;

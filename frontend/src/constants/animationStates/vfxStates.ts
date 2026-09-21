@@ -1,3 +1,13 @@
+export interface VfxCommand {
+	type: VfxTypes;
+	targetIds: string[];
+	amount?: number;
+	sourceId?: string;
+}
+
+export type TriggerVfx = (command: VfxCommand) => Promise<void>;
+
+
 export const VfxTypes = {
 	BANNER_WIN: 'Win',
 	BANNER_LEVEL_UP: 'LevelUp',

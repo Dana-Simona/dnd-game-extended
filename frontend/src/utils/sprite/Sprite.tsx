@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
+
 import { SpriteBox } from './SpriteStyles';
-
-export const AnimationPhase = {
-	FULL: 'full',
-	WINDUP: 'windup',
-	FOLLOW_THROUGH: 'followThrough',
-} as const;
-
-export type AnimationPhase =
-	(typeof AnimationPhase)[keyof typeof AnimationPhase];
+import { AnimationPhase } from '../../constants/animationStates/spriteStates';
 
 export interface SpriteProps {
 	imagePath: string;

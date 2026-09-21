@@ -1,20 +1,25 @@
 import React from 'react';
 import type { Transition } from 'framer-motion';
 import Tile from '../../Tile/Tile';
-import type { ActionType } from '../../../../constants/gameEvent';
-import type { AnimationPhase } from '../../../../utils/sprite/Sprite';
 import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
 import { ActiveLayerContainer, AnimatedUnitWrapper } from './ActiveLayerStyles';
-import type { UnitTransform } from '../../../../utils/animation/useGameAnimation/unitControl/unitControl';
 import type { HpStateMap } from '../../../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
+import {
+	UnitFacing,
+	type UnitTransform,
+} from '../../../../constants/animationStates/unitStates';
+import type {
+	SpritePresets,
+	AnimationPhase,
+} from '../../../../constants/animationStates/spriteStates';
 
 interface Props {
 	units: Unit[];
 	characterId: string;
 	tileSize: number;
 	board: string[];
-	activeUnitStates?: Record<string, ActionType>;
-	activeUnitPhases?: Record<string, AnimationPhase>;
+	activeSpriteStates?: Record<string, SpritePresets>;
+	activeSpritePhases?: Record<string, AnimationPhase>;
 	visualPositions?: Record<string, { x: number; y: number }>;
 	unitTransforms?: Record<string, UnitTransform>;
 	hpStates?: HpStateMap;
@@ -28,8 +33,8 @@ const ActiveLayer: React.FC<Props> = React.memo(
 		characterId,
 		tileSize,
 		board,
-		activeUnitStates = {},
-		activeUnitPhases = {},
+		activeSpriteStates = {},
+		activeSpritePhases = {},
 		visualPositions = {},
 		unitTransforms = {},
 		hpStates = {},
@@ -76,7 +81,9 @@ const ActiveLayer: React.FC<Props> = React.memo(
 
 					const facing =
 						transform.facing ??
-						(transform.scaleX === -1 ? 'left' : 'right');
+						(transform.scaleX === -1
+							? UnitFacing.LEFT
+							: UnitFacing.RIGHT);
 
 					return (
 						<AnimatedUnitWrapper
@@ -101,11 +108,9 @@ const ActiveLayer: React.FC<Props> = React.memo(
 								y={currentY}
 								grid={board}
 								unit={unit}
-								activeActionState={
-									activeUnitStates[unitId] as ActionType
-								}
+								activeActionState={activeSpriteStates[unitId]}
 								facing={facing}
-								phase={activeUnitPhases[unitId]}
+								phase={activeSpritePhases[unitId]}
 								hpState={hpStates[unitId]}
 							/>
 						</AnimatedUnitWrapper>

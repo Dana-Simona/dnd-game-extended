@@ -1,11 +1,11 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
+
 import { useGame } from './useGame';
 import { GameLog } from './gameLog/GameLog';
-import { useParams } from 'react-router-dom';
 import { Container, Stats } from './GameStyles';
 import { GameBoard } from './gameBoard/GameBoard';
 import { PlayerStats } from './playerStats/PlayerStats';
-import type { ActionType } from '../constants/gameEvent';
 
 export const Game: React.FC = () => {
 	const { level } = useParams<{ level: string }>();
@@ -16,9 +16,7 @@ export const Game: React.FC = () => {
 			<GameBoard
 				board={game.board}
 				enemies={game.enemies}
-				activeUnitStates={
-					game.activeUnitStates as Record<string, ActionType>
-				}
+				activeSpriteStates={game.activeSpriteStates}
 				visualPositions={game.visualPositions}
 				unitTransforms={game.unitTransforms}
 				cameraMotion={game.cameraMotion}

@@ -1,9 +1,9 @@
+import type { UnitTransform } from '../../../../constants/animationStates/unitStates';
 import {
 	calculateFacing,
 	calculateVectorOffset,
 	type Position,
 } from './unitCalculations';
-import type { UnitTransform } from './unitControl';
 
 type SetTransforms = React.Dispatch<
 	React.SetStateAction<Record<string, UnitTransform>>
@@ -67,7 +67,7 @@ export const executeDash = async (
 		scaleX: facing === 'left' ? -1 : 1,
 		transition: {
 			duration: durationMs / 1000,
-			ease: [0, 0.85, 0.15, 1.0]
+			ease: [0, 0.85, 0.15, 1.0],
 		},
 	};
 

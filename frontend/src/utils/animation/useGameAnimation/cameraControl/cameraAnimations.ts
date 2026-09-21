@@ -1,4 +1,4 @@
-import type { CameraState } from './cameraControl';
+import type { CameraState } from '../../../../constants/animationStates/cameraStates';
 
 export const updateShakeOffset = (
 	setCamera: React.Dispatch<React.SetStateAction<CameraState>>,

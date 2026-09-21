@@ -1,13 +1,13 @@
 import { getWallConfigAt } from './wallAutotile';
 import type { SpriteProps } from '../sprite/Sprite';
-import { UnitType, type Unit } from '../../constants/interfaces/unit';
 import { getUnitSpriteConfig } from '../animation/spriteAnimations';
+import { UnitType, type Unit } from '../../constants/interfaces/unit';
 import stairsSpriteSheet from '../../assets/tiles/Texture/TX Struct.png';
+import { SpritePresets } from '../../constants/animationStates/spriteStates';
 import wallSpriteSheet from '../../assets/tiles/Texture/TX Tileset Wall.png';
 import grassSpriteSheet from '../../assets/tiles/Texture/TX Tileset Grass.png';
 import { getProceduralTileCoords } from './proceduralNoise/useProceduralNoise';
 import stoneGroundSpriteSheet from '../../assets/tiles/Texture/TX Tileset Stone Ground.png';
-import { ActionType } from '../../constants/gameEvent';
 
 export const getUnitTypeByChar = (char: string): UnitType | null => {
 	if (char === '@') {
@@ -90,7 +90,7 @@ export const getTileConfig = (
 	x: number = 0,
 	y: number = 0,
 	grid: string[] = [],
-	actionState: ActionType = ActionType.IDLE,
+	actionState: SpritePresets = SpritePresets.IDLE,
 ): TileConfig => {
 	if (char === '#') {
 		const wallData = getWallConfigAt(grid, x, y);

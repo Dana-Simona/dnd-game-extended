@@ -1,10 +1,13 @@
-import { getUnitSpriteConfig } from '../../spriteAnimations';
 import { animationRegistry } from '../../animationRegistry';
-import type { Position } from '../cameraControl/cameraControl';
-import type { ActionType, GameEvent } from '../../../../constants/gameEvent';
-import type { AllPlayerData } from '../../../../constants/interfaces/player';
+import { getUnitSpriteConfig } from '../../spriteAnimations';
+import type { Position } from '../unitControl/unitCalculations';
+import type { GameEvent } from '../../../../constants/gameEvent';
 import type { Unit } from '../../../../constants/interfaces/unit';
-import { AnimationPhase } from '../../../sprite/Sprite';
+import type { AllPlayerData } from '../../../../constants/interfaces/player';
+import {
+	AnimationPhase,
+	type SpritePresets,
+} from '../../../../constants/animationStates/spriteStates';
 
 export const combinePlayerAndUnits = (
 	player: Unit | AllPlayerData | null,
@@ -53,7 +56,7 @@ export const findUnitPosition = (
 
 export const calculateAnimDuration = (
 	unit: Unit | undefined,
-	action: ActionType,
+	action: SpritePresets,
 	phase: AnimationPhase = AnimationPhase.FULL,
 ): number => {
 	const config = getUnitSpriteConfig(unit, action);
@@ -64,7 +67,10 @@ export const calculateAnimDuration = (
 	let framesToPlay = totalFrames;
 	if (phase === AnimationPhase.WINDUP && impactFrame !== undefined) {
 		framesToPlay = impactFrame;
-	} else if (phase === AnimationPhase.FOLLOW_THROUGH && impactFrame !== undefined) {
+	} else if (
+		phase === AnimationPhase.FOLLOW_THROUGH &&
+		impactFrame !== undefined
+	) {
 		framesToPlay = totalFrames - impactFrame;
 	}
 
@@ -135,7 +141,10 @@ export const triggerUnitAnim = (
 		setPhases((prev) => ({ ...prev, [unitId]: phase }));
 
 		const timer = setTimeout(() => {
-			if (phase === AnimationPhase.FULL|| phase === AnimationPhase.FOLLOW_THROUGH) {
+			if (
+				phase === AnimationPhase.FULL ||
+				phase === AnimationPhase.FOLLOW_THROUGH
+			) {
 				setStates((prev) => removeActiveState(prev, unitId));
 				setPhases((prev) => removeActivePhase(prev, unitId));
 			}

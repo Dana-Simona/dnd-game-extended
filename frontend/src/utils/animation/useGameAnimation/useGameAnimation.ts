@@ -6,11 +6,11 @@ import { playTurnSequence } from '../playTurnSequence';
 import { useUnitControl } from './unitControl/useUnitControl';
 import type { GameEvent } from '../../../constants/gameEvent';
 import type { Unit } from '../../../constants/interfaces/unit';
+import { useHpBarControl } from './hpBarControl/useHpBarControl';
 import { useCameraControl } from './cameraControl/useCameraControl';
 import type { AllPlayerData } from '../../../constants/interfaces/player';
 import { buildTargetPositions } from './spriteAnimationControl/animationUtils';
-import { useAnimationControl } from './spriteAnimationControl/useAnimationControl';
-import { useHpBarControl } from './hpBarControl/useHpBarControl';
+import { useSpriteAnimationControl } from './spriteAnimationControl/useSpriteAnimationControl';
 
 export const useGameAnimation = (
 	units: Unit[],
@@ -21,13 +21,13 @@ export const useGameAnimation = (
 	const [isAnimating, setIsAnimating] = useState(false);
 
 	const {
-		activeUnitStates,
+		activeSpriteStates,
 		activeUnitPhases,
 		visualPositions,
 		setVisualPositions,
 		targetPositionsRef,
-		playUnitAnimation,
-	} = useAnimationControl(units, player, tileSize, zoom);
+		playSpriteAnimation,
+	} = useSpriteAnimationControl(units, player, tileSize, zoom);
 
 	const { triggerCamera, resetCamera, cameraMotion, cameraStyle } =
 		useCameraControl(player, units, visualPositions, tileSize, zoom);
@@ -51,13 +51,25 @@ export const useGameAnimation = (
 
 	useEffect(() => {
 		setupAnimations({
-			playUnitAnimation,
-			spawnVFX,
+			triggerSpriteAnimation: ({ unitId, type, phase }) =>
+				playSpriteAnimation(
+					unitId,
+					type as Parameters<typeof playSpriteAnimation>[1],
+					phase,
+				),
+			triggerVfx: ({ type, targetIds, amount, sourceId }) =>
+				spawnVFX(type, targetIds, amount, sourceId),
 			triggerCamera,
 			triggerUnit,
 			triggerHpBar,
 		});
-	}, [playUnitAnimation, spawnVFX, triggerCamera, triggerUnit, triggerHpBar]);
+	}, [
+		playSpriteAnimation,
+		spawnVFX,
+		triggerCamera,
+		triggerUnit,
+		triggerHpBar,
+	]);
 
 	const resetPositions = useCallback(
 		(nextPlayer: Unit | AllPlayerData | null, nextEnemies: Unit[]) => {
@@ -114,7 +126,7 @@ export const useGameAnimation = (
 
 	return {
 		isAnimating,
-		activeUnitStates,
+		activeSpriteStates,
 		activeUnitPhases,
 		visualPositions,
 		unitTransforms,

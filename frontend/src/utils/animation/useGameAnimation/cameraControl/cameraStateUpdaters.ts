@@ -1,5 +1,5 @@
 import { calcTwoTargetCamera } from './cameraCalculations';
-import type { CameraState, Position } from './cameraControl';
+import type { CameraState, Position } from '../../../../constants/animationStates/cameraStates';
 
 export const applyCameraStateWithDelay = (
 	setCamera: React.Dispatch<React.SetStateAction<CameraState>>,

@@ -1,3 +1,5 @@
+import { UnitFacing } from '../../../../constants/animationStates/unitStates';
+
 export interface Position {
 	x: number;
 	y: number;
@@ -6,7 +8,8 @@ export interface Position {
 export const calculateFacing = (
 	sourcePos: Position,
 	targetPos: Position,
-): 'left' | 'right' => (targetPos.x - sourcePos.x < 0 ? 'left' : 'right');
+): UnitFacing =>
+	targetPos.x - sourcePos.x < 0 ? UnitFacing.LEFT : UnitFacing.RIGHT;
 
 export const calculateVectorOffset = (
 	fromPos: Position,

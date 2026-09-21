@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
-import type { Position } from '../cameraControl/cameraControl';
-import { VfxCategory, VfxTypeToCategoryMap } from './vfxTypes';
-import type { VfxItem, VfxTypes } from './vfxTypes';
+import { VfxCategory, VfxTypes, VfxTypeToCategoryMap, type VfxItem } from '../../../../constants/animationStates/vfxStates';
+import type { Position } from '../unitControl/unitCalculations';
 
 const CATEGORY_DURATIONS: Record<VfxCategory, number> = {
 	[VfxCategory.BANNER]: 1600,

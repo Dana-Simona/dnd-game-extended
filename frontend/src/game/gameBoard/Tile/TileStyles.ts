@@ -27,6 +27,7 @@ export const PositionedSpriteContainer = styled.div<PositionedSpriteProps>`
 	position: absolute;
 	left: 50%;
 	top: 0;
+	pointer-events: 'none';
 	transform: translate(
 		-50%,
 		calc(

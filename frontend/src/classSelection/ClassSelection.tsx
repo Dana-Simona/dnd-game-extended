@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import Button from '../utils/button/Button';
+import { Container } from './ClassSelectionStyles';
+import { UnitType } from '../constants/interfaces/unit';
+import type { AllPlayerData } from '../constants/interfaces/player';
+import AbilityDescription from './abilityDescription/AbilityDescription';
+import { SpritePresets } from '../constants/animationStates/spriteStates';
+import { getUnitSpriteConfig } from '../utils/animation/spriteAnimations';
+import { ClassAbilityDescription, ClassTypes } from '../constants/classTypes';
+import { ButtonContainer } from './characterSelection/CharacterSelectionStyles';
 import CharacterDisplay, {
 	type CharacterDisplayOptions,
 } from './characterSelection/characterDisplay/CharacterDisplay';
-import { Container } from './ClassSelectionStyles';
-import { ClassAbilityDescription, ClassTypes } from '../constants/classTypes';
-import { ButtonContainer } from './characterSelection/CharacterSelectionStyles';
-import AbilityDescription from './abilityDescription/AbilityDescription';
-import { ActionType } from '../constants/gameEvent';
-import { getUnitSpriteConfig } from '../utils/animation/spriteAnimations';
-import type { AllPlayerData } from '../constants/interfaces/player';
-import { UnitType } from '../constants/interfaces/unit';
 
 const getInitialClassIndex = (classes: CharacterDisplayOptions[]): number => {
 	const savedClass = sessionStorage.getItem('selectedClass');
@@ -37,7 +38,7 @@ const ClassSelection: React.FC = () => {
 						class: ClassTypes.WARRIOR,
 						unitType: UnitType.PLAYER,
 					} as AllPlayerData,
-					ActionType.ABILITY_CAST,
+					SpritePresets.ABILITY_CAST,
 				),
 				loop: true,
 			},
@@ -60,7 +61,7 @@ const ClassSelection: React.FC = () => {
 						class: ClassTypes.MAGE,
 						unitType: UnitType.PLAYER,
 					} as AllPlayerData,
-					ActionType.ABILITY_CAST,
+					SpritePresets.ABILITY_CAST,
 				),
 				loop: true,
 			},
@@ -83,7 +84,7 @@ const ClassSelection: React.FC = () => {
 						class: ClassTypes.ROGUE,
 						unitType: UnitType.PLAYER,
 					} as AllPlayerData,
-					ActionType.ABILITY_CAST,
+					SpritePresets.ABILITY_CAST,
 				),
 				loop: true,
 			},
@@ -106,7 +107,7 @@ const ClassSelection: React.FC = () => {
 						class: ClassTypes.HUNTER,
 						unitType: UnitType.PLAYER,
 					} as AllPlayerData,
-					ActionType.ABILITY_CAST,
+					SpritePresets.ABILITY_CAST,
 				),
 				loop: true,
 			},

@@ -1,13 +1,13 @@
 import React from 'react';
 import UnitTile from './unitTile/UnitTile';
 import LayeredTile from './layeredTile/LayeredTile';
-import { ActionType } from '../../../constants/gameEvent';
 import BaseStaticTile from './baseStaticTile/BaseStaticTile';
-import { AnimationPhase } from '../../../utils/sprite/Sprite';
 import type { Unit } from '../../../constants/interfaces/unit';
 import { getTileConfig } from '../../../utils/tileMapping/tileMapping';
+import { UnitFacing } from '../../../constants/animationStates/unitStates';
 import { getUnitSpriteConfig } from '../../../utils/animation/spriteAnimations';
 import type { HpState } from '../../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
+import { AnimationPhase, SpritePresets } from '../../../constants/animationStates/spriteStates';
 
 interface Props {
 	char: string;
@@ -15,8 +15,8 @@ interface Props {
 	y?: number;
 	grid?: string[];
 	unit?: Unit;
-	activeActionState?: ActionType;
-	facing?: 'left' | 'right';
+	activeActionState?: SpritePresets;
+	facing?: UnitFacing;
 	phase?: AnimationPhase;
 	hpState?: HpState;
 }
@@ -27,16 +27,13 @@ const Tile: React.FC<Props> = ({
 	y = 0,
 	grid = [],
 	unit,
-	activeActionState = ActionType.IDLE,
-	facing = 'right',
+	activeActionState = SpritePresets.IDLE,
+	facing = UnitFacing.RIGHT,
 	phase,
 	hpState,
 }) => {
 	if (unit) {
-		const spriteProps = getUnitSpriteConfig(
-			unit,
-			activeActionState as ActionType,
-		);
+		const spriteProps = getUnitSpriteConfig(unit, activeActionState);
 		const offsetY = spriteProps.offsetY || 0;
 
 		return (

@@ -8,9 +8,9 @@ import type { AllPlayerData } from '../../constants/interfaces/player';
 import Button from '../../utils/button/Button';
 import Stats from './Stats/Stats';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
-import { ActionType } from '../../constants/gameEvent';
 import { getUnitSpriteConfig } from '../../utils/animation/spriteAnimations';
 import { UnitType } from '../../constants/interfaces/unit';
+import { SpritePresets } from '../../constants/animationStates/spriteStates';
 
 export type Character = AllPlayerData & CharacterDisplayOptions;
 
@@ -55,7 +55,7 @@ export const CharacterSelection: React.FC = () => {
 					(player, index) => {
 						const spriteConfig = getUnitSpriteConfig(
 							{ ...player, unitType: UnitType.PLAYER},
-							ActionType.IDLE,
+							SpritePresets.IDLE,
 						);
 
 						return {

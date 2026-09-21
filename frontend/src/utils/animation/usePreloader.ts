@@ -1,19 +1,19 @@
 import { useEffect } from 'react';
-import { ActionType } from '../../constants/gameEvent';
 import { getUnitSpriteConfig } from './spriteAnimations';
 import type { Unit } from '../../constants/interfaces/unit';
 import type { AllPlayerData } from '../../constants/interfaces/player';
+import { SpritePresets } from '../../constants/animationStates/spriteStates';
 
 export const usePreloader = (units: Unit[], player: AllPlayerData | null) => {
 	useEffect(() => {
 		const allUnits = player ? [player, ...units] : [...units];
 
 		const actionsToPreload = [
-			ActionType.IDLE,
-			ActionType.MOVE,
-			ActionType.MELEE,
-			ActionType.DIE,
-			ActionType.ABILITY_CAST,
+			SpritePresets.IDLE,
+			SpritePresets.MOVE,
+			SpritePresets.MELEE,
+			SpritePresets.DIE,
+			SpritePresets.ABILITY_CAST,
 		];
 
 		allUnits.forEach((unit) => {

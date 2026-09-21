@@ -1,3 +1,5 @@
+export type TriggerCamera = (command: CameraCommand) => Promise<void>;
+
 export const CameraPreset = {
 	ZOOM_IN: 'ZOOM_IN',
 	ZOOM_OUT: 'ZOOM_OUT',

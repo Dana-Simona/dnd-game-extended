@@ -1,18 +1,18 @@
 import { useState, useCallback, useRef } from 'react';
 import type { Position } from './unitCalculations';
 import {
-	UnitPreset,
-	type UnitCommand,
-	type UnitTransform,
-	type TriggerUnit,
-} from './unitControl';
-import {
 	executeFaceTarget,
 	executeDash,
 	executeResetTransform,
 	executeFadeOut,
 	executeFadeIn,
 } from './unitAnimations';
+import {
+	UnitPreset,
+	type TriggerUnit,
+	type UnitCommand,
+	type UnitTransform,
+} from '../../../../constants/animationStates/unitStates';
 
 export const useUnitControl = (visualPositions: Record<string, Position>) => {
 	const [unitTransforms, setUnitTransforms] = useState<

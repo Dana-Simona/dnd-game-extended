@@ -1,10 +1,10 @@
 import React from 'react';
-import { useCharacter } from '../../../../../../utils/characterContext/CharacterContext';
 import { AbilityVfxContainer } from './AbilityVfxStyles';
-import type { SpriteProps } from '../../../../../../utils/sprite/Sprite';
-import { ClassTypes } from '../../../../../../constants/classTypes';
 import Sprite from '../../../../../../utils/sprite/Sprite';
-import type { VfxItem } from '../../../../../../utils/animation/useGameAnimation/vfxControl/vfxTypes';
+import { ClassTypes } from '../../../../../../constants/classTypes';
+import type { SpriteProps } from '../../../../../../utils/sprite/Sprite';
+import type { VfxItem } from '../../../../../../constants/animationStates/vfxStates';
+import { useCharacter } from '../../../../../../utils/characterContext/CharacterContext';
 
 interface Props {
 	item: VfxItem;

@@ -4,11 +4,11 @@ import { RollVfx } from './rollVfx/RollVfx';
 import { StatVfx } from './statVfx/StatVfx';
 import { VfxViewportLayer } from './vfxStyles';
 import { AbilityVfx } from './abilityVfx/AbilityVfx';
-import {
-	VfxCategory,
-	type VfxItem,
-} from '../../../../../utils/animation/useGameAnimation/vfxControl/vfxTypes';
 import ParticlesVfx from './particlesVfx/ParticlesVfx';
+import {
+	type VfxItem,
+	VfxCategory,
+} from '../../../../../constants/animationStates/vfxStates';
 
 interface Props {
 	vfxList: VfxItem[];

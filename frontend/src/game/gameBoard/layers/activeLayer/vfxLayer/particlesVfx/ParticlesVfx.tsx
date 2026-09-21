@@ -1,9 +1,6 @@
 import React, { useMemo } from 'react';
-import {
-	VfxTypes,
-	type VfxItem,
-} from '../../../../../../utils/animation/useGameAnimation/vfxControl/vfxTypes';
 import { Container, ParticleShape } from './ParticlesStyles';
+import type { VfxItem } from '../../../../../../constants/animationStates/vfxStates';
 
 export type DirectionInput = number | 'up' | 'down' | 'left' | 'right';
 
@@ -28,6 +25,80 @@ interface ParticleConfig {
 }
 
 const BLOOD_COLORS = ['#800000', '#990000', '#cc0000', '#e60000', '#4a0000'];
+
+const getStartPosition = (baseAngle: number) => ({
+	startX: Math.cos(baseAngle) * 30,
+	startY: Math.sin(baseAngle) * 30,
+});
+
+const getRandomColor = () =>
+	BLOOD_COLORS[Math.floor(Math.random() * BLOOD_COLORS.length)];
+
+const getParticleAngle = (
+	i: number,
+	count: number,
+	baseAngle: number,
+	isDirectional: boolean,
+	spreadAngle: number,
+) =>
+	isDirectional
+		? baseAngle + (Math.random() - 0.5) * spreadAngle
+		: (i / count) * spreadAngle + (Math.random() - 0.5) * 0.2;
+
+const getParticleTarget = (angle: number) => {
+	const distance = 15 + Math.random() * 60;
+	return {
+		tx: Math.cos(angle) * distance,
+		ty: Math.sin(angle) * distance - (8 + Math.random() * 16),
+	};
+};
+
+const createParticle = (
+	i: number,
+	count: number,
+	baseAngle: number,
+	isDirectional: boolean,
+	spreadAngle: number,
+	startPos: { startX: number; startY: number },
+): ParticleConfig => {
+	const angle = getParticleAngle(
+		i,
+		count,
+		baseAngle,
+		isDirectional,
+		spreadAngle,
+	);
+	const { tx, ty } = getParticleTarget(angle);
+	return {
+		id: i,
+		size: 2,
+		color: getRandomColor(),
+		...startPos,
+		tx,
+		ty,
+		delay: Math.random() * 30,
+		duration: 0.7 + Math.random() * 0.5,
+	};
+};
+
+const generateParticles = (
+	count: number,
+	baseAngle: number,
+	isDirectional: boolean,
+): ParticleConfig[] => {
+	const spreadAngle = isDirectional ? Math.PI / 4 : Math.PI * 2;
+	const startPos = getStartPosition(baseAngle);
+	return Array.from({ length: count }, (_, i) =>
+		createParticle(
+			i,
+			count,
+			baseAngle,
+			isDirectional,
+			spreadAngle,
+			startPos,
+		),
+	);
+};
 
 const resolveDirectionAngle = (
 	item: DirectionalVfxItem,
@@ -71,40 +142,10 @@ const ParticlesVfx: React.FC<Props> = ({ item }) => {
 		[item.direction, item.x, item.y, item.sourceX, item.sourceY],
 	);
 
-	const particles = useMemo(() => {
-		const count = 32;
-		const result: ParticleConfig[] = [];
-		const spreadAngle = isDirectional ? Math.PI / 4 : Math.PI * 2;
-
-		const startX = -Math.cos(baseAngle) * -30;
-		const startY = -Math.sin(baseAngle) * -30;
-
-		for (let i = 0; i < count; i++) {
-			const angle = isDirectional
-				? baseAngle + (Math.random() - 0.5) * spreadAngle
-				: (i / count) * spreadAngle + (Math.random() - 0.5) * 0.2;
-
-			const distance = 15 + Math.random() * 60;
-			const tx = Math.cos(angle) * distance;
-			const ty = Math.sin(angle) * distance - (8 + Math.random() * 16); 
-
-			result.push({
-				id: i,
-				size: 2,
-				color: BLOOD_COLORS[
-					Math.floor(Math.random() * BLOOD_COLORS.length)
-				],
-				startX,
-				startY,
-				tx,
-				ty,
-				delay: Math.random() * 30,
-				duration: 0.7 + Math.random() * 0.5,
-			});
-		}
-
-		return result;
-	}, [baseAngle, isDirectional]);
+	const particles = useMemo(
+		() => generateParticles(32, baseAngle, isDirectional),
+		[baseAngle, isDirectional],
+	);
 
 	return (
 		<Container

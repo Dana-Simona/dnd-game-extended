@@ -1,14 +1,15 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+
 import { ROUTES } from '../constants/routes';
 import type { GameEvent } from '../constants/gameEvent';
+import { usePreloader } from '../utils/animation/usePreloader';
+import { UnitType, type Unit } from '../constants/interfaces/unit';
 import type { AllPlayerData } from '../constants/interfaces/player';
 import { useCharacter } from '../utils/characterContext/CharacterContext';
 import { useGameAnimation } from '../utils/animation/useGameAnimation/useGameAnimation';
-import { usePreloader } from '../utils/animation/usePreloader';
-import { UnitType, type Unit } from '../constants/interfaces/unit';
 
-export interface BoardData {
+interface BoardData {
 	grid: string[];
 	player: AllPlayerData;
 	units: AllPlayerData[];
@@ -17,7 +18,7 @@ export interface BoardData {
 
 const VALID_KEYS = new Set(['w', 'a', 's', 'd', 'e', 'q']);
 
-export const isValidKey = (key: string): boolean =>
+const isValidKey = (key: string): boolean =>
 	VALID_KEYS.has(key.toLowerCase());
 
 export const filterEnemies = (units: AllPlayerData[] = []): Unit[] =>
@@ -55,7 +56,7 @@ export const useGame = (level?: string) => {
 
 	const {
 		isAnimating,
-		activeUnitStates,
+		activeSpriteStates,
 		activeUnitPhases,
 		visualPositions,
 		unitTransforms,
@@ -151,7 +152,7 @@ export const useGame = (level?: string) => {
 		board,
 		actionCount,
 		enemies,
-		activeUnitStates,
+		activeSpriteStates,
 		activeUnitPhases,
 		visualPositions,
 		unitTransforms,

@@ -1,8 +1,12 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import {
+	useState,
+	useCallback,
+	useEffect,
+	useRef,
+	type Dispatch,
+	type SetStateAction,
+} from 'react';
 
-import { AnimationPhase } from '../../../sprite/Sprite';
-import { ActionType } from '../../../../constants/gameEvent';
-import type { Position } from '../cameraControl/cameraControl';
 import type { Unit } from '../../../../constants/interfaces/unit';
 import type { AllPlayerData } from '../../../../constants/interfaces/player';
 import {
@@ -15,15 +19,20 @@ import {
 	calculateAnimDuration,
 	triggerUnitAnim,
 } from './animationUtils';
+import {
+	AnimationPhase,
+	type SpritePresets,
+} from '../../../../constants/animationStates/spriteStates';
+import type { Position } from '../unitControl/unitCalculations';
 
-export const useAnimationControl = (
+export const useSpriteAnimationControl = (
 	units: Unit[],
 	player: Unit | AllPlayerData | null,
 	tileSize: number = 32,
 	zoom: number = 2,
 ) => {
-	const [activeUnitStates, setActiveUnitStates] = useState<
-		Record<string, string>
+	const [activeSpriteStates, setActiveSpriteStates] = useState<
+		Record<string, SpritePresets>
 	>({});
 
 	const [activeUnitPhases, setActiveUnitPhases] = useState<
@@ -62,10 +71,10 @@ export const useAnimationControl = (
 		[player, visualPositions, tileSize, zoom],
 	);
 
-	const playUnitAnimation = useCallback(
+	const playSpriteAnimation = useCallback(
 		async (
 			unitId: string,
-			action: ActionType,
+			action: SpritePresets,
 			phase: AnimationPhase = AnimationPhase.FULL,
 		): Promise<void> => {
 			const targetPos = targetPositionsRef.current[unitId];
@@ -87,11 +96,15 @@ export const useAnimationControl = (
 				duration,
 				targetPos,
 				setVisualPositions,
-				setActiveUnitStates,
+				setActiveSpriteStates as unknown as Dispatch<
+					SetStateAction<Record<string, string>>
+				>,
 				setActiveUnitPhases,
 			);
 
-			const isMoveAction = action === ActionType.MOVE && phase === AnimationPhase.FULL;
+			const isMoveAction =
+				(action as string).toLowerCase() === 'move' &&
+				phase === AnimationPhase.FULL;
 
 			if (isMoveAction) {
 				const earlyResolveMs = Math.floor(duration * 0.5);
@@ -110,15 +123,17 @@ export const useAnimationControl = (
 	);
 
 	return {
-		activeUnitStates,
+		activeSpriteStates,
 		activeUnitPhases,
 		visualPositions,
 		setVisualPositions,
 		targetPositionsRef,
-		playUnitAnimation,
+		playSpriteAnimation,
 	};
 };
 
-export type UseAnimationControlReturn = ReturnType<typeof useAnimationControl>;
-export type PlayUnitAnimationFn =
-	UseAnimationControlReturn['playUnitAnimation'];
+export type UseSpriteAnimationControlReturn = ReturnType<
+	typeof useSpriteAnimationControl
+>;
+export type PlaySpriteAnimationFn =
+	UseSpriteAnimationControlReturn['playSpriteAnimation'];
