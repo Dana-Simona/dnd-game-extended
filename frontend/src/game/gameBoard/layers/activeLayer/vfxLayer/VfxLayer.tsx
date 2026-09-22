@@ -3,7 +3,7 @@ import BannerVfx from './alertVfx/AlertVfx';
 import { RollVfx } from './rollVfx/RollVfx';
 import { StatVfx } from './statVfx/StatVfx';
 import { VfxViewportLayer } from './vfxStyles';
-import { AbilityVfx } from './abilityVfx/AbilityVfx';
+import { EffectVfx } from './effectVfx/EffectVfx';
 import ParticlesVfx from './particlesVfx/ParticlesVfx';
 import {
 	type VfxItem,
@@ -44,7 +44,7 @@ export const VfxLayer: React.FC<Props> = ({ vfxList }) => {
 						);
 					case VfxCategory.EFFECTS:
 						return (
-							<AbilityVfx
+							<EffectVfx
 								key={item.id}
 								item={item}
 							/>

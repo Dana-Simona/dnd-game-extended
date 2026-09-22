@@ -21,7 +21,7 @@ import {
 	CameraPreset,
 	type TriggerCamera,
 } from '../../constants/animationStates/cameraStates';
-import { type Unit } from '../../constants/interfaces/unit';
+import { UnitType, type Unit } from '../../constants/interfaces/unit';
 
 interface Controllers {
 	triggerSpriteAnimation: TriggerSpriteAnimation;
@@ -49,14 +49,14 @@ export const setupAnimations = (controllers: Controllers) => {
 			type: SpritePresets.DIE,
 			unitId: event.sourceId,
 		});
-		await new Promise((resolve) => setTimeout(resolve, 300)),
 
-		await controllers.triggerUnit({
-			type: UnitPreset.FADE_OUT,
-			unitId: event.sourceId,
-			delayMs: 400,
-			durationMs: 200,
-		});
+		(await new Promise((resolve) => setTimeout(resolve, 300)),
+			await controllers.triggerUnit({
+				type: UnitPreset.FADE_OUT,
+				unitId: event.sourceId,
+				delayMs: 400,
+				durationMs: 200,
+			}));
 	});
 
 	animationRegistry.register(ActionType.MELEE, async (event: GameEvent) => {
@@ -211,7 +211,16 @@ export const setupAnimations = (controllers: Controllers) => {
 	);
 
 	animationRegistry.register(ActionType.GAIN_XP, async (event: GameEvent) => {
-		if (!event.sourceId) return;
+		if (!event.sourceId && !event.targetIds) return;
+		const deadUnit = controllers.getUnitById(event.targetIds[0]);
+		const isEnemy = deadUnit?.unitType !== UnitType.PLAYER;
+		if (isEnemy) {
+			await controllers.triggerVfx({
+				type: VfxTypes.EFFECTS_EXP,
+				targetIds: event.targetIds,
+				amount: event.amount,
+			});
+		}
 		await controllers.triggerVfx({
 			type: VfxTypes.STAT_EXP,
 			targetIds: [event.sourceId],

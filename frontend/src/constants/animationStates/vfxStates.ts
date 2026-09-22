@@ -7,7 +7,6 @@ export interface VfxCommand {
 
 export type TriggerVfx = (command: VfxCommand) => Promise<void>;
 
-
 export const VfxTypes = {
 	BANNER_WIN: 'Win',
 	BANNER_LEVEL_UP: 'LevelUp',
@@ -21,6 +20,7 @@ export const VfxTypes = {
 	PARTICLES_DAMAGE: 'ParticlesDamage',
 	EFFECTS_ABILITY_CAST: 'AbilityCast',
 	EFFECTS_HEAL: 'ParticlesHeal',
+	EFFECTS_EXP: 'EffectsExp',
 	PROJECTILE_ABILITY: 'ProjectileAbility',
 } as const;
 export type VfxTypes = (typeof VfxTypes)[keyof typeof VfxTypes];
@@ -48,6 +48,7 @@ export const VfxTypeToCategoryMap: Record<VfxTypes, VfxCategory> = {
 	[VfxTypes.PARTICLES_DAMAGE]: VfxCategory.PARTICLES,
 	[VfxTypes.EFFECTS_ABILITY_CAST]: VfxCategory.EFFECTS,
 	[VfxTypes.EFFECTS_HEAL]: VfxCategory.EFFECTS,
+	[VfxTypes.EFFECTS_EXP]: VfxCategory.EFFECTS,
 	[VfxTypes.PROJECTILE_ABILITY]: VfxCategory.PROJECTILES,
 } as const;
 

@@ -1,5 +1,10 @@
 import { useState, useCallback, useRef } from 'react';
-import { VfxCategory, VfxTypes, VfxTypeToCategoryMap, type VfxItem } from '../../../../constants/animationStates/vfxStates';
+import {
+	VfxCategory,
+	VfxTypes,
+	VfxTypeToCategoryMap,
+	type VfxItem,
+} from '../../../../constants/animationStates/vfxStates';
 import type { Position } from '../unitControl/unitCalculations';
 
 const CATEGORY_DURATIONS: Record<VfxCategory, number> = {
@@ -9,6 +14,10 @@ const CATEGORY_DURATIONS: Record<VfxCategory, number> = {
 	[VfxCategory.EFFECTS]: 500,
 	[VfxCategory.PARTICLES]: 500,
 	[VfxCategory.PROJECTILES]: 500,
+};
+
+const TYPE_DURATIONS: Partial<Record<VfxTypes, number>> = {
+	[VfxTypes.EFFECTS_EXP]: 3200,
 };
 
 export const useVfxControl = (
@@ -23,10 +32,12 @@ export const useVfxControl = (
 			type: VfxTypes,
 			targetIds: string[],
 			amount?: number,
-			sourceId?: string,  
+			sourceId?: string,
 		): Promise<void> => {
 			const category = VfxTypeToCategoryMap[type];
-			const duration = CATEGORY_DURATIONS[category];
+
+			const duration =
+				TYPE_DURATIONS[type] ?? CATEGORY_DURATIONS[category];
 
 			const sourcePos = sourceId ? visualPositions[sourceId] : undefined;
 			const sourceX = sourcePos

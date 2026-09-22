@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const AbilityVfxContainer = styled.div<{ $x: number; $y: number }>`
+export const EffectVfxContainer = styled.div<{ $x: number; $y: number }>`
 	position: absolute;
 	left: ${({ $x }) => $x}px;
 	top: ${({ $y }) => $y}px;
