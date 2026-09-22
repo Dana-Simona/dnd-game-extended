@@ -21,7 +21,6 @@ export const Game: React.FC = () => {
 				unitTransforms={game.unitTransforms}
 				panZoomMotion={game.panZoomMotion}
 				effectMotion={game.effectMotion}
-				effectKey={game.effectKey}
 				activeVfxList={game.activeVfxList}
 				activeUnitPhases={game.activeUnitPhases}
 				hpStates={game.hpStates}

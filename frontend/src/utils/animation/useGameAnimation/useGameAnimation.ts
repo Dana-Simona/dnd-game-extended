@@ -29,13 +29,8 @@ export const useGameAnimation = (
 		playSpriteAnimation,
 	} = useSpriteAnimationControl(units, player, tileSize, zoom);
 
-	const {
-		triggerCamera,
-		resetCamera,
-		panZoomMotion,
-		effectMotion,
-		effectKey,
-	} = useCameraControl(player, units, visualPositions, tileSize, zoom);
+	const { triggerCamera, resetCamera, panZoomMotion, effectMotion } =
+		useCameraControl(player, units, visualPositions, tileSize, zoom);
 
 	const { spawnVFX, activeVfxList } = useVfxControl(
 		visualPositions,
@@ -149,7 +144,6 @@ export const useGameAnimation = (
 		unitTransforms,
 		panZoomMotion,
 		effectMotion,
-		effectKey,
 		runTurn,
 		resetPositions,
 		activeVfxList,

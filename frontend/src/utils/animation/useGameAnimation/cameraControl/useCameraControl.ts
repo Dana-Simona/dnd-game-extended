@@ -8,8 +8,9 @@ import type { AllPlayerData } from '../../../../constants/interfaces/player';
 import { calcTwoTargetCamera, getTargetCoords } from './cameraCalculations';
 import {
 	cameraEffectVariants,
+	panTo,
+	zoomTo,
 	panZoomTo,
-	type PanZoomCustomParams,
 } from './cameraVariants';
 import {
 	combinePlayerAndUnits,
@@ -173,24 +174,44 @@ export const useCameraControl = (
 	const pixelY = activeTarget.y * tileSize + tileSize / 2;
 	const zoom = cameraState.zoom;
 
-	const tileKey = `${Math.round(activeTarget.x)},${Math.round(activeTarget.y)},${zoom}`;
-	const lastTileRef = useRef<string>('');
+	const lastPanRef = useRef<{ x: number; y: number } | null>(null);
+	const lastZoomRef = useRef<number | null>(null);
+	const isFirstRender = useRef(true);
 
 	useEffect(() => {
-		if (lastTileRef.current !== tileKey) {
-			lastTileRef.current = tileKey;
+		if (isFirstRender.current) {
+			panZoomControls.set({
+				transformOrigin: `${pixelX}px ${pixelY}px`,
+				x: `calc(${halfWidth}vw - ${pixelX}px)`,
+				y: `calc(${halfHeight}vh - ${pixelY}px)`,
+				scale: zoom,
+			});
+			isFirstRender.current = false;
+		} else {
+			const panChanged =
+				!lastPanRef.current ||
+				lastPanRef.current.x !== pixelX ||
+				lastPanRef.current.y !== pixelY;
 
-			const customParams: PanZoomCustomParams = {
-				pixelX,
-				pixelY,
-				zoom,
-				halfWidth,
-				halfHeight,
-			};
+			const zoomChanged =
+				lastZoomRef.current === null || lastZoomRef.current !== zoom;
 
-			panZoomControls.start(panZoomTo(customParams));
+			if (panChanged && zoomChanged) {
+				panZoomControls.start(
+					panZoomTo({ pixelX, pixelY, zoom, halfWidth, halfHeight }),
+				);
+			} else if (panChanged) {
+				panZoomControls.start(
+					panTo({ pixelX, pixelY, zoom, halfWidth, halfHeight }),
+				);
+			} else if (zoomChanged) {
+				panZoomControls.start(zoomTo({ zoom }));
+			}
 		}
-	}, [tileKey, pixelX, pixelY, zoom, panZoomControls]);
+
+		lastPanRef.current = { x: pixelX, y: pixelY };
+		lastZoomRef.current = zoom;
+	}, [pixelX, pixelY, zoom, panZoomControls]);
 
 	useEffect(() => {
 		if (cameraState.effectNonce > 0 && cameraState.effect !== 'idle') {
@@ -202,9 +223,10 @@ export const useCameraControl = (
 
 	const panZoomProps: MotionProps = useMemo(
 		() => ({
+			initial: { scale: defaultZoom },
 			animate: panZoomControls,
 		}),
-		[panZoomControls],
+		[panZoomControls, defaultZoom],
 	);
 
 	const effectProps: MotionProps = useMemo(

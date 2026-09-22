@@ -1,35 +1,32 @@
 import type { Variants, TargetAndTransition } from 'framer-motion';
 
-export interface PanZoomCustomParams {
+export interface PanCustomParams {
 	pixelX: number;
 	pixelY: number;
-	zoom: number;
-	halfWidth: number;
-	halfHeight: number;
+	zoom: number; 
+	halfWidth?: number;
+	halfHeight?: number;
 }
 
-export const panZoomTo = ({
+export interface ZoomCustomParams {
+	zoom: number;
+}
+
+export interface PanZoomCustomParams
+	extends PanCustomParams, ZoomCustomParams {}
+
+export const panTo = ({
 	pixelX = 0,
 	pixelY = 0,
 	zoom = 2,
 	halfWidth = 50,
 	halfHeight = 50,
-}: PanZoomCustomParams): TargetAndTransition => ({
+}: PanCustomParams): TargetAndTransition => ({
 	transformOrigin: `${pixelX}px ${pixelY}px`,
 	x: `calc(${halfWidth}vw - ${pixelX}px)`,
 	y: `calc(${halfHeight}vh - ${pixelY}px)`,
-	scale: [
-		zoom, 
-		zoom * 0.99, 
-		zoom * 1.01,
-		zoom, 
-	],
+	scale: [null, zoom * 0.99, zoom * 1.01, zoom],
 	transition: {
-		scale: {
-			duration: 0.6,
-			times: [0, 0.3, 0.7, 1],
-			ease: ['easeOut', 'easeInOut', 'easeOut'],
-		},
 		x: {
 			type: 'spring',
 			stiffness: 120,
@@ -42,8 +39,40 @@ export const panZoomTo = ({
 			damping: 22,
 			mass: 0.8,
 		},
+		scale: {
+			duration: 0.6,
+			times: [0, 0.3, 0.7, 1],
+			ease: ['easeOut', 'easeInOut', 'easeOut'],
+		},
 	},
 });
+
+export const zoomTo = ({
+	zoom = 2,
+}: ZoomCustomParams): TargetAndTransition => ({
+	scale: [null, zoom * 0.99, zoom * 1.01, zoom],
+	transition: {
+		scale: {
+			duration: 0.6,
+			times: [0, 0.3, 0.7, 1],
+			ease: ['easeOut', 'easeInOut', 'easeOut'],
+		},
+	},
+});
+
+export const panZoomTo = (params: PanZoomCustomParams): TargetAndTransition => {
+	const pan = panTo(params);
+	const zoom = zoomTo(params);
+
+	return {
+		...pan,
+		...zoom,
+		transition: {
+			...pan.transition,
+			...zoom.transition,
+		},
+	};
+};
 
 export const cameraEffectVariants: Variants = {
 	idle: { x: 0, y: 0, scale: 1 },

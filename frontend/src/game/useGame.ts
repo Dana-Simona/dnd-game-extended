@@ -63,7 +63,6 @@ export const useGame = (level?: string) => {
 		resetPositions,
 		panZoomMotion,
 		effectMotion,
-		effectKey,
 		activeVfxList,
 		hpStates,
 	} = useGameAnimation(enemies, character);
@@ -159,7 +158,6 @@ export const useGame = (level?: string) => {
 		unitTransforms,
 		panZoomMotion,
 		effectMotion,
-		effectKey,
 		activeVfxList,
 		hpStates,
 	};
