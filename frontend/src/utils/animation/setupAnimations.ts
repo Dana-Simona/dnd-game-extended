@@ -44,23 +44,19 @@ export const setupAnimations = (controllers: Controllers) => {
 
 	animationRegistry.register(ActionType.DIE, async (event: GameEvent) => {
 		if (!event.sourceId) return;
-		await Promise.all([
-			controllers.triggerSpriteAnimation({
-				type: SpritePresets.DIE,
-				unitId: event.sourceId,
-			}),
-			controllers.triggerCamera({
-				type: CameraPreset.SHAKE,
-				intensity: 15,
-				duration: 300,
-			}),
-			controllers.triggerUnit({
-				type: UnitPreset.FADE_OUT,
-				unitId: event.sourceId,
-				delayMs: 400,
-				durationMs: 200,
-			}),
-		]);
+
+		controllers.triggerSpriteAnimation({
+			type: SpritePresets.DIE,
+			unitId: event.sourceId,
+		});
+		await new Promise((resolve) => setTimeout(resolve, 300)),
+
+		await controllers.triggerUnit({
+			type: UnitPreset.FADE_OUT,
+			unitId: event.sourceId,
+			delayMs: 400,
+			durationMs: 200,
+		});
 	});
 
 	animationRegistry.register(ActionType.MELEE, async (event: GameEvent) => {
@@ -121,16 +117,23 @@ export const setupAnimations = (controllers: Controllers) => {
 			}),
 		]);
 
+		const unit = controllers.getUnitById(defender);
+		let finalHealth;
+		if (!!unit && !!event.amount)
+			finalHealth = unit.currentHealth - event.amount;
+		const isDead = !!finalHealth && finalHealth <= 0;
+
 		await Promise.all([
 			controllers.triggerSpriteAnimation({
 				type: SpritePresets.MELEE,
 				unitId: attacker,
 				phase: AnimationPhase.FOLLOW_THROUGH,
 			}),
-			controllers.triggerUnit({
-				type: UnitPreset.RESET,
-				unitId: defender,
-			}),
+			!isDead &&
+				controllers.triggerUnit({
+					type: UnitPreset.RESET,
+					unitId: defender,
+				}),
 			controllers.triggerHpBar({
 				type: HpBarPreset.DEPLETE_HP,
 				unitId: defender,
