@@ -172,11 +172,12 @@ export const SPRITE_MANIFEST: Record<
 			offsetY: 36,
 		},
 		[SpritePresets.TAKE_DAMAGE]: {
-			width: 40,
-			height: 32,
+			width: 100,
+			height: 100,
 			frameCount: 4,
 			fps: 6,
 			impactFrame: 2,
+			offsetY: 36,
 		},
 	},
 	enemy_queensguard: {

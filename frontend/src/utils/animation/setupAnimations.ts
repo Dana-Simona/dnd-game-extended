@@ -92,11 +92,6 @@ export const setupAnimations = (controllers: Controllers) => {
 				unitId: defender,
 				phase: AnimationPhase.WINDUP,
 			}),
-			controllers.triggerHpBar({
-				type: HpBarPreset.SHOW_DAMAGE_PREVIEW,
-				unitId: defender,
-				damage: event.amount || 0,
-			}),
 		]);
 
 		await Promise.all([
@@ -118,6 +113,11 @@ export const setupAnimations = (controllers: Controllers) => {
 				targetId: attacker,
 				distancePx: -25,
 				durationMs: 1000,
+			}),
+			controllers.triggerHpBar({
+				type: HpBarPreset.SHOW_DAMAGE_PREVIEW,
+				unitId: defender,
+				damage: event.amount || 0,
 			}),
 		]);
 
