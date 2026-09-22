@@ -104,6 +104,8 @@ public class UnitJsonBuilder {
 
     private static void buildPlayerBaseJson(StringBuilder json, Player player) {
         json.append(",\"class\":\"").append(escapeJson(player.getClass().getSimpleName())).append("\",")
+                .append("\"currentExp\":").append(player.getExperience()).append(",")
+                .append("\"expRequiredForNextLevel\":").append(player.experienceRequiredForNextLevel()).append(",")
                 .append("\"level\":").append(player.getLevel());
     }
 

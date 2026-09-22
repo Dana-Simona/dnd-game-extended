@@ -95,9 +95,13 @@ public abstract class Player extends Unit {
         return experience;
     }
 
+    public Integer experienceRequiredForNextLevel() {
+        return 50 * level;
+    }
+
     @Override
     public void onGameTick() {
-        while (getExperience() >= (50 * level)) {
+        while (getExperience() >= experienceRequiredForNextLevel()) {
             levelUp();
         }
     }

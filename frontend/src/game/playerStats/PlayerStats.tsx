@@ -11,22 +11,17 @@ import { StatBar } from './statBar/StatBar';
 import { StatItem } from './statItem/StatItem';
 import { Cooldown } from './cooldown/Cooldown';
 import { Arrows } from './arrows/Arrows';
+import { ExpBar } from './expBar/ExpBar';
 
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import type { AllPlayerData } from '../../constants/interfaces/player';
-
-export interface RogueData {
-	energyCost?: number;
-	energy?: number;
-	currentEnergy?: number;
-}
 
 export const PlayerStats: React.FC = () => {
 	const { character } = useCharacter();
 
 	if (!character) return null;
 
-	const player = character as Partial<AllPlayerData & RogueData>;
+	const player = character as Partial<AllPlayerData>;
 
 	const currentHealth = player.currentHealth ?? player.health ?? 0;
 	const maxHealth = player.health ?? 100;
@@ -48,6 +43,11 @@ export const PlayerStats: React.FC = () => {
 				<PlayerName>{player.name}</PlayerName>
 				<PlayerLevel>Lvl {player.level}</PlayerLevel>
 			</HeaderInfo>
+
+			<ExpBar
+				currentExp={player.currentExp ?? 0}
+				maxExp={player.expRequiredForNextLevel ?? 100}
+			/>
 
 			<StatBar
 				label='Health'

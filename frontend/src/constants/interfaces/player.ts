@@ -4,6 +4,8 @@ export interface Player extends Unit {
 	class: string;
 	level: number;
 	range: number;
+	currentExp: number;
+	expRequiredForNextLevel: number;
 }
 
 export interface Warrior extends Player {
