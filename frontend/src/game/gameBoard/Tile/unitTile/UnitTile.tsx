@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 import HealthBar from './healthBar/HealthBar';
 import RangeRing from './rangeRing/RangeRing';
+import type { Player } from '../../../../constants/interfaces/player';
+import type { Monster } from '../../../../constants/interfaces/monster';
 import Sprite, { type SpriteProps } from '../../../../utils/sprite/Sprite';
 import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
 import { UnitFacing } from '../../../../constants/animationStates/unitStates';
@@ -19,8 +21,6 @@ interface Props {
 	phase?: AnimationPhase;
 	offsetY: number;
 	facing?: UnitFacing;
-	visionRange?: number;
-	abilityRange?: number;
 	tileSize?: number;
 	hpState?: HpState;
 }
@@ -31,12 +31,23 @@ const UnitTile: React.FC<Props> = ({
 	phase,
 	offsetY,
 	facing = UnitFacing.RIGHT,
-	visionRange,
-	abilityRange,
 	tileSize = 32,
 	hpState,
 }) => {
 	const [isHovered, setIsHovered] = useState(false);
+
+	let visionRange;
+	if (
+		unit?.unitType === UnitType.MONSTER ||
+		unit?.unitType === UnitType.BOSS
+	) {
+		visionRange = (unit as Monster)?.visionRange;
+	}
+
+	let abilityRange;
+	if (unit?.unitType === UnitType.PLAYER) {
+		abilityRange = (unit as Player)?.range;
+	}
 
 	const isPlayer = unit?.unitType === UnitType.PLAYER;
 	const currentHp = hpState?.currentHp ?? unit?.currentHealth ?? 0;

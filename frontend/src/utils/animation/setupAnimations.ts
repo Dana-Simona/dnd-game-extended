@@ -21,7 +21,7 @@ import {
 	CameraPreset,
 	type TriggerCamera,
 } from '../../constants/animationStates/cameraStates';
-import { UnitType, type Unit } from '../../constants/interfaces/unit';
+import { type Unit } from '../../constants/interfaces/unit';
 
 interface Controllers {
 	triggerSpriteAnimation: TriggerSpriteAnimation;
