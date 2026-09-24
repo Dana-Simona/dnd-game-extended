@@ -128,6 +128,13 @@ export const useCameraControl = (
 		[getUnitPos],
 	);
 
+	const zoomToRange = useCallback(
+		async (range: number): Promise<void> => {
+			//todo
+		},
+		[getUnitPos],
+	);
+
 	const shake = useCallback(
 		async (intensity = 12, duration = 450): Promise<void> => {
 			setCameraState((prev) => ({
@@ -174,6 +181,7 @@ export const useCameraControl = (
 			zoomIn,
 			zoomOut,
 			zoomTwoTargets,
+			zoomToRange,
 			shake,
 			thump,
 			reset,

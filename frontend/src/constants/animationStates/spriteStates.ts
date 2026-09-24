@@ -19,6 +19,7 @@ export const AnimationPhase = {
 	FULL: 'full',
 	WINDUP: 'windup',
 	FOLLOW_THROUGH: 'followThrough',
+	LOOP: 'loop',
 } as const;
 
 export type AnimationPhase =

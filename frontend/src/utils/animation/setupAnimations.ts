@@ -1,17 +1,24 @@
 import { animationRegistry } from './animationRegistry';
 import { ActionType, type GameEvent } from '../../constants/gameEvent';
-import {
-	VfxTypes,
-	type TriggerVfxAPI,
-} from '../../constants/animationStates/vfxStates';
+import { type TriggerVfxAPI } from '../../constants/animationStates/vfxStates';
 import { AnimationPhase } from '../../constants/animationStates/spriteStates';
 import { UnitType, type Unit } from '../../constants/interfaces/unit';
-import type { Player } from '../../constants/interfaces/player';
+import type {
+	Hunter,
+	Mage,
+	Player,
+	Rogue,
+	Warrior,
+} from '../../constants/interfaces/player';
 import { ClassTypes } from '../../constants/classTypes';
 import type { TriggerCameraAPI } from '../../constants/animationStates/cameraStates';
 import type { TriggerHpBarAPI } from '../../constants/animationStates/hpStates';
 import type { TriggerUnitAPI } from './useGameAnimation/unitControl/useUnitControl';
 import type { TriggerSpriteAnimationAPI } from './useGameAnimation/spriteAnimationControl/useSpriteAnimationControl';
+import {
+	BloodColor,
+	ProjectileType,
+} from '../../constants/animationStates/vfxStates';
 
 interface Controllers {
 	triggerSpriteAnimation: TriggerSpriteAnimationAPI;
@@ -119,16 +126,16 @@ export const setupAnimations = (controllers: Controllers) => {
 			if (caster?.unitType === UnitType.PLAYER) {
 				switch ((caster as Player)?.class) {
 					case ClassTypes.MAGE:
-						mageCast(casterId, victimsIds);
+						mageCast(caster as Mage, victimsIds);
 						break;
 					case ClassTypes.WARRIOR:
-						warriorCast(casterId, victimsIds[0]);
+						warriorCast(caster as Warrior, victimsIds[0]);
 						break;
 					case ClassTypes.ROGUE:
-						rogueCast(casterId, victimsIds);
+						rogueCast(caster as Rogue, victimsIds);
 						break;
 					case ClassTypes.HUNTER:
-						hunterCast(casterId, victimsIds[0]);
+						hunterCast(caster as Hunter, victimsIds[0]);
 						break;
 					default:
 						break;
@@ -224,116 +231,383 @@ export const setupAnimations = (controllers: Controllers) => {
 		if (!event.sourceId) return;
 	});
 
-	const mageCast = (mage: string, targets: string[]) => {
-		//ability cast
-		//zoom in on mage
-		//
-		//play ability cast animation (loop)
-		//play ice particle animations gather towards the wand
-		//spawn black clouds at the top of the screen
-		//make screen darker gradually
-		//
-		//zoom out to the mage's range sharply (mage still in center)
-		//ice particles explode from the wand
-		//all targets have growing ice at their feet
-		//
-		//blue lightning strikes them all one after the other (staggered)
-		//(we don't wait for them to finish):
-		//targets plays hit animation (windup)
-		//ice hit vfx
-		//---
-		//target plays hit animation (follow through)
-		//target shakes
-		//target hp preview damage (in purple)
-		//---
-		//target hp drains
-		//
-		//clouds scatter
-		//screen color return to normal
-		//
-		//----take damage from ability
-		//display damage taken stat
+	const delay = (ms: number) =>
+		new Promise((resolve) => setTimeout(resolve, ms));
+
+	const mageCast = async (mage: Mage, targets: string[]) => {
+		const mageId = mage.id;
+
+		// ability cast & zoom in on mage
+		await Promise.all([
+			controllers.triggerSpriteAnimation.abilityCast(
+				mageId,
+				AnimationPhase.LOOP,
+			),
+			controllers.triggerCamera.zoomIn(mageId),
+		]);
+
+		// play ice particle animations gather towards the wand
+		// spawn black clouds at the top of the screen
+		// make screen darker gradually
+		await Promise.all([
+			controllers.triggerVfx.iceGather(mageId),
+			controllers.triggerVfx.blackClouds(true),
+			controllers.triggerVfx.screenDarken(1000),
+		]);
+
+		await delay(500);
+
+		// zoom out to the mage's range sharply (mage still in center)
+		// ice particles explode from the wand
+		// all targets have growing ice at their feet
+		await Promise.all([
+			controllers.triggerCamera.zoomToRange(mage.range),
+			controllers.triggerVfx.iceExplode(mageId),
+			...targets.map((target) => controllers.triggerVfx.iceFeet(target)),
+		]);
+
+		await delay(300);
+
+		// blue lightning strikes them all one after the other (staggered)
+		// (we don't wait for them to finish):
+		targets.forEach((target, index) => {
+			setTimeout(async () => {
+				// target plays hit animation (windup) & ice hit vfx
+				await Promise.all([
+					controllers.triggerVfx.lightningStrike(target),
+					controllers.triggerVfx.iceHit(target),
+					controllers.triggerSpriteAnimation.takeDamage(
+						target,
+						AnimationPhase.WINDUP,
+					),
+				]);
+
+				// ---
+				// target plays hit animation (follow through)
+				// target shakes (via camera shake slightly on impact)
+				// target hp preview damage (in purple)
+				await Promise.all([
+					controllers.triggerSpriteAnimation.takeDamage(
+						target,
+						AnimationPhase.FOLLOW_THROUGH,
+					),
+					controllers.triggerCamera.shake(2, 100),
+					controllers.triggerHpBar.showDamagePreview(
+						target,
+						0, //todo: damage amount
+						'purple',
+					),
+				]);
+
+				await delay(200);
+
+				// ---
+				// target hp drains
+				// display damage taken stat
+				controllers.triggerHpBar.drainHp(target);
+				await controllers.triggerVfx.statDamage(
+					target,
+					0, //todo: damage amount
+				);
+
+				await controllers.triggerSpriteAnimation.idle(target);
+			}, index * 150); // 150ms stagger between strikes
+		});
+
+		// Wait enough time for staggered animations to begin before clearing environment
+		await delay(targets.length * 150 + 500);
+
+		// clouds scatter, screen color return to normal, mage to idle
+		await Promise.all([
+			controllers.triggerVfx.blackClouds(false),
+			controllers.triggerVfx.screenRestoreColor(1000),
+			controllers.triggerSpriteAnimation.idle(mageId),
+		]);
 	};
 
-	const warriorCast = (warrior: string, target: string) => {
-		//zoom in on the warrior
-		//change screen to red hue
-		//add ash and smoke particles flying
-		//
-		//play cast animation (windup)
-		//dust fvx from the leap
-		//warrior leaps in an arc to his target
-		//(wait foe a few ms) then pan camera to enemy
-		//
-		//camera shakes
-		//target rotates right (so they lay on their back)
-		//target dash down a little bit
-		//cast play animation (follow through)
-		//ground breaking beneath them vfx
-		//target plays hit animation (follow through)
-		//target hp preview damage (in gold)
-		//target play hit animation (follow through)
-		//
-		//warrior dashes back to his place
-		//blood particles drip for the target
-		//target hp drains
-		//
-		//heal vfx over the warrior
-		//heal stat vfx
-		//
-		//target recovers and rotates back
+	const warriorCast = async (warrior: Warrior, target: string) => {
+		const warriorId = warrior.id;
+
+		// zoom in on the warrior
+		// change screen to red hue
+		// add ash and smoke particles flying
+		await Promise.all([
+			controllers.triggerCamera.zoomIn(warriorId),
+			controllers.triggerVfx.screenRedHue(500),
+			controllers.triggerVfx.ashSmokeAmbient(true),
+		]);
+
+		// play cast animation (windup)
+		// dust fvx from the leap
+		// warrior leaps in an arc to his target
+		await Promise.all([
+			controllers.triggerSpriteAnimation.abilityCast(
+				warriorId,
+				AnimationPhase.WINDUP,
+			),
+			controllers.triggerVfx.dustLeap(warriorId),
+			controllers.triggerUnit.jump(warriorId, target, 100, 400),
+		]);
+
+		// (wait for a few ms) then pan camera to enemy
+		await delay(300);
+		await controllers.triggerCamera.focusTarget(target, 200);
+
+		// camera shakes
+		// target rotates right (so they lay on their back)
+		// target dash down a little bit (simulating knock-down)
+		// cast play animation (follow through)
+		// ground breaking beneath them vfx
+		await Promise.all([
+			controllers.triggerCamera.shake(5, 300),
+			controllers.triggerUnit.rotate(target, 90, 150),
+			controllers.triggerUnit.dash(target, target, 10, 100),
+			controllers.triggerSpriteAnimation.abilityCast(
+				warriorId,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			controllers.triggerVfx.groundBreak(target),
+		]);
+
+		// target plays hit animation
+		// target hp preview damage (in gold)
+		await Promise.all([
+			controllers.triggerSpriteAnimation.takeDamage(
+				target,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			controllers.triggerHpBar.showDamagePreview(
+				target,
+				0, //todo: damage amount
+				'gold',
+			),
+		]);
+
+		await delay(400);
+
+		// warrior dashes back to his place
+		// blood particles drip for the target
+		// target hp drains
+		await Promise.all([
+			controllers.triggerUnit.reset(warriorId),
+			controllers.triggerVfx.bloodDrip(target, BloodColor.RED),
+			controllers.triggerHpBar.drainHp(target),
+			controllers.triggerVfx.statDamage(
+				target,
+				0, //todo: damage amount
+			),
+		]);
+
+		// heal vfx over the warrior
+		// heal stat vfx
+		await Promise.all([
+			controllers.triggerVfx.statHeal(
+				warriorId,
+				0, //todo: heal amount
+			),
+			// Additional generic heal VFX if applicable could go here
+		]);
+
+		// target recovers and rotates back
+		// cleanup camera & environment
+		await Promise.all([
+			controllers.triggerUnit.rotate(target, 0, 300),
+			controllers.triggerSpriteAnimation.idle(target),
+			controllers.triggerSpriteAnimation.idle(warriorId),
+			controllers.triggerCamera.reset(500),
+			controllers.triggerVfx.screenRestoreColor(500),
+			controllers.triggerVfx.ashSmokeAmbient(false),
+		]);
 	};
 
-	const rogueCast = (rogue: string, targets: string[]) => {
-		//de-saturates the map (except for the active layer) (make black and white)
+	const rogueCast = async (rogue: Rogue, targets: string[]) => {
+		const rogueId = rogue.id;
+
+		// de-saturates the map (except for the active layer) (make black and white)
 		// play screen effects of ravens flying around
-		//
-		//zoom in on rogue
-		//rogue - play animation (windup) (the rogue vanishes)
-		//
-		//dash the rogue to the air
-		//
-		//rogue - play animation (follow through) (the rogue reappears and he has a halo behind his as part of the animation then sharply throws his arms out as if throwing knives)
-		//zoom out to the rogue's range
-		//
-		//projectile 4 round of knives on each enemy in range at the same time
-		//
-		//all the enemies:
-		//hit animation (windup)
-		//have white slash animation on top of them
-		//gray hp preview
-		//
-		//recoil
-		//hit animation (follow through)
-		//splash blood particles
-		//hp drain
-		//
-		//enemies recover
-		//rogue dashes back to the original tile
-		//camera restores to default, focusing on him
-		//
-		//return to idle
-		//landing smoke vfx
+		// zoom in on rogue
+		await Promise.all([
+			controllers.triggerVfx.screenDesaturate(true),
+			controllers.triggerVfx.ravensFlying(2000),
+			controllers.triggerCamera.zoomIn(rogueId, 1.5, 300),
+		]);
+
+		// rogue - play animation (windup) (the rogue vanishes)
+		await Promise.all([
+			controllers.triggerSpriteAnimation.abilityCast(
+				rogueId,
+				AnimationPhase.WINDUP,
+			),
+			controllers.triggerUnit.fadeOut(rogueId, 0, 200),
+		]);
+
+		// dash the rogue to the air
+		await controllers.triggerUnit.leap(rogueId, 150, 300);
+
+		// rogue - play animation (follow through) (the rogue reappears and throws arms out)
+		// zoom out to the rogue's range
+		await Promise.all([
+			controllers.triggerUnit.fadeIn(rogueId, 0, 100),
+			controllers.triggerSpriteAnimation.abilityCast(
+				rogueId,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			controllers.triggerCamera.zoomToRange(rogue.range),
+		]);
+
+		// projectile 4 round of knives on each enemy in range at the same time
+		const knifePromises = [];
+		for (let i = 0; i < 4; i++) {
+			knifePromises.push(
+				...targets.map((target) =>
+					controllers.triggerVfx.projectile(
+						ProjectileType.KNIVES,
+						rogueId,
+						target,
+					),
+				),
+			);
+		}
+		await Promise.all(knifePromises);
+
+		// all the enemies: hit windup, slash animation, gray hp preview
+		await Promise.all(
+			targets.map(async (target) => {
+				await Promise.all([
+					controllers.triggerSpriteAnimation.takeDamage(
+						target,
+						AnimationPhase.WINDUP,
+					),
+					controllers.triggerVfx.slash(target),
+					controllers.triggerHpBar.showDamagePreview(
+						target,
+						0, //todo: damage amount
+						'gray',
+					),
+				]);
+			}),
+		);
+
+		// recoil (minor camera thump), hit animation follow through, splash blood
+		await controllers.triggerCamera.thump(3, 150);
+		await Promise.all(
+			targets.map(async (target) => {
+				await Promise.all([
+					controllers.triggerSpriteAnimation.takeDamage(
+						target,
+						AnimationPhase.FOLLOW_THROUGH,
+					),
+					controllers.triggerVfx.bleed(
+						rogueId,
+						target,
+						BloodColor.RED,
+					),
+					controllers.triggerHpBar.drainHp(target),
+					controllers.triggerVfx.statDamage(
+						target,
+						0, //todo: damage amount
+					),
+				]);
+			}),
+		);
+
+		await delay(300);
+
+		// enemies recover
+		// rogue dashes back to the original tile
+		// camera restores to default, focusing on him
+		await Promise.all([
+			...targets.map((target) =>
+				controllers.triggerSpriteAnimation.idle(target),
+			),
+			controllers.triggerUnit.reset(rogueId),
+			controllers.triggerCamera.reset(400),
+		]);
+
+		// return to idle
+		// landing smoke vfx
+		// restore color
+		await Promise.all([
+			controllers.triggerSpriteAnimation.idle(rogueId),
+			controllers.triggerVfx.landingSmoke(rogueId),
+			controllers.triggerVfx.screenRestoreColor(400),
+		]);
 	};
 
-	const hunterCast = (hunter: string, target: string) => {
-		//black letterbox bars at the top and bottom of the screen appear
-		//play attack animation (windup) - the hunter jumps and charges their bow
-		//ground smoke from the impact of jumping
-		//white glowing arrow forming over the normal arrow
-		//white swirl effect of the target enemy
-		//camera pans up to match the jump
-		//
-		//the white arrow shoots as a projectile to the enemy
-		//the camera pans + zooms to the enemy
-		//
-		//enemy recoils
-		//plays follow through animation
-		//splatters (white) blood
-		//white hp preview
-		//
-		//enemy recovers
-		//hunter returns to idle
-		//landing smoke vfx
+	const hunterCast = async (hunter: Hunter, target: string) => {
+		const hunterId = hunter.id;
+
+		// black letterbox bars at the top and bottom of the screen appear
+		await controllers.triggerVfx.letterbox(true);
+
+		// play attack animation (windup) - the hunter jumps and charges their bow
+		// ground smoke from the impact of jumping
+		// white swirl effect of the target enemy
+		// camera pans up to match the jump
+		await Promise.all([
+			controllers.triggerSpriteAnimation.abilityCast(
+				hunterId,
+				AnimationPhase.WINDUP,
+			),
+			controllers.triggerUnit.leap(hunterId, 80, 300),
+			controllers.triggerVfx.dustLeap(hunterId),
+			controllers.triggerVfx.targetSwirl(target),
+			controllers.triggerCamera.focusTarget(hunterId, 300),
+		]);
+
+		await delay(200);
+
+		// the white arrow shoots as a projectile to the enemy
+		// the camera pans + zooms to the enemy
+		await Promise.all([
+			controllers.triggerVfx.projectile(
+				ProjectileType.ARROW,
+				hunterId,
+				target,
+			),
+			controllers.triggerCamera.zoomIn(target, 1.5, 200),
+		]);
+
+		// enemy recoils
+		// plays follow through animation
+		// splatters (white) blood
+		// white hp preview
+		await Promise.all([
+			controllers.triggerSpriteAnimation.takeDamage(
+				target,
+				AnimationPhase.WINDUP,
+			),
+			controllers.triggerSpriteAnimation.takeDamage(
+				target,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			controllers.triggerVfx.bloodDrip(target, BloodColor.WHITE),
+			controllers.triggerHpBar.showDamagePreview(
+				target,
+				0, //todo: damage amount
+				'white',
+			),
+		]);
+
+		await delay(200);
+
+		// enemy recovers & HP drains
+		// hunter returns to idle & returns to ground
+		// landing smoke vfx
+		// remove letterbox
+		await Promise.all([
+			controllers.triggerHpBar.drainHp(target),
+			controllers.triggerVfx.statDamage(
+				target,
+				0, //todo: damage amount
+			),
+			controllers.triggerSpriteAnimation.idle(target),
+
+			controllers.triggerUnit.reset(hunterId),
+			controllers.triggerSpriteAnimation.idle(hunterId),
+			controllers.triggerVfx.landingSmoke(hunterId),
+			controllers.triggerCamera.reset(400),
+			controllers.triggerVfx.letterbox(false),
+		]);
 	};
 };

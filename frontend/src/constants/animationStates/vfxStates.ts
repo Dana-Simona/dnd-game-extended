@@ -1,5 +1,15 @@
-export type BloodColor = 'Red' | 'White';
-export type ProjectileType = 'KNIVES' | 'ARROW';
+export const BloodColor = {
+	RED: 'Red',
+	WHITE: 'White',
+} as const;
+export type BloodColor = (typeof BloodColor)[keyof typeof BloodColor];
+
+export const ProjectileType = {
+	KNIVES: 'knives',
+	ARROW: 'arrow',
+} as const;
+export type ProjectileType =
+	(typeof ProjectileType)[keyof typeof ProjectileType];
 
 export const VfxTypes = {
 	// 1. Floating UI & Stat Popups
