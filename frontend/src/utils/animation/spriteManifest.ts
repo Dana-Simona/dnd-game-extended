@@ -76,7 +76,6 @@ export const SPRITE_MANIFEST: Record<
 			frameCount: 26,
 			fps: 4,
 			loopStartFrame: 21,
-			loop: true,
 		},
 	},
 	player_mage_thorosofmyr: {
@@ -122,6 +121,7 @@ export const SPRITE_MANIFEST: Record<
 			frameCount: 7,
 			fps: 10,
 			offsetY: -5,
+			loopStartFrame: 6
 		},
 		[SpritePresets.TAKE_DAMAGE]: {
 			width: 30,
@@ -162,6 +162,7 @@ export const SPRITE_MANIFEST: Record<
 			frameCount: 6,
 			fps: 6,
 			offsetY: 36,
+			loopStartFrame: 5
 		},
 		[SpritePresets.MELEE]: {
 			width: 100,
@@ -202,6 +203,7 @@ export const SPRITE_MANIFEST: Record<
 			frameCount: 6,
 			fps: 6,
 			offsetY: 36,
+			loopStartFrame: 5
 		},
 		[SpritePresets.MELEE]: {
 			width: 100,

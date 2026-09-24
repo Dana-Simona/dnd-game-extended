@@ -1,7 +1,11 @@
 import { animationRegistry } from './animationRegistry';
 import { ActionType, type GameEvent } from '../../constants/gameEvent';
 import { type TriggerVfxAPI } from '../../constants/animationStates/vfxStates';
-import { AnimationPhase } from '../../constants/animationStates/spriteStates';
+import {
+	AnimationPhase,
+	SpritePresets,
+	type TriggerSpriteAnimationAPI,
+} from '../../constants/animationStates/spriteStates';
 import { UnitType, type Unit } from '../../constants/interfaces/unit';
 import type {
 	Hunter,
@@ -14,7 +18,6 @@ import { ClassTypes } from '../../constants/classTypes';
 import type { TriggerCameraAPI } from '../../constants/animationStates/cameraStates';
 import type { TriggerHpBarAPI } from '../../constants/animationStates/hpStates';
 import type { TriggerUnitAPI } from './useGameAnimation/unitControl/useUnitControl';
-import type { TriggerSpriteAnimationAPI } from './useGameAnimation/spriteAnimationControl/useSpriteAnimationControl';
 import {
 	BloodColor,
 	ProjectileType,
@@ -40,8 +43,12 @@ export const setupAnimations = (controllers: Controllers) => {
 		if (!event.sourceId) return;
 
 		controllers.triggerSpriteAnimation.die(event.sourceId);
+		controllers.triggerSpriteAnimation.loop(
+			event.sourceId,
+			SpritePresets.DIE,
+		);
 
-		await new Promise((resolve) => setTimeout(resolve, 300));
+		await new Promise((resolve) => setTimeout(resolve, 1000));
 		await controllers.triggerUnit.fadeOut(event.sourceId, 400, 200);
 	});
 
@@ -239,9 +246,9 @@ export const setupAnimations = (controllers: Controllers) => {
 
 		// ability cast & zoom in on mage
 		await Promise.all([
-			controllers.triggerSpriteAnimation.abilityCast(
+			controllers.triggerSpriteAnimation.loop(
 				mageId,
-				AnimationPhase.LOOP,
+				SpritePresets.ABILITY_CAST,
 			),
 			controllers.triggerCamera.zoomIn(mageId),
 		]);
@@ -321,7 +328,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		await Promise.all([
 			controllers.triggerVfx.blackClouds(false),
 			controllers.triggerVfx.screenRestoreColor(1000),
-			controllers.triggerSpriteAnimation.idle(mageId),
+			controllers.triggerSpriteAnimation.stopLoop(mageId),
 		]);
 	};
 

@@ -19,26 +19,14 @@ import {
 	updateSinglePosition,
 	calculateAnimDuration,
 	triggerUnitAnim,
+	stopUnitAnim,
 } from './animationUtils';
 import {
 	AnimationPhase,
 	SpritePresets,
+	type TriggerSpriteAnimationAPI,
 } from '../../../../constants/animationStates/spriteStates';
 import type { Position } from '../unitControl/unitCalculations';
-
-export interface TriggerSpriteAnimationAPI {
-	play: (
-		unitId: string,
-		action: SpritePresets,
-		phase?: AnimationPhase,
-	) => Promise<void>;
-	melee: (unitId: string, phase?: AnimationPhase) => Promise<void>;
-	move: (unitId: string) => Promise<void>;
-	takeDamage: (unitId: string, phase?: AnimationPhase) => Promise<void>;
-	idle: (unitId: string) => Promise<void>;
-	abilityCast: (unitId: string, phase?: AnimationPhase) => Promise<void>;
-	die: (unitId: string, phase?: AnimationPhase) => Promise<void>;
-}
 
 export interface UseSpriteAnimationControlReturn {
 	activeSpriteStates: Record<string, SpritePresets>;
@@ -163,6 +151,16 @@ export const useSpriteAnimationControl = (
 				playSpriteAnimation(unitId, SpritePresets.ABILITY_CAST, phase),
 			die: (unitId, phase) =>
 				playSpriteAnimation(unitId, SpritePresets.DIE, phase),
+			loop: (unitId, action) =>
+				playSpriteAnimation(unitId, action, AnimationPhase.LOOP),
+			stopLoop: (unitId) =>
+				stopUnitAnim(
+					unitId,
+					setActiveSpriteStates as Dispatch<
+						SetStateAction<Record<string, string>>
+					>,
+					setActiveUnitPhases,
+				),
 		}),
 		[playSpriteAnimation],
 	);

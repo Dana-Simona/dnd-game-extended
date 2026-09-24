@@ -34,7 +34,8 @@ const Sprite: React.FC<SpriteProps> = ({
 		setIsLoopingPhase(false);
 	}, [imagePath, loopStartFrame, phase]);
 
-	const hasCustomLoop = loop && loopStartFrame > 0;
+	const isLoopActive = loop || phase === AnimationPhase.LOOP;
+	const hasCustomLoop = isLoopActive && loopStartFrame > 0;
 	const isLooping = isLoopingPhase && hasCustomLoop;
 
 	let currentStartFrame = isLooping ? loopStartFrame : 0;
@@ -55,12 +56,16 @@ const Sprite: React.FC<SpriteProps> = ({
 
 	const duration = currentFrameCount / fps;
 	const isInfinite =
-		loop &&
+		isLoopActive &&
 		(!hasCustomLoop || isLoopingPhase) &&
-		phase === AnimationPhase.FULL;
+		(phase === AnimationPhase.FULL || phase === AnimationPhase.LOOP);
 
 	const handleAnimationEnd = () => {
-		if (hasCustomLoop && !isLoopingPhase && phase === AnimationPhase.FULL) {
+		if (
+			hasCustomLoop &&
+			!isLoopingPhase &&
+			(phase === AnimationPhase.FULL || phase === AnimationPhase.LOOP)
+		) {
 			setIsLoopingPhase(true);
 		}
 	};

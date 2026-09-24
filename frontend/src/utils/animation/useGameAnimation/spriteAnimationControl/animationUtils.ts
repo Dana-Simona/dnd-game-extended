@@ -108,6 +108,23 @@ interface ActiveAnimation {
 
 const runningAnimations = new Map<string, ActiveAnimation>();
 
+export const stopUnitAnim = (
+	unitId: string,
+	setStates: React.Dispatch<React.SetStateAction<Record<string, string>>>,
+	setPhases: React.Dispatch<
+		React.SetStateAction<Record<string, AnimationPhase>>
+	>,
+) => {
+	const existing = runningAnimations.get(unitId);
+	if (existing) {
+		clearTimeout(existing.timer);
+		existing.resolve();
+		runningAnimations.delete(unitId);
+	}
+	setStates((prev) => removeActiveState(prev, unitId));
+	setPhases((prev) => removeActivePhase(prev, unitId));
+};
+
 export const triggerUnitAnim = (
 	unitId: string,
 	action: string,
