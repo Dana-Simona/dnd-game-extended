@@ -15,10 +15,6 @@ export interface SpriteAnimationCommand {
 	phase?: AnimationPhase;
 }
 
-export type TriggerSpriteAnimation = (
-	command: SpriteAnimationCommand,
-) => Promise<void>;
-
 export const AnimationPhase = {
 	FULL: 'full',
 	WINDUP: 'windup',

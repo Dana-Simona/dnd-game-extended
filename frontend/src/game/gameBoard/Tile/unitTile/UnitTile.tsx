@@ -8,12 +8,12 @@ import Sprite, { type SpriteProps } from '../../../../utils/sprite/Sprite';
 import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
 import { UnitFacing } from '../../../../constants/animationStates/unitStates';
 import type { AnimationPhase } from '../../../../constants/animationStates/spriteStates';
-import type { HpState } from '../../../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
 import {
 	PositionedSpriteContainer,
 	SpriteTileWrapper,
 	SpriteFlipWrapper,
 } from '../TileStyles';
+import type { HpState } from '../../../../constants/animationStates/hpStates';
 
 interface Props {
 	unit?: Unit;

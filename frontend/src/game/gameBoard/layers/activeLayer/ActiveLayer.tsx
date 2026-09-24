@@ -3,7 +3,6 @@ import type { Transition } from 'framer-motion';
 import Tile from '../../Tile/Tile';
 import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
 import { ActiveLayerContainer, AnimatedUnitWrapper } from './ActiveLayerStyles';
-import type { HpStateMap } from '../../../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
 import {
 	UnitFacing,
 	type UnitTransform,
@@ -12,6 +11,7 @@ import type {
 	SpritePresets,
 	AnimationPhase,
 } from '../../../../constants/animationStates/spriteStates';
+import type { HpStateMap } from '../../../../constants/animationStates/hpStates';
 
 interface Props {
 	units: Unit[];

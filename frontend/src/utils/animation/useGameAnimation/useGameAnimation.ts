@@ -27,12 +27,13 @@ export const useGameAnimation = (
 		setVisualPositions,
 		targetPositionsRef,
 		playSpriteAnimation,
+		triggerSpriteAnimation,
 	} = useSpriteAnimationControl(units, player, tileSize, zoom);
 
 	const { triggerCamera, resetCamera, panZoomMotion, effectMotion } =
 		useCameraControl(player, units, visualPositions, tileSize, zoom);
 
-	const { spawnVFX, activeVfxList } = useVfxControl(
+	const { triggerVfx, activeVfxList } = useVfxControl(
 		visualPositions,
 		tileSize,
 	);
@@ -44,8 +45,7 @@ export const useGameAnimation = (
 		hpStates,
 		triggerHpBar,
 		showDamagePreview,
-		depleteHp,
-		clearPreview,
+		drainHp,
 		resetHpStates,
 	} = useHpBarControl(units, player);
 
@@ -61,22 +61,16 @@ export const useGameAnimation = (
 
 	useEffect(() => {
 		setupAnimations({
-			triggerSpriteAnimation: ({ unitId, type, phase }) =>
-				playSpriteAnimation(
-					unitId,
-					type as Parameters<typeof playSpriteAnimation>[1],
-					phase,
-				),
-			triggerVfx: ({ type, targetIds, amount, sourceId }) =>
-				spawnVFX(type, targetIds, amount, sourceId),
+			triggerSpriteAnimation,
+			triggerVfx,
 			triggerCamera,
 			triggerUnit,
 			triggerHpBar,
 			getUnitById,
 		});
 	}, [
-		playSpriteAnimation,
-		spawnVFX,
+		triggerSpriteAnimation,
+		triggerVfx,
 		triggerCamera,
 		triggerUnit,
 		triggerHpBar,
@@ -150,7 +144,8 @@ export const useGameAnimation = (
 		hpStates,
 		triggerHpBar,
 		showDamagePreview,
-		depleteHp,
-		clearPreview,
+		drainHp,
+		triggerSpriteAnimation,
+		playSpriteAnimation,
 	};
 };

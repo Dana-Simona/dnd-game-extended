@@ -2,35 +2,23 @@ import { animationRegistry } from './animationRegistry';
 import { ActionType, type GameEvent } from '../../constants/gameEvent';
 import {
 	VfxTypes,
-	type TriggerVfx,
+	type TriggerVfxAPI,
 } from '../../constants/animationStates/vfxStates';
-import {
-	UnitPreset,
-	type TriggerUnit,
-} from '../../constants/animationStates/unitStates';
-import {
-	HpBarPreset,
-	type TriggerHpBar,
-} from './useGameAnimation/hpBarControl/useHpBarControl';
-import {
-	AnimationPhase,
-	SpritePresets,
-	type TriggerSpriteAnimation,
-} from '../../constants/animationStates/spriteStates';
-import {
-	CameraPreset,
-	type TriggerCamera,
-} from '../../constants/animationStates/cameraStates';
+import { AnimationPhase } from '../../constants/animationStates/spriteStates';
 import { UnitType, type Unit } from '../../constants/interfaces/unit';
 import type { Player } from '../../constants/interfaces/player';
 import { ClassTypes } from '../../constants/classTypes';
+import type { TriggerCameraAPI } from '../../constants/animationStates/cameraStates';
+import type { TriggerHpBarAPI } from '../../constants/animationStates/hpStates';
+import type { TriggerUnitAPI } from './useGameAnimation/unitControl/useUnitControl';
+import type { TriggerSpriteAnimationAPI } from './useGameAnimation/spriteAnimationControl/useSpriteAnimationControl';
 
 interface Controllers {
-	triggerSpriteAnimation: TriggerSpriteAnimation;
-	triggerVfx: TriggerVfx;
-	triggerCamera: TriggerCamera;
-	triggerUnit: TriggerUnit;
-	triggerHpBar: TriggerHpBar;
+	triggerSpriteAnimation: TriggerSpriteAnimationAPI;
+	triggerCamera: TriggerCameraAPI;
+	triggerUnit: TriggerUnitAPI;
+	triggerHpBar: TriggerHpBarAPI;
+	triggerVfx: TriggerVfxAPI;
 	getUnitById: (id: string) => Unit | undefined;
 }
 
@@ -38,27 +26,16 @@ export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(ActionType.MOVE, async (event: GameEvent) => {
 		if (!event.sourceId) return;
 
-		await controllers.triggerSpriteAnimation({
-			type: SpritePresets.MOVE,
-			unitId: event.sourceId,
-		});
+		await controllers.triggerSpriteAnimation.move(event.sourceId);
 	});
 
 	animationRegistry.register(ActionType.DIE, async (event: GameEvent) => {
 		if (!event.sourceId) return;
 
-		controllers.triggerSpriteAnimation({
-			type: SpritePresets.DIE,
-			unitId: event.sourceId,
-		});
+		controllers.triggerSpriteAnimation.die(event.sourceId);
 
-		(await new Promise((resolve) => setTimeout(resolve, 300)),
-			await controllers.triggerUnit({
-				type: UnitPreset.FADE_OUT,
-				unitId: event.sourceId,
-				delayMs: 400,
-				durationMs: 200,
-			}));
+		await new Promise((resolve) => setTimeout(resolve, 300));
+		await controllers.triggerUnit.fadeOut(event.sourceId, 400, 200);
 	});
 
 	animationRegistry.register(ActionType.MELEE, async (event: GameEvent) => {
@@ -67,56 +44,33 @@ export const setupAnimations = (controllers: Controllers) => {
 		if (!event.sourceId || !defender) return;
 
 		await Promise.all([
-			controllers.triggerUnit({
-				type: UnitPreset.FACE,
-				sourceId: attacker,
-				targetId: defender,
-			}),
-			controllers.triggerUnit({
-				type: UnitPreset.FACE,
-				sourceId: defender,
-				targetId: attacker,
-			}),
+			controllers.triggerUnit.face(attacker, defender),
+			controllers.triggerUnit.face(defender, attacker),
 		]);
 
 		await Promise.all([
-			controllers.triggerSpriteAnimation({
-				type: SpritePresets.MELEE,
-				unitId: attacker,
-				phase: AnimationPhase.WINDUP,
-			}),
-			controllers.triggerSpriteAnimation({
-				type: SpritePresets.TAKE_DAMAGE,
-				unitId: defender,
-				phase: AnimationPhase.WINDUP,
-			}),
+			controllers.triggerSpriteAnimation.melee(
+				attacker,
+				AnimationPhase.WINDUP,
+			),
+			controllers.triggerSpriteAnimation.takeDamage(
+				defender,
+				AnimationPhase.WINDUP,
+			),
 		]);
 
 		await Promise.all([
-			controllers.triggerSpriteAnimation({
-				type: SpritePresets.TAKE_DAMAGE,
-				unitId: defender,
-				phase: AnimationPhase.FOLLOW_THROUGH,
-			}),
-			controllers.triggerCamera({ type: CameraPreset.SHAKE }),
-			controllers.triggerVfx({
-				type: VfxTypes.PARTICLES_DAMAGE,
-				targetIds: [defender],
-				amount: event.amount,
-				sourceId: attacker,
-			}),
-			controllers.triggerUnit({
-				type: UnitPreset.DASH,
-				sourceId: defender,
-				targetId: attacker,
-				distancePx: -25,
-				durationMs: 1000,
-			}),
-			controllers.triggerHpBar({
-				type: HpBarPreset.SHOW_DAMAGE_PREVIEW,
-				unitId: defender,
-				damage: event.amount || 0,
-			}),
+			controllers.triggerSpriteAnimation.takeDamage(
+				defender,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			controllers.triggerCamera.shake(),
+			controllers.triggerVfx.bleed(attacker, defender),
+			controllers.triggerUnit.dash(defender, attacker, -25, 1000),
+			controllers.triggerHpBar.showDamagePreview(
+				defender,
+				event.amount || 0,
+			),
 		]);
 
 		const unit = controllers.getUnitById(defender);
@@ -126,41 +80,25 @@ export const setupAnimations = (controllers: Controllers) => {
 		const isDead = !!finalHealth && finalHealth <= 0;
 
 		await Promise.all([
-			controllers.triggerSpriteAnimation({
-				type: SpritePresets.MELEE,
-				unitId: attacker,
-				phase: AnimationPhase.FOLLOW_THROUGH,
-			}),
-			!isDead &&
-				controllers.triggerUnit({
-					type: UnitPreset.RESET,
-					unitId: defender,
-				}),
-			controllers.triggerHpBar({
-				type: HpBarPreset.DEPLETE_HP,
-				unitId: defender,
-			}),
+			controllers.triggerSpriteAnimation.melee(
+				attacker,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			!isDead && controllers.triggerUnit.reset(defender),
+			controllers.triggerHpBar.drainHp(defender),
 		]);
 	});
 
 	animationRegistry.register(ActionType.COMBAT, async (event: GameEvent) => {
 		const targetId = event.targetIds?.[0];
 		if (!event.sourceId || !targetId) return;
-		await controllers.triggerCamera({
-			type: CameraPreset.ZOOM_TWO_TARGETS,
-			targetIds: [event.sourceId, ...event.targetIds],
-		});
+		await controllers.triggerCamera.zoomTwoTargets(
+			event.sourceId,
+			targetId,
+		);
 		await Promise.all([
-			controllers.triggerUnit({
-				type: UnitPreset.FACE,
-				sourceId: event.sourceId,
-				targetId,
-			}),
-			controllers.triggerUnit({
-				type: UnitPreset.FACE,
-				sourceId: targetId,
-				targetId: event.sourceId,
-			}),
+			controllers.triggerUnit.face(event.sourceId, targetId),
+			controllers.triggerUnit.face(targetId, event.sourceId),
 		]);
 	});
 
@@ -200,57 +138,35 @@ export const setupAnimations = (controllers: Controllers) => {
 	);
 
 	animationRegistry.register(ActionType.GAIN_XP, async (event: GameEvent) => {
-		if (!event.sourceId && !event.targetIds) return;
-		const deadUnit = controllers.getUnitById(event.targetIds[0]);
+		if (!event.sourceId || !event.targetIds || !event.amount) return;
+		const targetId = event.targetIds[0];
+		const deadUnit = controllers.getUnitById(targetId);
 		const isEnemy = deadUnit?.unitType !== UnitType.PLAYER;
 		if (isEnemy) {
-			await controllers.triggerVfx({
-				type: VfxTypes.EFFECTS_EXP,
-				targetIds: event.targetIds,
-				amount: event.amount,
-			});
+			await controllers.triggerVfx.effectsExp(targetId, event.amount);
 		}
-		await controllers.triggerVfx({
-			type: VfxTypes.STAT_EXP,
-			targetIds: [event.sourceId],
-			amount: event.amount,
-		});
+		await controllers.triggerVfx.statExp(event.sourceId, event.amount);
 	});
 
 	animationRegistry.register(ActionType.HEAL, async (event: GameEvent) => {
-		if (!event.sourceId) return;
-		controllers.triggerHpBar({
-			type: HpBarPreset.DEPLETE_HP,
-			unitId: event.sourceId,
-		});
-		await controllers.triggerVfx({
-			type: VfxTypes.STAT_HEAL,
-			targetIds: [event.sourceId],
-			amount: event.amount,
-		});
+		if (!event.sourceId || !event.amount) return;
+		controllers.triggerHpBar.drainHp(event.sourceId);
+		await controllers.triggerVfx.statHeal(event.sourceId, event.amount);
 	});
 
 	animationRegistry.register(
 		ActionType.LEVEL_UP,
 		async (event: GameEvent) => {
-			if (!event.sourceId) return;
-			await controllers.triggerVfx({
-				type: VfxTypes.BANNER_LEVEL_UP,
-				targetIds: [event.sourceId],
-				amount: event.amount,
-			});
+			if (!event.sourceId || !event.amount) return;
+			await controllers.triggerVfx.bannerLevelUp(event.amount);
 		},
 	);
 
 	animationRegistry.register(ActionType.LOSE, async (event: GameEvent) => {
-		if (!event.sourceId) return;
-		await controllers.triggerCamera({ type: CameraPreset.ZOOM_IN });
-		await controllers.triggerCamera({ type: CameraPreset.THUMP });
-		await controllers.triggerVfx({
-			type: VfxTypes.BANNER_LOSE,
-			targetIds: [event.sourceId],
-			amount: event.amount,
-		});
+		if (!event.sourceId || !event.amount) return;
+		await controllers.triggerCamera.zoomIn();
+		await controllers.triggerCamera.thump();
+		await controllers.triggerVfx.bannerLose(event.amount);
 	});
 
 	animationRegistry.register(
@@ -263,63 +179,44 @@ export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(
 		ActionType.ROLL_ATTACK,
 		async (event: GameEvent) => {
-			if (!event.sourceId) return;
-			await controllers.triggerVfx({
-				type: VfxTypes.ROLL_ATTACK,
-				targetIds: [event.sourceId],
-				amount: event.amount,
-			});
+			if (!event.sourceId || !event.amount) return;
+			await controllers.triggerVfx.rollAttack(
+				event.sourceId,
+				event.amount,
+			);
 		},
 	);
 
 	animationRegistry.register(
 		ActionType.ROLL_DEFENSE,
 		async (event: GameEvent) => {
-			if (!event.sourceId) return;
-			await controllers.triggerVfx({
-				type: VfxTypes.ROLL_DEFENSE,
-				targetIds: [event.sourceId],
-				amount: event.amount,
-			});
+			if (!event.sourceId || !event.amount) return;
+			await controllers.triggerVfx.rollDefense(
+				event.sourceId,
+				event.amount,
+			);
 		},
 	);
 
 	animationRegistry.register(
 		ActionType.TAKE_DAMAGE,
 		async (event: GameEvent) => {
-			if (!event.sourceId) return;
-			await controllers.triggerVfx({
-				type: VfxTypes.STAT_DAMAGE,
-				targetIds: [event.sourceId],
-				amount: event.amount,
-			});
+			if (!event.sourceId || !event.amount) return;
+			await controllers.triggerVfx.statDamage(
+				event.sourceId,
+				event.amount,
+			);
 		},
 	);
 
 	animationRegistry.register(
 		ActionType.TAKE_DAMAGE_FROM_ABILITY,
 		async (event: GameEvent) => {
-			if (!event.sourceId) return;
-			await Promise.all([
-				controllers.triggerSpriteAnimation({
-					type: SpritePresets.TAKE_DAMAGE,
-					unitId: event.sourceId,
-				}),
-				controllers.triggerVfx({
-					type: VfxTypes.STAT_DAMAGE,
-					targetIds: [event.sourceId],
-					amount: event.amount,
-				}),
-				controllers.triggerHpBar({
-					type: HpBarPreset.SHOW_DAMAGE_PREVIEW,
-					unitId: event.sourceId,
-					damage: event.amount || 0,
-				}),
-			]);
-			controllers.triggerHpBar({
-				type: HpBarPreset.DEPLETE_HP,
-				unitId: event.sourceId,
-			});
+			if (!event.sourceId || !event.amount) return;
+			await controllers.triggerVfx.statDamage(
+				event.sourceId,
+				event.amount,
+			);
 		},
 	);
 

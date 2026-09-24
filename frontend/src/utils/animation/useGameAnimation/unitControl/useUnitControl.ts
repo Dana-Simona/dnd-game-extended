@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import type { Position } from './unitCalculations';
 import {
 	executeFaceTarget,
@@ -6,13 +6,48 @@ import {
 	executeResetTransform,
 	executeFadeOut,
 	executeFadeIn,
+	executeRotate,
+	executeJump,
+	executeLeap,
 } from './unitAnimations';
-import {
-	UnitPreset,
-	type TriggerUnit,
-	type UnitCommand,
-	type UnitTransform,
-} from '../../../../constants/animationStates/unitStates';
+import type { UnitTransform } from '../../../../constants/animationStates/unitStates';
+
+export interface TriggerUnitAPI {
+	face: (sourceId: string, targetId: string) => Promise<void>;
+	dash: (
+		sourceId: string,
+		targetId: string,
+		distancePx?: number,
+		durationMs?: number,
+	) => Promise<void>;
+	fadeOut: (
+		unitId: string,
+		delayMs?: number,
+		durationMs?: number,
+	) => Promise<void>;
+	fadeIn: (
+		unitId: string,
+		delayMs?: number,
+		durationMs?: number,
+	) => Promise<void>;
+	reset: (unitId: string) => Promise<void>;
+	rotate: (
+		unitId: string,
+		degrees?: number,
+		durationMs?: number,
+	) => Promise<void>;
+	jump: (
+		sourceId: string,
+		targetId: string,
+		heightPx?: number,
+		durationMs?: number,
+	) => Promise<void>;
+	leap: (
+		unitId: string,
+		heightPx?: number,
+		durationMs?: number,
+	) => Promise<void>;
+}
 
 export const useUnitControl = (visualPositions: Record<string, Position>) => {
 	const [unitTransforms, setUnitTransforms] = useState<
@@ -24,7 +59,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 
 	const faceTarget = useCallback(
 		async (sourceId: string, targetId: string) => {
-			executeFaceTarget(
+			await executeFaceTarget(
 				sourceId,
 				targetId,
 				visualPositionsRef.current,
@@ -40,14 +75,12 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			targetId: string,
 			distancePx = 24,
 			durationMs = 200,
-			delayMs = 0,
 		) => {
 			await executeDash(
 				sourceId,
 				targetId,
 				distancePx,
 				durationMs,
-				delayMs,
 				visualPositionsRef.current,
 				setUnitTransforms,
 			);
@@ -56,11 +89,11 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 	);
 
 	const fadeOut = useCallback(
-		async (unitId: string, durationMs = 200, delayMs = 0) => {
+		async (unitId: string, delayMs = 0, durationMs = 200) => {
 			await executeFadeOut(
 				unitId,
-				durationMs,
 				delayMs,
+				durationMs,
 				setUnitTransforms,
 			);
 		},
@@ -68,63 +101,78 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 	);
 
 	const fadeIn = useCallback(
-		async (unitId: string, durationMs = 200, delayMs = 0) => {
-			await executeFadeIn(unitId, durationMs, delayMs, setUnitTransforms);
+		async (unitId: string, delayMs = 0, durationMs = 200) => {
+			await executeFadeIn(unitId, delayMs, durationMs, setUnitTransforms);
 		},
 		[],
 	);
 
 	const resetTransform = useCallback(async (unitId: string) => {
-		executeResetTransform(unitId, setUnitTransforms);
+		await executeResetTransform(unitId, setUnitTransforms);
 	}, []);
+
+	const rotate = useCallback(
+		async (unitId: string, degrees = 360, durationMs = 300) => {
+			await executeRotate(unitId, degrees, durationMs, setUnitTransforms);
+		},
+		[],
+	);
+
+	const jump = useCallback(
+		async (
+			sourceId: string,
+			targetId: string,
+			heightPx = 30,
+			durationMs = 300,
+		) => {
+			await executeJump(
+				sourceId,
+				targetId,
+				heightPx,
+				durationMs,
+				visualPositionsRef.current,
+				setUnitTransforms,
+			);
+		},
+		[],
+	);
+
+	const leap = useCallback(
+		async (unitId: string, heightPx = 30, durationMs = 300) => {
+			await executeLeap(unitId, heightPx, durationMs, setUnitTransforms);
+		},
+		[],
+	);
 
 	const resetAllTransforms = useCallback(() => {
 		setUnitTransforms({});
 	}, []);
 
-	const triggerUnit: TriggerUnit = useCallback(
-		async (command: UnitCommand) => {
-			switch (command.type) {
-				case UnitPreset.FACE:
-					await faceTarget(command.sourceId, command.targetId);
-					break;
-				case UnitPreset.DASH:
-					await dash(
-						command.sourceId,
-						command.targetId,
-						command.distancePx,
-						command.durationMs,
-						command.delayMs,
-					);
-					break;
-				case UnitPreset.FADE_OUT:
-					await fadeOut(
-						command.unitId,
-						command.durationMs,
-						command.delayMs,
-					);
-					break;
-				case UnitPreset.FADE_IN:
-					await fadeIn(
-						command.unitId,
-						command.durationMs,
-						command.delayMs,
-					);
-					break;
-				case UnitPreset.RESET:
-					await resetTransform(command.unitId);
-					break;
-			}
-		},
-		[faceTarget, dash, fadeOut, fadeIn, resetTransform],
+	const triggerUnit = useMemo<TriggerUnitAPI>(
+		() => ({
+			face: faceTarget,
+			dash,
+			fadeOut,
+			fadeIn,
+			reset: resetTransform,
+			rotate,
+			jump,
+			leap,
+		}),
+		[faceTarget, dash, fadeOut, fadeIn, resetTransform, rotate, jump, leap],
 	);
 
 	return {
 		triggerUnit,
 		unitTransforms,
 		resetAllTransforms,
+		faceTarget,
 		dash,
 		fadeOut,
 		fadeIn,
+		resetTransform,
+		rotate,
+		jump,
+		leap,
 	};
 };

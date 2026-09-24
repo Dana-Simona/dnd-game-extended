@@ -1,5 +1,5 @@
 import React from 'react';
-import type { HpState } from '../../../../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
+import type { HpState } from '../../../../../constants/animationStates/hpStates';
 import {
 	BarContainer,
 	BarFill,

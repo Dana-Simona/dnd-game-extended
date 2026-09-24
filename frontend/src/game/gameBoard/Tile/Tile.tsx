@@ -6,8 +6,8 @@ import type { Unit } from '../../../constants/interfaces/unit';
 import { getTileConfig } from '../../../utils/tileMapping/tileMapping';
 import { UnitFacing } from '../../../constants/animationStates/unitStates';
 import { getUnitSpriteConfig } from '../../../utils/animation/spriteAnimations';
-import type { HpState } from '../../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
 import { AnimationPhase, SpritePresets } from '../../../constants/animationStates/spriteStates';
+import type { HpState } from '../../../constants/animationStates/hpStates';
 
 interface Props {
 	char: string;

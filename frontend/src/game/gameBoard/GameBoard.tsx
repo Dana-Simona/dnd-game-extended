@@ -15,11 +15,11 @@ import {
 } from './GameBoardStyles';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import type { UnitTransform } from '../../constants/animationStates/unitStates';
-import type { HpStateMap } from '../../utils/animation/useGameAnimation/hpBarControl/useHpBarControl';
 import type {
 	SpritePresets,
 	AnimationPhase,
 } from '../../constants/animationStates/spriteStates';
+import type { HpStateMap } from '../../constants/animationStates/hpStates';
 
 export interface Props {
 	board: string[];

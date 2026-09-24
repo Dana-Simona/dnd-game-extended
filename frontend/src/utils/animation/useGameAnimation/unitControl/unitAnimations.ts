@@ -36,7 +36,6 @@ export const executeDash = async (
 	targetId: string,
 	distancePx = 24,
 	durationMs = 200,
-	delayMs = 0,
 	positions: Record<string, Position>,
 	setTransforms: SetTransforms,
 ) => {
@@ -48,10 +47,6 @@ export const executeDash = async (
 			`Dash failed: Missing position for ${sourceId} or ${targetId}`,
 		);
 		return;
-	}
-
-	if (delayMs > 0) {
-		await new Promise((resolve) => setTimeout(resolve, delayMs));
 	}
 
 	const { offsetX, offsetY } = calculateVectorOffset(
@@ -81,8 +76,8 @@ export const executeDash = async (
 
 export const executeFadeOut = async (
 	unitId: string,
-	durationMs = 200,
 	delayMs = 0,
+	durationMs = 200,
 	setTransforms: SetTransforms,
 ) => {
 	if (delayMs > 0) {
@@ -107,8 +102,8 @@ export const executeFadeOut = async (
 
 export const executeFadeIn = async (
 	unitId: string,
-	durationMs = 200,
 	delayMs = 0,
+	durationMs = 200,
 	setTransforms: SetTransforms,
 ) => {
 	if (delayMs > 0) {
@@ -138,6 +133,7 @@ export const executeResetTransform = (
 	const resetVariant: UnitTransform = {
 		x: 0,
 		y: 0,
+		rotate: 0,
 		opacity: 1,
 		transition: {
 			duration: 0.15,
@@ -152,4 +148,123 @@ export const executeResetTransform = (
 			...resetVariant,
 		},
 	}));
+};
+
+export const executeRotate = async (
+	unitId: string,
+	degrees = 360,
+	durationMs = 300,
+	setTransforms: SetTransforms,
+) => {
+	const rotateVariant: UnitTransform = {
+		rotate: degrees,
+		transition: {
+			duration: durationMs / 1000,
+			ease: 'easeInOut',
+		},
+	};
+
+	setTransforms((prev) => ({
+		...prev,
+		[unitId]: { ...prev[unitId], ...rotateVariant },
+	}));
+
+	await new Promise((resolve) => setTimeout(resolve, durationMs));
+};
+
+export const executeJump = async (
+	sourceId: string,
+	targetId: string,
+	heightPx = 30,
+	durationMs = 300,
+	positions: Record<string, Position>,
+	setTransforms: SetTransforms,
+) => {
+	const sourcePos = positions[sourceId];
+	const targetPos = positions[targetId];
+
+	if (!sourcePos || !targetPos) {
+		console.warn(
+			`Jump failed: Missing position for ${sourceId} or ${targetId}`,
+		);
+		return;
+	}
+
+	const { offsetX, offsetY } = calculateVectorOffset(
+		sourcePos,
+		targetPos,
+		24,
+	);
+	const facing = calculateFacing(sourcePos, targetPos);
+
+	const jumpUpVariant: UnitTransform = {
+		x: offsetX * 0.5,
+		y: offsetY - heightPx,
+		scaleX: facing === 'left' ? -1 : 1,
+		transition: {
+			duration: durationMs / 2000,
+			ease: 'easeOut',
+		},
+	};
+
+	setTransforms((prev) => ({
+		...prev,
+		[sourceId]: { ...prev[sourceId], ...jumpUpVariant },
+	}));
+
+	await new Promise((resolve) => setTimeout(resolve, durationMs / 2));
+
+	const jumpDownVariant: UnitTransform = {
+		x: offsetX,
+		y: offsetY,
+		scaleX: facing === 'left' ? -1 : 1,
+		transition: {
+			duration: durationMs / 2000,
+			ease: 'easeIn',
+		},
+	};
+
+	setTransforms((prev) => ({
+		...prev,
+		[sourceId]: { ...prev[sourceId], ...jumpDownVariant },
+	}));
+
+	await new Promise((resolve) => setTimeout(resolve, durationMs / 2));
+};
+
+export const executeLeap = async (
+	unitId: string,
+	heightPx = 30,
+	durationMs = 300,
+	setTransforms: SetTransforms,
+) => {
+	const leapUpVariant: UnitTransform = {
+		y: -heightPx,
+		transition: {
+			duration: durationMs / 2000,
+			ease: 'easeOut',
+		},
+	};
+
+	setTransforms((prev) => ({
+		...prev,
+		[unitId]: { ...prev[unitId], ...leapUpVariant },
+	}));
+
+	await new Promise((resolve) => setTimeout(resolve, durationMs / 2));
+
+	const leapDownVariant: UnitTransform = {
+		y: 0,
+		transition: {
+			duration: durationMs / 2000,
+			ease: 'easeIn',
+		},
+	};
+
+	setTransforms((prev) => ({
+		...prev,
+		[unitId]: { ...prev[unitId], ...leapDownVariant },
+	}));
+
+	await new Promise((resolve) => setTimeout(resolve, durationMs / 2));
 };

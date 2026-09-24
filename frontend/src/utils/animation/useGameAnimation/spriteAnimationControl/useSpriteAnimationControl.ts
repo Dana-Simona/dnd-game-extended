@@ -3,6 +3,7 @@ import {
 	useCallback,
 	useEffect,
 	useRef,
+	useMemo,
 	type Dispatch,
 	type SetStateAction,
 } from 'react';
@@ -25,12 +26,40 @@ import {
 } from '../../../../constants/animationStates/spriteStates';
 import type { Position } from '../unitControl/unitCalculations';
 
+export interface TriggerSpriteAnimationAPI {
+	play: (
+		unitId: string,
+		action: SpritePresets,
+		phase?: AnimationPhase,
+	) => Promise<void>;
+	melee: (unitId: string, phase?: AnimationPhase) => Promise<void>;
+	move: (unitId: string) => Promise<void>;
+	takeDamage: (unitId: string, phase?: AnimationPhase) => Promise<void>;
+	idle: (unitId: string) => Promise<void>;
+	abilityCast: (unitId: string, phase?: AnimationPhase) => Promise<void>;
+	die: (unitId: string, phase?: AnimationPhase) => Promise<void>;
+}
+
+export interface UseSpriteAnimationControlReturn {
+	activeSpriteStates: Record<string, SpritePresets>;
+	activeUnitPhases: Record<string, AnimationPhase>;
+	visualPositions: Record<string, Position>;
+	setVisualPositions: Dispatch<SetStateAction<Record<string, Position>>>;
+	targetPositionsRef: React.MutableRefObject<Record<string, Position>>;
+	playSpriteAnimation: (
+		unitId: string,
+		action: SpritePresets,
+		phase?: AnimationPhase,
+	) => Promise<void>;
+	triggerSpriteAnimation: TriggerSpriteAnimationAPI;
+}
+
 export const useSpriteAnimationControl = (
 	units: Unit[],
 	player: Unit | AllPlayerData | null,
 	tileSize: number = 32,
 	zoom: number = 2,
-) => {
+): UseSpriteAnimationControlReturn => {
 	const [activeSpriteStates, setActiveSpriteStates] = useState<
 		Record<string, SpritePresets>
 	>({});
@@ -121,6 +150,23 @@ export const useSpriteAnimationControl = (
 		[isUnitInViewport],
 	);
 
+	const triggerSpriteAnimation = useMemo<TriggerSpriteAnimationAPI>(
+		() => ({
+			play: playSpriteAnimation,
+			melee: (unitId, phase) =>
+				playSpriteAnimation(unitId, SpritePresets.MELEE, phase),
+			move: (unitId) => playSpriteAnimation(unitId, SpritePresets.MOVE),
+			takeDamage: (unitId, phase) =>
+				playSpriteAnimation(unitId, SpritePresets.TAKE_DAMAGE, phase),
+			idle: (unitId) => playSpriteAnimation(unitId, SpritePresets.IDLE),
+			abilityCast: (unitId, phase) =>
+				playSpriteAnimation(unitId, SpritePresets.ABILITY_CAST, phase),
+			die: (unitId, phase) =>
+				playSpriteAnimation(unitId, SpritePresets.DIE, phase),
+		}),
+		[playSpriteAnimation],
+	);
+
 	return {
 		activeSpriteStates,
 		activeUnitPhases,
@@ -128,11 +174,9 @@ export const useSpriteAnimationControl = (
 		setVisualPositions,
 		targetPositionsRef,
 		playSpriteAnimation,
+		triggerSpriteAnimation,
 	};
 };
 
-export type UseSpriteAnimationControlReturn = ReturnType<
-	typeof useSpriteAnimationControl
->;
 export type PlaySpriteAnimationFn =
 	UseSpriteAnimationControlReturn['playSpriteAnimation'];

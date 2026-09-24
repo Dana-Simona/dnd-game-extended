@@ -1,49 +1,31 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 
 import type { Unit } from '../../../../constants/interfaces/unit';
 import type { AllPlayerData } from '../../../../constants/interfaces/player';
+import type {
+	HpStateMap,
+	TriggerHpBarAPI,
+} from '../../../../constants/animationStates/hpStates';
 
-export interface HpState {
-	currentHp: number;
-	maxHp: number;
-	previewHp: number;
+export interface UseHpBarControlReturn {
+	hpStates: HpStateMap;
+	triggerHpBar: TriggerHpBarAPI;
+	showDamagePreview: (
+		unitId: string | number,
+		damage: number,
+		color?: string,
+	) => void;
+	drainHp: (unitId: string | number, targetHp?: number) => void;
+	resetHpStates: (
+		nextPlayer?: Unit | AllPlayerData | null,
+		nextUnits?: Unit[],
+	) => void;
 }
-
-export type HpStateMap = Record<string | number, HpState>;
-
-export const HpBarPreset = {
-	SHOW_DAMAGE_PREVIEW: 'SHOW_DAMAGE_PREVIEW',
-	SET_PREVIEW_HP: 'SET_PREVIEW_HP',
-	DEPLETE_HP: 'DEPLETE_HP',
-	CLEAR_PREVIEW: 'CLEAR_PREVIEW',
-} as const;
-
-export type HpBarPreset = (typeof HpBarPreset)[keyof typeof HpBarPreset];
-
-export type HpBarCommand =
-	| {
-			type: typeof HpBarPreset.SHOW_DAMAGE_PREVIEW;
-			unitId: string | number;
-			damage: number;
-	  }
-	| {
-			type: typeof HpBarPreset.SET_PREVIEW_HP;
-			unitId: string | number;
-			targetHp: number;
-	  }
-	| {
-			type: typeof HpBarPreset.DEPLETE_HP;
-			unitId: string | number;
-			targetHp?: number;
-	  }
-	| { type: typeof HpBarPreset.CLEAR_PREVIEW; unitId: string | number };
-
-export type TriggerHpBar = (command: HpBarCommand) => void;
 
 export const useHpBarControl = (
 	units: Unit[] = [],
 	player: Unit | AllPlayerData | null = null,
-) => {
+): UseHpBarControlReturn => {
 	const [hpStates, setHpStates] = useState<HpStateMap>({});
 
 	const syncHpStates = useCallback(() => {
@@ -72,7 +54,7 @@ export const useHpBarControl = (
 	}, [syncHpStates]);
 
 	const showDamagePreview = useCallback(
-		(unitId: string | number, damage: number) => {
+		(unitId: string | number, damage: number, color?: string) => {
 			setHpStates((prev) => {
 				const current = prev[unitId];
 				if (!current) return prev;
@@ -83,6 +65,7 @@ export const useHpBarControl = (
 					[unitId]: {
 						...current,
 						previewHp: nextPreview,
+						color,
 					},
 				};
 			});
@@ -90,28 +73,7 @@ export const useHpBarControl = (
 		[],
 	);
 
-	const setPreviewHp = useCallback(
-		(unitId: string | number, targetHp: number) => {
-			setHpStates((prev) => {
-				const current = prev[unitId];
-				if (!current) return prev;
-
-				return {
-					...prev,
-					[unitId]: {
-						...current,
-						previewHp: Math.max(
-							0,
-							Math.min(current.maxHp, targetHp),
-						),
-					},
-				};
-			});
-		},
-		[],
-	);
-
-	const depleteHp = useCallback(
+	const drainHp = useCallback(
 		(unitId: string | number, targetHp?: number) => {
 			setHpStates((prev) => {
 				const current = prev[unitId];
@@ -125,6 +87,7 @@ export const useHpBarControl = (
 						...current,
 						currentHp: finalHp,
 						previewHp: finalHp,
+						color: undefined,
 					},
 				};
 			});
@@ -132,39 +95,12 @@ export const useHpBarControl = (
 		[],
 	);
 
-	const clearPreview = useCallback((unitId: string | number) => {
-		setHpStates((prev) => {
-			const current = prev[unitId];
-			if (!current) return prev;
-
-			return {
-				...prev,
-				[unitId]: {
-					...current,
-					previewHp: current.currentHp,
-				},
-			};
-		});
-	}, []);
-
-	const triggerHpBar: TriggerHpBar = useCallback(
-		(command: HpBarCommand) => {
-			switch (command.type) {
-				case HpBarPreset.SHOW_DAMAGE_PREVIEW:
-					showDamagePreview(command.unitId, command.damage);
-					break;
-				case HpBarPreset.SET_PREVIEW_HP:
-					setPreviewHp(command.unitId, command.targetHp);
-					break;
-				case HpBarPreset.DEPLETE_HP:
-					depleteHp(command.unitId, command.targetHp);
-					break;
-				case HpBarPreset.CLEAR_PREVIEW:
-					clearPreview(command.unitId);
-					break;
-			}
-		},
-		[showDamagePreview, setPreviewHp, depleteHp, clearPreview],
+	const triggerHpBar = useMemo<TriggerHpBarAPI>(
+		() => ({
+			showDamagePreview,
+			drainHp,
+		}),
+		[showDamagePreview, drainHp],
 	);
 
 	const resetHpStates = useCallback(
@@ -197,9 +133,7 @@ export const useHpBarControl = (
 		hpStates,
 		triggerHpBar,
 		showDamagePreview,
-		setPreviewHp,
-		depleteHp,
-		clearPreview,
+		drainHp,
 		resetHpStates,
 	};
 };

@@ -1,23 +1,19 @@
-export type TriggerCamera = (command: CameraCommand) => Promise<void>;
-
-export const CameraPreset = {
-	ZOOM_IN: 'ZOOM_IN',
-	ZOOM_OUT: 'ZOOM_OUT',
-	ZOOM_TWO_TARGETS: 'ZOOM_TWO_TARGETS',
-	FOCUS_TARGET: 'FOCUS_TARGET',
-	SHAKE: 'SHAKE',
-	THUMP: 'THUMP',
-	RESET: 'RESET',
-} as const;
-
-export type CameraPreset = (typeof CameraPreset)[keyof typeof CameraPreset];
-
-export interface CameraCommand {
-	type: CameraPreset;
-	targetIds?: string[];
-	duration?: number;
-	intensity?: number;
-	zoomLevel?: number;
+export interface TriggerCameraAPI {
+	focusTarget: (targetId: string, duration?: number) => Promise<void>;
+	zoomIn: (
+		targetId?: string,
+		zoomLevel?: number,
+		duration?: number,
+	) => Promise<void>;
+	zoomOut: (duration?: number) => Promise<void>;
+	zoomTwoTargets: (
+		target1: string,
+		target2: string,
+		duration?: number,
+	) => Promise<void>;
+	shake: (intensity?: number, duration?: number) => Promise<void>;
+	thump: (intensity?: number, duration?: number) => Promise<void>;
+	reset: (duration?: number) => Promise<void>;
 }
 
 export interface CameraState {
