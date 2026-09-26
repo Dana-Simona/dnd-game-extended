@@ -7,7 +7,7 @@ import {
 	IconWrapper,
 	RollValueNumber,
 } from './RollVfxStyles';
-import type { VfxItem } from '../../../../../../constants/animationStates/vfxStates';
+import type { VfxItem } from '../../../../../../../../constants/animationStates/vfxStates';
 
 interface Props {
 	item: VfxItem;

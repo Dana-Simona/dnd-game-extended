@@ -1,28 +1,22 @@
 import { useState, useCallback, useRef, useMemo } from 'react';
+import type { Position } from '../unitControl/unitCalculations';
 import {
 	VfxCategory,
 	VfxTypes,
 	VfxTypeToCategoryMap,
 	type VfxItem,
 	type TriggerVfxAPI,
-	type BloodColor,
 } from '../../../../constants/animationStates/vfxStates';
-import type { Position } from '../unitControl/unitCalculations';
 
 const CATEGORY_DURATIONS: Record<VfxCategory, number> = {
-	[VfxCategory.BANNER]: 1600,
-	[VfxCategory.STAT]: 900,
-	[VfxCategory.ROLL]: 1000,
-	[VfxCategory.EFFECTS]: 500,
-	[VfxCategory.PARTICLES]: 500,
-	[VfxCategory.PROJECTILES]: 500,
-	[VfxCategory.WORLD]: 600,
-	[VfxCategory.SCREEN]: 500,
-	[VfxCategory.OVERLAY]: 1000,
+	[VfxCategory.SCREEN_COLOR]: 500,
+	[VfxCategory.BACK]: 600,
+	[VfxCategory.FRONT]: 800,
+	[VfxCategory.PORTAL]: 1200,
 };
 
 const TYPE_DURATIONS: Partial<Record<VfxTypes, number>> = {
-	[VfxTypes.EFFECTS_EXP]: 3200,
+	[VfxTypes.EXP_ORBS]: 3200,
 	[VfxTypes.LIGHTNING_STRIKE]: 800,
 };
 
@@ -122,7 +116,6 @@ export const useVfxControl = (
 
 	const triggerVfx = useMemo<TriggerVfxAPI>(
 		() => ({
-			// 1. Floating UI & Stat Popups
 			statDamage: (targetId, amount) =>
 				spawnVFX(VfxTypes.STAT_DAMAGE, [targetId], amount),
 			statHeal: (targetId, amount) =>
@@ -133,32 +126,15 @@ export const useVfxControl = (
 				spawnVFX(VfxTypes.ROLL_ATTACK, [targetId], amount),
 			rollDefense: (targetId, amount) =>
 				spawnVFX(VfxTypes.ROLL_DEFENSE, [targetId], amount),
-
-			// 2. Particle Systems
-			bleed: (sourceId, targetId, color) =>
-				spawnVFX(
-					VfxTypes.BLEED,
-					[targetId],
-					undefined,
-					sourceId,
-					color ? { color: color as BloodColor } : undefined,
-				),
+			bleed: (sourceId, targetId) =>
+				spawnVFX(VfxTypes.BLEED, [targetId], undefined, sourceId),
 			effectsExp: (sourceId, amount) =>
-				spawnVFX(VfxTypes.EFFECTS_EXP, [], amount, sourceId),
+				spawnVFX(VfxTypes.EXP_ORBS, [], amount, sourceId),
 			iceGather: (sourceId) =>
 				spawnVFX(VfxTypes.ICE_GATHER, [], undefined, sourceId),
 			iceExplode: (sourceId) =>
 				spawnVFX(VfxTypes.ICE_EXPLODE, [], undefined, sourceId),
-			bloodDrip: (targetId, color) =>
-				spawnVFX(
-					VfxTypes.BLOOD_DRIP_SPLASH,
-					[targetId],
-					undefined,
-					undefined,
-					{ color },
-				),
-
-			// 3. Spritesheet & World-Anchored Effects
+			bloodDrip: (targetId) => spawnVFX(VfxTypes.BLOOD_DRIP, [targetId]),
 			iceFeet: (targetId) => spawnVFX(VfxTypes.ICE_FEET, [targetId]),
 			lightningStrike: (targetId) =>
 				spawnVFX(VfxTypes.LIGHTNING_STRIKE, [targetId]),
@@ -166,17 +142,24 @@ export const useVfxControl = (
 			groundBreak: (targetId) =>
 				spawnVFX(VfxTypes.GROUND_BREAK, [targetId]),
 			dustLeap: (unitId) => spawnVFX(VfxTypes.DUST_LEAP, [unitId]),
-			landingSmoke: (unitId) =>
-				spawnVFX(VfxTypes.LANDING_SMOKE, [unitId]),
+			landingDust: (unitId) => spawnVFX(VfxTypes.DUST_LAND, [unitId]),
 			slash: (targetId) => spawnVFX(VfxTypes.SLASH, [targetId]),
 			targetSwirl: (targetId) =>
 				spawnVFX(VfxTypes.TARGET_SWIRL, [targetId]),
-			projectile: (projectileType, sourceId, targetId) =>
-				spawnVFX(VfxTypes.PROJECTILE, [targetId], undefined, sourceId, {
-					projectileType,
-				}),
-
-			// 4. Screen Shaders & Post-Processing
+			knivesProjectile: (sourceId, targetId) =>
+				spawnVFX(
+					VfxTypes.KNIVES_PROJECTILE,
+					[targetId],
+					undefined,
+					sourceId,
+				),
+			arrowProjectile: (sourceId, targetId) =>
+				spawnVFX(
+					VfxTypes.ARROW_PROJECTILE,
+					[targetId],
+					undefined,
+					sourceId,
+				),
 			screenDarken: (durationMs = 500) =>
 				spawnVFX(
 					VfxTypes.SCREEN_DARKEN,
@@ -195,15 +178,8 @@ export const useVfxControl = (
 					{ durationMs },
 					durationMs,
 				),
-			screenDesaturate: (excludeActiveLayer = false) =>
-				spawnVFX(
-					VfxTypes.SCREEN_DESATURATE,
-					[],
-					undefined,
-					undefined,
-					{ excludeActiveLayer },
-					0,
-				),
+			screenDesaturate: () =>
+				spawnVFX(VfxTypes.SCREEN_DESATURATE, [], undefined, undefined),
 			screenRestoreColor: async (durationMs = 500) => {
 				removeVfxType(VfxTypes.SCREEN_DESATURATE);
 				removeVfxType(VfxTypes.SCREEN_RED_HUE);
@@ -217,15 +193,13 @@ export const useVfxControl = (
 					durationMs,
 				);
 			},
-
-			// 5. Banners & Portal Overlays
 			bannerLevelUp: (amount) =>
 				spawnVFX(VfxTypes.BANNER_LEVEL_UP, [], amount),
 			bannerLose: (amount) => spawnVFX(VfxTypes.BANNER_LOSE, [], amount),
 			blackClouds: async (visible) => {
 				if (visible) {
 					await spawnVFX(
-						VfxTypes.BLACK_CLOUDS,
+						VfxTypes.BLIZZARD_CLOUDS,
 						[],
 						undefined,
 						undefined,
@@ -233,7 +207,7 @@ export const useVfxControl = (
 						0,
 					);
 				} else {
-					removeVfxType(VfxTypes.BLACK_CLOUDS);
+					removeVfxType(VfxTypes.BLIZZARD_CLOUDS);
 				}
 			},
 			ravensFlying: (durationMs = 1000) =>

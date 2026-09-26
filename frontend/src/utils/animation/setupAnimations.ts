@@ -18,10 +18,7 @@ import { ClassTypes } from '../../constants/classTypes';
 import type { TriggerCameraAPI } from '../../constants/animationStates/cameraStates';
 import type { TriggerHpBarAPI } from '../../constants/animationStates/hpStates';
 import type { TriggerUnitAPI } from './useGameAnimation/unitControl/useUnitControl';
-import {
-	BloodColor,
-	ProjectileType,
-} from '../../constants/animationStates/vfxStates';
+import {} from '../../constants/animationStates/vfxStates';
 
 interface Controllers {
 	triggerSpriteAnimation: TriggerSpriteAnimationAPI;
@@ -244,7 +241,6 @@ export const setupAnimations = (controllers: Controllers) => {
 	const mageCast = async (mage: Mage, targets: string[]) => {
 		const mageId = mage.id;
 
-		// ability cast & zoom in on mage
 		await Promise.all([
 			controllers.triggerSpriteAnimation.loop(
 				mageId,
@@ -397,7 +393,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		// target hp drains
 		await Promise.all([
 			controllers.triggerUnit.reset(warriorId),
-			controllers.triggerVfx.bloodDrip(target, BloodColor.RED),
+			controllers.triggerVfx.bloodDrip(target),
 			controllers.triggerHpBar.drainHp(target),
 			controllers.triggerVfx.statDamage(
 				target,
@@ -467,11 +463,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		for (let i = 0; i < 4; i++) {
 			knifePromises.push(
 				...targets.map((target) =>
-					controllers.triggerVfx.projectile(
-						ProjectileType.KNIVES,
-						rogueId,
-						target,
-					),
+					controllers.triggerVfx.knivesProjectile(rogueId, target),
 				),
 			);
 		}
@@ -504,11 +496,7 @@ export const setupAnimations = (controllers: Controllers) => {
 						target,
 						AnimationPhase.FOLLOW_THROUGH,
 					),
-					controllers.triggerVfx.bleed(
-						rogueId,
-						target,
-						BloodColor.RED,
-					),
+					controllers.triggerVfx.bleed(rogueId, target),
 					controllers.triggerHpBar.drainHp(target),
 					controllers.triggerVfx.statDamage(
 						target,
@@ -536,7 +524,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		// restore color
 		await Promise.all([
 			controllers.triggerSpriteAnimation.idle(rogueId),
-			controllers.triggerVfx.landingSmoke(rogueId),
+			controllers.triggerVfx.landingDust(rogueId),
 			controllers.triggerVfx.screenRestoreColor(400),
 		]);
 	};
@@ -567,11 +555,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		// the white arrow shoots as a projectile to the enemy
 		// the camera pans + zooms to the enemy
 		await Promise.all([
-			controllers.triggerVfx.projectile(
-				ProjectileType.ARROW,
-				hunterId,
-				target,
-			),
+			controllers.triggerVfx.arrowProjectile(hunterId, target),
 			controllers.triggerCamera.zoomIn(target, 1.5, 200),
 		]);
 
@@ -588,7 +572,7 @@ export const setupAnimations = (controllers: Controllers) => {
 				target,
 				AnimationPhase.FOLLOW_THROUGH,
 			),
-			controllers.triggerVfx.bloodDrip(target, BloodColor.WHITE),
+			controllers.triggerVfx.bloodDrip(target),
 			controllers.triggerHpBar.showDamagePreview(
 				target,
 				0, //todo: damage amount
@@ -612,7 +596,7 @@ export const setupAnimations = (controllers: Controllers) => {
 
 			controllers.triggerUnit.reset(hunterId),
 			controllers.triggerSpriteAnimation.idle(hunterId),
-			controllers.triggerVfx.landingSmoke(hunterId),
+			controllers.triggerVfx.landingDust(hunterId),
 			controllers.triggerCamera.reset(400),
 			controllers.triggerVfx.letterbox(false),
 		]);

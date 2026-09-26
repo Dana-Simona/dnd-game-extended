@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const AlertOverlay = styled.div`
+export const PortalOverlay = styled.div`
 	position: fixed;
 	top: 0;
 	left: 0;
