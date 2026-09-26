@@ -4,15 +4,12 @@ import Bleed from './effectVfxs/back/Bleed';
 import { VfxViewportLayer } from './vfxStyles';
 import IceHit from './effectVfxs/front/IceHit';
 import IceFeet from './effectVfxs/front/IceFeet';
-import StatExp from './effectVfxs/front/StatExp';
 import ExpOrbs from './effectVfxs/front/ExpOrbs';
 import DustLeap from './effectVfxs/back/DustLeap';
 import DustLand from './effectVfxs/back/DustLand';
-import StatHeal from './effectVfxs/front/StatHeal';
 import IceGather from './effectVfxs/front/IceGather';
 import BloodDrip from './effectVfxs/front/BloodDrip';
 import IceExplode from './effectVfxs/front/IceExplode';
-import StatDamage from './effectVfxs/front/StatDamage';
 import EffectHeal from './effectVfxs/front/EffectHeal';
 import GroundBreak from './effectVfxs/back/GroundBreak';
 import TargetSwirl from './effectVfxs/back/TargetSwirl';
@@ -25,6 +22,7 @@ import {
 } from '../../../../../constants/animationStates/vfxStates';
 import Slash from './effectVfxs/front/Slash';
 import { RollVfx } from './effectVfxs/front/rollVfx/RollVfx';
+import { StatVfx } from './effectVfxs/front/statVfx/StatVfx';
 
 interface Props {
 	vfxList: VfxItem[];
@@ -40,9 +38,9 @@ const VFX_COMPONENTS: Partial<
 	[VfxTypes.ICE_GATHER]: IceGather,
 
 	[VfxTypes.ICE_FEET]: IceFeet,
-	[VfxTypes.STAT_DAMAGE]: StatDamage,
-	[VfxTypes.STAT_HEAL]: StatHeal,
-	[VfxTypes.STAT_EXP]: StatExp,
+	[VfxTypes.STAT_DAMAGE]: StatVfx,
+	[VfxTypes.STAT_HEAL]: StatVfx,
+	[VfxTypes.STAT_EXP]: StatVfx,
 	[VfxTypes.ROLL_ATTACK]: RollVfx,
 	[VfxTypes.ROLL_DEFENSE]: RollVfx,
 	[VfxTypes.BLEED]: Bleed,

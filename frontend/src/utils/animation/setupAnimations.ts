@@ -130,32 +130,42 @@ export const setupAnimations = (controllers: Controllers) => {
 
 	animationRegistry.register(
 		ActionType.ABILITY_CAST,
-		async (event: GameEvent) => {
+		async (event: GameEvent, next: () => void) => {
 			const casterId = event.sourceId;
 			const victimsIds = event.targetIds;
 
-			if (!casterId || !victimsIds || event.targetIds.length === 0)
+			// Guard clause: unblock queue if data is invalid
+			if (!casterId || !victimsIds || victimsIds.length === 0) {
+				next();
 				return;
+			}
 
 			const caster = controllers.getUnitById(casterId);
 
 			if (caster?.unitType === UnitType.PLAYER) {
 				switch ((caster as Player)?.class) {
 					case ClassTypes.MAGE:
-						mageCast(caster as Mage, victimsIds);
+						await mageCast(caster as Mage, victimsIds, next);
 						break;
 					case ClassTypes.WARRIOR:
-						warriorCast(caster as Warrior, victimsIds[0]);
+						await warriorCast(
+							caster as Warrior,
+							victimsIds[0],
+							next,
+						);
 						break;
 					case ClassTypes.ROGUE:
-						rogueCast(caster as Rogue, victimsIds);
+						await rogueCast(caster as Rogue, victimsIds, next);
 						break;
 					case ClassTypes.HUNTER:
-						hunterCast(caster as Hunter, victimsIds[0]);
+						await hunterCast(caster as Hunter, victimsIds[0], next);
 						break;
 					default:
+						next(); // Unblock queue for unhandled classes
 						break;
 				}
+			} else {
+				next(); // Unblock queue if unit is not a PLAYER
 			}
 		},
 	);
@@ -177,29 +187,25 @@ export const setupAnimations = (controllers: Controllers) => {
 			if (caster?.unitType === UnitType.PLAYER) {
 				switch ((caster as Player)?.class) {
 					case ClassTypes.MAGE:
-						takeDamageFromMageCast(
-							caster as Mage,
-							victimId,
-							damageTaken,
-						);
+						takeDamageFromMageCast(victimId, damageTaken);
 						break;
 					case ClassTypes.WARRIOR:
 						takeDamageFromWarriorCast(
-							caster as Warrior,
+							casterId,
 							victimId,
 							damageTaken,
 						);
 						break;
 					case ClassTypes.ROGUE:
 						takeDamageFromRogueCast(
-							caster as Rogue,
+							casterId,
 							victimId,
 							damageTaken,
 						);
 						break;
 					case ClassTypes.HUNTER:
 						takeDamageFromHunterCast(
-							caster as Hunter,
+							casterId,
 							victimId,
 							damageTaken,
 						);
@@ -282,7 +288,11 @@ export const setupAnimations = (controllers: Controllers) => {
 	const delay = (ms: number) =>
 		new Promise((resolve) => setTimeout(resolve, ms));
 
-	const mageCast = async (mage: Mage, targets: string[]) => {
+	const mageCast = async (
+		mage: Mage,
+		targets: string[],
+		next: () => void,
+	) => {
 		const mageId = mage.id;
 
 		await Promise.all([
@@ -329,36 +339,10 @@ export const setupAnimations = (controllers: Controllers) => {
 					),
 				]);
 
-				// ---
-				// target plays hit animation (follow through)
-				// target shakes (via camera shake slightly on impact)
-				// target hp preview damage (in purple)
-				await Promise.all([
-					controllers.triggerSpriteAnimation.takeDamage(
-						target,
-						AnimationPhase.FOLLOW_THROUGH,
-					),
-					controllers.triggerCamera.shake(2, 100),
-					controllers.triggerHpBar.showDamagePreview(
-						target,
-						0, //todo: damage amount
-						'purple',
-					),
-				]);
-
-				await delay(200);
-
-				// ---
-				// target hp drains
-				// display damage taken stat
-				controllers.triggerHpBar.drainHp(target);
-				await controllers.triggerVfx.statDamage(
-					target,
-					0, //todo: damage amount
-				);
+				next();
 
 				await controllers.triggerSpriteAnimation.idle(target);
-			}, index * 150); // 150ms stagger between strikes
+			}, index * 150);
 		});
 
 		// Wait enough time for staggered animations to begin before clearing environment
@@ -372,7 +356,11 @@ export const setupAnimations = (controllers: Controllers) => {
 		]);
 	};
 
-	const warriorCast = async (warrior: Warrior, target: string) => {
+	const warriorCast = async (
+		warrior: Warrior,
+		target: string,
+		next: () => void,
+	) => {
 		const warriorId = warrior.id;
 
 		// zoom in on the warrior
@@ -467,7 +455,11 @@ export const setupAnimations = (controllers: Controllers) => {
 		]);
 	};
 
-	const rogueCast = async (rogue: Rogue, targets: string[]) => {
+	const rogueCast = async (
+		rogue: Rogue,
+		targets: string[],
+		next: () => void,
+	) => {
 		const rogueId = rogue.id;
 
 		// de-saturates the map (except for the active layer) (make black and white)
@@ -573,7 +565,11 @@ export const setupAnimations = (controllers: Controllers) => {
 		]);
 	};
 
-	const hunterCast = async (hunter: Hunter, target: string) => {
+	const hunterCast = async (
+		hunter: Hunter,
+		target: string,
+		next: () => void,
+	) => {
 		const hunterId = hunter.id;
 
 		// black letterbox bars at the top and bottom of the screen appear
@@ -645,28 +641,55 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerVfx.letterbox(false),
 		]);
 	};
+
+	const takeDamageFromMageCast = async (
+		victim: string,
+		damageTaken: number,
+	) => {
+		// ---
+		// target plays hit animation (follow through)
+		// target shakes (via camera shake slightly on impact)
+		// target hp preview damage (in purple)
+		await Promise.all([
+			controllers.triggerSpriteAnimation.takeDamage(
+				victim,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			controllers.triggerCamera.shake(2, 100),
+			controllers.triggerHpBar.showDamagePreview(
+				victim,
+				0, //todo: damage amount
+				'purple',
+			),
+		]);
+
+		await delay(200);
+
+		// ---
+		// target hp drains
+		// display damage taken stat
+		controllers.triggerHpBar.drainHp(victim);
+		await controllers.triggerVfx.statDamage(
+			victim,
+			damageTaken, //todo: damage amount
+		);
+	};
+
+	const takeDamageFromWarriorCast = async (
+		warrior: string,
+		victim: string,
+		damageTaken: number,
+	) => {};
+
+	const takeDamageFromRogueCast = async (
+		rogue: string,
+		victim: string,
+		damageTaken: number,
+	) => {};
+
+	const takeDamageFromHunterCast = async (
+		hunter: string,
+		victim: string,
+		damageTaken: number,
+	) => {};
 };
-
-const takeDamageFromMageCast = async (
-	mage: Mage,
-	victimId: string,
-	damageTaken: number,
-) => {};
-
-const takeDamageFromWarriorCast = async (
-	warrior: Warrior,
-	victimId: string,
-	damageTaken: number,
-) => {};
-
-const takeDamageFromRogueCast = async (
-	rogue: Rogue,
-	victimId: string,
-	damageTaken: number,
-) => {};
-
-const takeDamageFromHunterCast = async (
-	hunter: Hunter,
-	victimId: string,
-	damageTaken: number,
-) => {};

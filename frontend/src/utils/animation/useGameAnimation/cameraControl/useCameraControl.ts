@@ -5,7 +5,7 @@ import { useAnimationControls } from 'framer-motion';
 import type { Position } from '../unitControl/unitCalculations';
 import type { Unit } from '../../../../constants/interfaces/unit';
 import type { AllPlayerData } from '../../../../constants/interfaces/player';
-import { calcTwoTargetCamera, getTargetCoords } from './cameraCalculations';
+import { calcRangeZoom, calcTwoTargetCamera, getTargetCoords } from './cameraCalculations';
 import type { TriggerCameraAPI } from '../../../../constants/animationStates/cameraStates';
 import {
 	cameraEffectVariants,
@@ -129,10 +129,24 @@ export const useCameraControl = (
 	);
 
 	const zoomToRange = useCallback(
-		async (range: number): Promise<void> => {
-			//todo
+		async (
+			range: number,
+			targetId?: string,
+			duration = 450,
+			marginTiles = 1.5,
+		): Promise<void> => {
+			const targetPos = getUnitPos(targetId);
+			const calculatedZoom = calcRangeZoom(range, tileSize, marginTiles);
+
+			setCameraState((prev) => ({
+				...prev,
+				focusPos: targetPos ?? prev.focusPos,
+				zoom: calculatedZoom,
+			}));
+
+			await delay(duration);
 		},
-		[getUnitPos],
+		[getUnitPos, tileSize],
 	);
 
 	const shake = useCallback(

@@ -121,7 +121,7 @@ export const SPRITE_MANIFEST: Record<
 			frameCount: 7,
 			fps: 10,
 			offsetY: -5,
-			loopStartFrame: 6
+			loopStartFrame: 6,
 		},
 		[SpritePresets.TAKE_DAMAGE]: {
 			width: 30,
@@ -162,7 +162,7 @@ export const SPRITE_MANIFEST: Record<
 			frameCount: 6,
 			fps: 6,
 			offsetY: 36,
-			loopStartFrame: 5
+			loopStartFrame: 5,
 		},
 		[SpritePresets.MELEE]: {
 			width: 100,
@@ -203,21 +203,23 @@ export const SPRITE_MANIFEST: Record<
 			frameCount: 6,
 			fps: 6,
 			offsetY: 36,
-			loopStartFrame: 5
+			loopStartFrame: 5,
 		},
 		[SpritePresets.MELEE]: {
 			width: 100,
 			height: 100,
-			frameCount: 6,
+			frameCount: 8,
 			fps: 12,
 			offsetY: 36,
+			impactFrame: 6,
 		},
 		[SpritePresets.TAKE_DAMAGE]: {
-			width: 40,
-			height: 32,
-			frameCount: 6,
-			fps: 12,
-			offsetY: 5,
+			width: 100,
+			height: 100,
+			frameCount: 4,
+			fps: 6,
+			offsetY: 36,
+			impactFrame: 2,
 		},
 	},
 };

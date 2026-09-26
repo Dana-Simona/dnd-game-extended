@@ -11,8 +11,6 @@ class AnimationRegistry {
 		const handler = this.handlers.get(event.type || event.action);
 		if (!handler) return;
 
-		console.log(event)
-
 		return new Promise<void>((resolve) => {
 			let nextCalled = false;
 

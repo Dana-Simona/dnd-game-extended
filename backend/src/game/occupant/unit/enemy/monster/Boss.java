@@ -37,7 +37,7 @@ public class Boss extends Monster implements HeroicUnit {
 
     public void shoeBodyBop(Player player) {
         sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), player.getId(), null));
-        player.takeDamageFromAbility(getAttackPoints(), getName());
+        player.takeDamageFromAbility(getAttackPoints(), getName(), getId());
     }
 
     private Player playerInRange() {
