@@ -180,7 +180,7 @@ public abstract class Unit extends Occupant {
         sendMessage(this.name + " dealt " + damageTaken + " damage to " + defender.getName() + ".");
         if (damageTaken > 0) {
             sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.MELEE, this.getId(), defender.getId(), damageTaken));
-            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.TAKE_DAMAGE, defender.getId(), damageTaken));
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.TAKE_DAMAGE, defender.getId(), this.getId(), damageTaken));
         }
         sendMessage("");
     }
@@ -233,7 +233,7 @@ public abstract class Unit extends Occupant {
      * @throws IllegalArgumentException If damage amount is negative.
      * @throws IllegalArgumentException If the attacker is null.
      */
-    public void takeDamageFromAbility(int damageAmount, String attackerName) {
+    public void takeDamageFromAbility(int damageAmount, String attackerName, String attackerId) {
         if (damageAmount < 0) {
             throw new IllegalArgumentException("damage dealt can't be negative");
         }
@@ -244,7 +244,7 @@ public abstract class Unit extends Occupant {
         if (actualDamage > 0) {
             this.takeDamage(actualDamage);
             sendMessage(attackerName + " hit " + this.getName() + " for " + actualDamage + " ability damage");
-            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.TAKE_DAMAGE_FROM_ABILITY, getId(), actualDamage));
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.TAKE_DAMAGE_FROM_ABILITY, attackerId, getId(), actualDamage));
         }
 
     }

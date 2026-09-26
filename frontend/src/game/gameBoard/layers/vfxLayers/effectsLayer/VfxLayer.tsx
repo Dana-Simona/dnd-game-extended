@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Bleed from './effectVfxs/front/Bleed';
+import Bleed from './effectVfxs/back/Bleed';
 import { VfxViewportLayer } from './vfxStyles';
 import IceHit from './effectVfxs/front/IceHit';
 import IceFeet from './effectVfxs/front/IceFeet';

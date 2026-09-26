@@ -44,7 +44,7 @@ public class Mage extends Player {
             int randomEnemyPlace = (int) (Math.random() * enemies.size());
             Enemy randomEnemy = enemies.get(randomEnemyPlace);
 
-            randomEnemy.takeDamageFromAbility(this.spellPower, this.getName());
+            randomEnemy.takeDamageFromAbility(this.spellPower, this.getName(), this.getId());
             handleEnemyIfDead(randomEnemy);
             enemies.removeIf(Enemy::isDead);
             hits++;

@@ -128,7 +128,7 @@ export const useVfxControl = (
 				spawnVFX(VfxTypes.ROLL_DEFENSE, [targetId], amount),
 			bleed: (sourceId, targetId) =>
 				spawnVFX(VfxTypes.BLEED, [targetId], undefined, sourceId),
-			effectsExp: (sourceId, amount) =>
+			expOrbs: (sourceId, amount) =>
 				spawnVFX(VfxTypes.EXP_ORBS, [], amount, sourceId),
 			iceGather: (sourceId) =>
 				spawnVFX(VfxTypes.ICE_GATHER, [], undefined, sourceId),

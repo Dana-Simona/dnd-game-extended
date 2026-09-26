@@ -37,7 +37,7 @@ public class Rogue extends Player {
         int damageAmount = getAttackPoints();
         for (Enemy enemy : enemiesWithinRange) {
             sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), targetIds, null));
-            enemy.takeDamageFromAbility(damageAmount, this.getName());
+            enemy.takeDamageFromAbility(damageAmount, this.getName(), this.getId());
             handleEnemyIfDead(enemy);
         }
     }

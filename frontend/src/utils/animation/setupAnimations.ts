@@ -49,26 +49,44 @@ export const setupAnimations = (controllers: Controllers) => {
 		await controllers.triggerUnit.fadeOut(event.sourceId, 400, 200);
 	});
 
-	animationRegistry.register(ActionType.MELEE, async (event: GameEvent) => {
-		const defender = event.targetIds?.[0];
-		const attacker = event.sourceId;
-		if (!event.sourceId || !defender) return;
+	animationRegistry.register(
+		ActionType.MELEE,
+		async (event: GameEvent, next: () => void) => {
+			const defender = event.targetIds?.[0];
+			const attacker = event.sourceId;
+			if (!attacker || !defender) return;
 
-		await Promise.all([
-			controllers.triggerUnit.face(attacker, defender),
-			controllers.triggerUnit.face(defender, attacker),
-		]);
+			await Promise.all([
+				controllers.triggerUnit.face(attacker, defender),
+				controllers.triggerUnit.face(defender, attacker),
+			]);
 
-		await Promise.all([
-			controllers.triggerSpriteAnimation.melee(
+			await Promise.all([
+				controllers.triggerSpriteAnimation.melee(
+					attacker,
+					AnimationPhase.WINDUP,
+				),
+				controllers.triggerSpriteAnimation.takeDamage(
+					defender,
+					AnimationPhase.WINDUP,
+				),
+			]);
+
+			next();
+
+			await controllers.triggerSpriteAnimation.melee(
 				attacker,
-				AnimationPhase.WINDUP,
-			),
-			controllers.triggerSpriteAnimation.takeDamage(
-				defender,
-				AnimationPhase.WINDUP,
-			),
-		]);
+				AnimationPhase.FOLLOW_THROUGH,
+			);
+		},
+	);
+
+	const handleKnockBackFromDamage = async (event: GameEvent) => {
+		const defender = event.sourceId;
+		const attacker = event.targetIds?.[0];
+		const finalDamage = event.amount;
+
+		if (!defender || !attacker || !finalDamage) return;
 
 		await Promise.all([
 			controllers.triggerSpriteAnimation.takeDamage(
@@ -78,27 +96,24 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerCamera.shake(),
 			controllers.triggerVfx.bleed(attacker, defender),
 			controllers.triggerUnit.dash(defender, attacker, -25, 1000),
-			controllers.triggerHpBar.showDamagePreview(
-				defender,
-				event.amount || 0,
-			),
+			controllers.triggerHpBar.showDamagePreview(defender, finalDamage),
+			controllers.triggerVfx.statDamage(defender, finalDamage),
 		]);
 
 		const unit = controllers.getUnitById(defender);
-		let finalHealth;
-		if (!!unit && !!event.amount)
-			finalHealth = unit.currentHealth - event.amount;
-		const isDead = !!finalHealth && finalHealth <= 0;
+		const finalHealth = unit ? unit.currentHealth - finalDamage : null;
+		const isDead = finalHealth !== null && finalHealth <= 0;
 
 		await Promise.all([
-			controllers.triggerSpriteAnimation.melee(
-				attacker,
-				AnimationPhase.FOLLOW_THROUGH,
-			),
 			!isDead && controllers.triggerUnit.reset(defender),
 			controllers.triggerHpBar.drainHp(defender),
 		]);
-	});
+	};
+
+	animationRegistry.register(
+		ActionType.TAKE_DAMAGE,
+		handleKnockBackFromDamage,
+	);
 
 	animationRegistry.register(ActionType.COMBAT, async (event: GameEvent) => {
 		const targetId = event.targetIds?.[0];
@@ -116,15 +131,12 @@ export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(
 		ActionType.ABILITY_CAST,
 		async (event: GameEvent) => {
-			if (
-				!event.sourceId ||
-				!event.targetIds ||
-				event.targetIds.length === 0
-			)
-				return;
-
 			const casterId = event.sourceId;
 			const victimsIds = event.targetIds;
+
+			if (!casterId || !victimsIds || event.targetIds.length === 0)
+				return;
+
 			const caster = controllers.getUnitById(casterId);
 
 			if (caster?.unitType === UnitType.PLAYER) {
@@ -148,13 +160,67 @@ export const setupAnimations = (controllers: Controllers) => {
 		},
 	);
 
+	animationRegistry.register(
+		ActionType.TAKE_DAMAGE_FROM_ABILITY,
+		async (event: GameEvent, next: () => void) => {
+			const casterId = event.sourceId;
+			const victimId = event.targetIds[0];
+			const damageTaken = event.amount;
+
+			if (!casterId || !victimId || !damageTaken) {
+				next();
+				return;
+			}
+
+			const caster = controllers.getUnitById(casterId);
+
+			if (caster?.unitType === UnitType.PLAYER) {
+				switch ((caster as Player)?.class) {
+					case ClassTypes.MAGE:
+						takeDamageFromMageCast(
+							caster as Mage,
+							victimId,
+							damageTaken,
+						);
+						break;
+					case ClassTypes.WARRIOR:
+						takeDamageFromWarriorCast(
+							caster as Warrior,
+							victimId,
+							damageTaken,
+						);
+						break;
+					case ClassTypes.ROGUE:
+						takeDamageFromRogueCast(
+							caster as Rogue,
+							victimId,
+							damageTaken,
+						);
+						break;
+					case ClassTypes.HUNTER:
+						takeDamageFromHunterCast(
+							caster as Hunter,
+							victimId,
+							damageTaken,
+						);
+						break;
+					default:
+						next();
+						break;
+				}
+			} else {
+				next();
+			}
+		},
+	);
+
 	animationRegistry.register(ActionType.GAIN_XP, async (event: GameEvent) => {
 		if (!event.sourceId || !event.targetIds || !event.amount) return;
 		const targetId = event.targetIds[0];
 		const deadUnit = controllers.getUnitById(targetId);
 		const isEnemy = deadUnit?.unitType !== UnitType.PLAYER;
 		if (isEnemy) {
-			await controllers.triggerVfx.effectsExp(targetId, event.amount);
+			await controllers.triggerVfx.expOrbs(targetId, event.amount);
 		}
 		await controllers.triggerVfx.statExp(event.sourceId, event.amount);
 	});
@@ -203,28 +269,6 @@ export const setupAnimations = (controllers: Controllers) => {
 		async (event: GameEvent) => {
 			if (!event.sourceId || !event.amount) return;
 			await controllers.triggerVfx.rollDefense(
-				event.sourceId,
-				event.amount,
-			);
-		},
-	);
-
-	animationRegistry.register(
-		ActionType.TAKE_DAMAGE,
-		async (event: GameEvent) => {
-			if (!event.sourceId || !event.amount) return;
-			await controllers.triggerVfx.statDamage(
-				event.sourceId,
-				event.amount,
-			);
-		},
-	);
-
-	animationRegistry.register(
-		ActionType.TAKE_DAMAGE_FROM_ABILITY,
-		async (event: GameEvent) => {
-			if (!event.sourceId || !event.amount) return;
-			await controllers.triggerVfx.statDamage(
 				event.sourceId,
 				event.amount,
 			);
@@ -602,3 +646,27 @@ export const setupAnimations = (controllers: Controllers) => {
 		]);
 	};
 };
+
+const takeDamageFromMageCast = async (
+	mage: Mage,
+	victimId: string,
+	damageTaken: number,
+) => {};
+
+const takeDamageFromWarriorCast = async (
+	warrior: Warrior,
+	victimId: string,
+	damageTaken: number,
+) => {};
+
+const takeDamageFromRogueCast = async (
+	rogue: Rogue,
+	victimId: string,
+	damageTaken: number,
+) => {};
+
+const takeDamageFromHunterCast = async (
+	hunter: Hunter,
+	victimId: string,
+	damageTaken: number,
+) => {};

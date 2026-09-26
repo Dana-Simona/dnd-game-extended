@@ -48,7 +48,7 @@ public class Warrior extends Player {
 
             int damage = (int) (getHealthPool() * 0.1);
             sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), randomEnemy.getId(), null));
-            randomEnemy.takeDamageFromAbility(damage, this.getName());
+            randomEnemy.takeDamageFromAbility(damage, this.getName(), this.getId());
             handleEnemyIfDead(randomEnemy);
         }
     }

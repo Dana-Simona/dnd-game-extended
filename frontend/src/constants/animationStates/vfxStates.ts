@@ -59,6 +59,7 @@ export const VfxTypeToCategoryMap: Record<VfxTypes, VfxCategory> = {
 	[VfxTypes.DUST_LEAP]: VfxCategory.BACK,
 	[VfxTypes.DUST_LAND]: VfxCategory.BACK,
 	[VfxTypes.TARGET_SWIRL]: VfxCategory.BACK,
+	[VfxTypes.BLEED]: VfxCategory.BACK,
 
 	[VfxTypes.ICE_GATHER]: VfxCategory.FRONT,
 	[VfxTypes.ICE_FEET]: VfxCategory.FRONT,
@@ -67,7 +68,6 @@ export const VfxTypeToCategoryMap: Record<VfxTypes, VfxCategory> = {
 	[VfxTypes.STAT_EXP]: VfxCategory.FRONT,
 	[VfxTypes.ROLL_ATTACK]: VfxCategory.FRONT,
 	[VfxTypes.ROLL_DEFENSE]: VfxCategory.FRONT,
-	[VfxTypes.BLEED]: VfxCategory.FRONT,
 	[VfxTypes.BLOOD_DRIP]: VfxCategory.FRONT,
 	[VfxTypes.ICE_EXPLODE]: VfxCategory.FRONT,
 	[VfxTypes.EFFECTS_HEAL]: VfxCategory.FRONT,
@@ -116,7 +116,7 @@ export interface TriggerVfxAPI {
 		targetId: string,
 		color?: string,
 	) => Promise<void>;
-	effectsExp: (sourceId: string, amount: number) => Promise<void>;
+	expOrbs: (sourceId: string, amount: number) => Promise<void>;
 	iceGather: (sourceId: string) => Promise<void>;
 	iceExplode: (sourceId: string) => Promise<void>;
 	bloodDrip: (targetId: string) => Promise<void>;
