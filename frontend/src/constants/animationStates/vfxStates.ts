@@ -134,7 +134,7 @@ export interface TriggerVfxAPI {
 
 	screenDarken: (durationMs?: number) => Promise<void>;
 	screenRedHue: (durationMs?: number) => Promise<void>;
-	screenDesaturate: (excludeActiveLayer?: boolean) => Promise<void>;
+	screenDesaturate: (durationMs?: number) => Promise<void>;
 	screenRestoreColor: (durationMs?: number) => Promise<void>;
 
 	bannerLevelUp: (amount: number) => Promise<void>;

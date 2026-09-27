@@ -1,8 +1,30 @@
-import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import styled, { css } from 'styled-components';
+import { VfxTypes } from '../../constants/animationStates/vfxStates';
 
 export const VIEWPORT_WIDTH_VW = 95;
 export const VIEWPORT_HEIGHT_VH = 60;
+
+const SCREEN_VFX_STYLES: Partial<
+	Record<VfxTypes | string, ReturnType<typeof css>>
+> = {
+	[VfxTypes.SCREEN_DARKEN]: css`
+		filter: brightness(0.5) saturate(170%) sepia(0.5);
+	`,
+	[VfxTypes.SCREEN_RED_HUE]: css`
+		filter: sepia(1) hue-rotate(310deg) saturate(400%);
+	`,
+	[VfxTypes.SCREEN_DESATURATE]: css`
+		filter: grayscale(100%);
+	`,
+	[VfxTypes.SCREEN_RESTORE_COLOR]: css`
+		filter: brightness(1) grayscale(0%) sepia(0) saturate(100%) hue-rotate(0deg);
+	`,
+};
+
+interface StaticLayerWrapperProps {
+	$activeVfxTypes?: string[];
+}
 
 export const ViewportContainer = styled.div`
 	width: ${VIEWPORT_WIDTH_VW}vw;
@@ -29,4 +51,12 @@ export const BoardEffectLayer = styled(motion.div)`
 
 export const BoardCanvas = styled.div`
 	position: relative;
+`;
+
+export const StaticLayerWrapper = styled.div<StaticLayerWrapperProps>`
+	position: relative;
+	transition: filter 0.5s ease-in-out;
+
+	${({ $activeVfxTypes }) =>
+		$activeVfxTypes?.map((vfxType) => SCREEN_VFX_STYLES[vfxType])}
 `;

@@ -30,6 +30,7 @@ export interface UseVfxControlReturn {
 		sourceId?: string,
 		extraProps?: Partial<VfxItem>,
 		customDurationMs?: number,
+		isPersistent?: boolean, // Added flag
 	) => Promise<void>;
 	removeVfxType: (type: VfxTypes) => void;
 	resetVfxList: () => void;
@@ -50,6 +51,7 @@ export const useVfxControl = (
 			sourceId?: string,
 			extraProps?: Partial<VfxItem>,
 			customDurationMs?: number,
+			isPersistent: boolean = false, // Controlled removal toggle
 		): Promise<void> => {
 			const category = VfxTypeToCategoryMap[type];
 
@@ -98,13 +100,16 @@ export const useVfxControl = (
 
 			return new Promise((resolve) => {
 				setTimeout(() => {
-					const idsToRemove = new Set(
-						newItems.map((item) => item.id),
-					);
-					setActiveVfxList((prev) =>
-						prev.filter((item) => !idsToRemove.has(item.id)),
-					);
-					resolve();
+					// Only filter out the items if NOT marked as persistent
+					if (!isPersistent) {
+						const idsToRemove = new Set(
+							newItems.map((item) => item.id),
+						);
+						setActiveVfxList((prev) =>
+							prev.filter((item) => !idsToRemove.has(item.id)),
+						);
+					}
+					resolve(); // Resolve the animation phase/sequence promise on time
 				}, duration);
 			});
 		},
@@ -165,6 +170,7 @@ export const useVfxControl = (
 					undefined,
 					sourceId,
 				),
+			// Persistent = true: keeps screen modified until screenRestoreColor is called
 			screenDarken: (durationMs = 500) =>
 				spawnVFX(
 					VfxTypes.SCREEN_DARKEN,
@@ -173,6 +179,7 @@ export const useVfxControl = (
 					undefined,
 					{ durationMs },
 					durationMs,
+					true,
 				),
 			screenRedHue: (durationMs = 500) =>
 				spawnVFX(
@@ -182,9 +189,18 @@ export const useVfxControl = (
 					undefined,
 					{ durationMs },
 					durationMs,
+					true,
 				),
-			screenDesaturate: () =>
-				spawnVFX(VfxTypes.SCREEN_DESATURATE, [], undefined, undefined),
+			screenDesaturate: (durationMs = 500) =>
+				spawnVFX(
+					VfxTypes.SCREEN_DESATURATE,
+					[],
+					undefined,
+					undefined,
+					{ durationMs },
+					durationMs,
+					true,
+				),
 			screenRestoreColor: async (durationMs = 500) => {
 				removeVfxType(VfxTypes.SCREEN_DESATURATE);
 				removeVfxType(VfxTypes.SCREEN_RED_HUE);
@@ -196,6 +212,7 @@ export const useVfxControl = (
 					undefined,
 					{ durationMs },
 					durationMs,
+					false, // Restoring is temporary or transient
 				);
 			},
 			bannerLevelUp: (amount) =>
@@ -210,6 +227,7 @@ export const useVfxControl = (
 						undefined,
 						{ visible },
 						0,
+						true,
 					);
 				} else {
 					removeVfxType(VfxTypes.BLIZZARD_CLOUDS);
@@ -233,6 +251,7 @@ export const useVfxControl = (
 						undefined,
 						{ visible },
 						0,
+						true,
 					);
 				} else {
 					removeVfxType(VfxTypes.LETTERBOX);
@@ -247,6 +266,7 @@ export const useVfxControl = (
 						undefined,
 						{ enabled },
 						0,
+						true,
 					);
 				} else {
 					removeVfxType(VfxTypes.ASH_SMOKE_AMBIENT);

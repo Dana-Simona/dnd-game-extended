@@ -463,7 +463,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		// play screen effects of ravens flying around
 		// zoom in on rogue
 		await Promise.all([
-			controllers.triggerVfx.screenDesaturate(true),
+			controllers.triggerVfx.screenDesaturate(),
 			controllers.triggerVfx.ravensFlying(2000),
 			controllers.triggerCamera.zoomIn(rogueId, 1.5, 300),
 		]);

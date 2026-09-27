@@ -15,6 +15,7 @@ import {
 	Board,
 	BoardEffectLayer,
 	BoardCanvas,
+	StaticLayerWrapper,
 } from './GameBoardStyles';
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import type { UnitTransform } from '../../constants/animationStates/unitStates';
@@ -97,7 +98,11 @@ export const GameBoard: React.FC<Props> = ({
 			<Board {...panZoomMotion}>
 				<BoardEffectLayer {...effectMotion}>
 					<BoardCanvas>
-						<StaticLayer board={board} />
+						<StaticLayerWrapper
+							$activeVfxTypes={activeScreenVfxTypes}
+						>
+							<StaticLayer board={board} />
+						</StaticLayerWrapper>
 						<VfxLayer vfxList={backVfxs} />
 						<ActiveLayer
 							units={allUnits}
