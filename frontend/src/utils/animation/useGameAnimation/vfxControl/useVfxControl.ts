@@ -66,7 +66,12 @@ export const useVfxControl = (
 				? (sourcePos.y + 0.5) * tileSize
 				: undefined;
 
-			const targets = targetIds.length > 0 ? targetIds : ['screen'];
+			const targets =
+				targetIds.length > 0
+					? targetIds
+					: sourceId
+						? [sourceId]
+						: ['screen'];
 
 			const newItems: VfxItem[] = targets.map((targetId) => {
 				const pos = visualPositions[targetId] || { x: 0, y: 0 };

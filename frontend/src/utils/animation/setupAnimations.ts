@@ -301,15 +301,12 @@ export const setupAnimations = (controllers: Controllers) => {
 				SpritePresets.ABILITY_CAST,
 			),
 			controllers.triggerCamera.zoomIn(mageId),
-		]);
-
-		// play ice particle animations gather towards the wand
-		// spawn black clouds at the top of the screen
-		// make screen darker gradually
-		await Promise.all([
-			controllers.triggerVfx.iceGather(mageId),
-			controllers.triggerVfx.blackClouds(true),
-			controllers.triggerVfx.screenDarken(1000),
+			(async () => {
+				await delay(1000);
+				controllers.triggerVfx.iceGather(mageId);
+				controllers.triggerVfx.blackClouds(true);
+				controllers.triggerVfx.screenDarken(1000);
+			})(),
 		]);
 
 		await delay(500);

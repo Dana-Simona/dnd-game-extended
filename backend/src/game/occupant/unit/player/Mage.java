@@ -22,7 +22,8 @@ public class Mage extends Player {
             Integer manaPool, Integer manaCost, Integer spellPower, Integer hitsCount, Integer abilityRange, BoardCallback boardCallback, StepCounter stepCounter) {
         super(name, health, attack, defense, position, callback, boardCallback, stepCounter);
         this.manaPool = manaPool;
-        this.currentMana = this.manaPool / 4;
+        // this.currentMana = this.manaPool / 4;
+        this.currentMana = this.manaPool;
         this.manaCost = manaCost;
         this.spellPower = spellPower;
         this.hitsCount = hitsCount;

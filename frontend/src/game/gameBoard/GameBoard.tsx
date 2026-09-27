@@ -96,7 +96,7 @@ export const GameBoard: React.FC<Props> = ({
 		<ViewportContainer ref={viewportRef}>
 			<Board {...panZoomMotion}>
 				<BoardEffectLayer {...effectMotion}>
-					<BoardCanvas $activeScreenVfx={activeScreenVfxTypes}>
+					<BoardCanvas>
 						<StaticLayer board={board} />
 						<VfxLayer vfxList={backVfxs} />
 						<ActiveLayer
