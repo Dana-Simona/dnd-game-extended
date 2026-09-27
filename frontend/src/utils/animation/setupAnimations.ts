@@ -1,6 +1,10 @@
+import { ClassTypes } from '../../constants/classTypes';
 import { animationRegistry } from './animationRegistry';
 import { ActionType, type GameEvent } from '../../constants/gameEvent';
 import { type TriggerVfxAPI } from '../../constants/animationStates/vfxStates';
+import type { TriggerHpBarAPI } from '../../constants/animationStates/hpStates';
+import type { TriggerUnitAPI } from '../../constants/animationStates/unitStates';
+import type { TriggerCameraAPI } from '../../constants/animationStates/cameraStates';
 import {
 	AnimationPhase,
 	SpritePresets,
@@ -14,11 +18,6 @@ import type {
 	Rogue,
 	Warrior,
 } from '../../constants/interfaces/player';
-import { ClassTypes } from '../../constants/classTypes';
-import type { TriggerCameraAPI } from '../../constants/animationStates/cameraStates';
-import type { TriggerHpBarAPI } from '../../constants/animationStates/hpStates';
-import type { TriggerUnitAPI } from './useGameAnimation/unitControl/useUnitControl';
-import {} from '../../constants/animationStates/vfxStates';
 
 interface Controllers {
 	triggerSpriteAnimation: TriggerSpriteAnimationAPI;
@@ -317,16 +316,15 @@ export const setupAnimations = (controllers: Controllers) => {
 		await Promise.all([
 			controllers.triggerCamera.zoomToRange(mage.range),
 			controllers.triggerVfx.iceExplode(mageId),
-			...targets.map((target) => controllers.triggerVfx.iceFeet(target)),
+			...targets.map((target) =>
+				controllers.triggerVfx.toggleIceFeet(target, true),
+			),
 		]);
 
 		await delay(300);
 
-		// blue lightning strikes them all one after the other (staggered)
-		// (we don't wait for them to finish):
 		targets.forEach((target, index) => {
 			setTimeout(async () => {
-				// target plays hit animation (windup) & ice hit vfx
 				await Promise.all([
 					controllers.triggerVfx.lightningStrike(target),
 					controllers.triggerVfx.iceHit(target),
@@ -339,13 +337,11 @@ export const setupAnimations = (controllers: Controllers) => {
 				next();
 
 				await controllers.triggerSpriteAnimation.idle(target);
-			}, index * 150);
+			}, index * 500);
 		});
 
-		// Wait enough time for staggered animations to begin before clearing environment
-		await delay(targets.length * 150 + 500);
+		await delay(targets.length * 500 + 1000);
 
-		// clouds scatter, screen color return to normal, mage to idle
 		await Promise.all([
 			controllers.triggerVfx.blackClouds(false),
 			controllers.triggerVfx.screenRestoreColor(1000),
@@ -583,7 +579,7 @@ export const setupAnimations = (controllers: Controllers) => {
 			),
 			controllers.triggerUnit.leap(hunterId, 80, 300),
 			controllers.triggerVfx.dustLeap(hunterId),
-			controllers.triggerVfx.targetSwirl(target),
+			controllers.triggerVfx.toggleTargetSwirl(target, true),
 			controllers.triggerCamera.focusTarget(hunterId, 300),
 		]);
 
@@ -615,6 +611,7 @@ export const setupAnimations = (controllers: Controllers) => {
 				0, //todo: damage amount
 				'white',
 			),
+			controllers.triggerVfx.toggleTargetSwirl(target, true),
 		]);
 
 		await delay(200);
@@ -652,12 +649,13 @@ export const setupAnimations = (controllers: Controllers) => {
 				victim,
 				AnimationPhase.FOLLOW_THROUGH,
 			),
-			controllers.triggerCamera.shake(2, 100),
+			controllers.triggerUnit.shake(victim),
 			controllers.triggerHpBar.showDamagePreview(
 				victim,
-				0, //todo: damage amount
+				damageTaken,
 				'purple',
 			),
+			controllers.triggerVfx.toggleIceFeet(victim, false),
 		]);
 
 		await delay(200);
@@ -666,10 +664,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		// target hp drains
 		// display damage taken stat
 		controllers.triggerHpBar.drainHp(victim);
-		await controllers.triggerVfx.statDamage(
-			victim,
-			damageTaken, //todo: damage amount
-		);
+		await controllers.triggerVfx.statDamage(victim, damageTaken);
 	};
 
 	const takeDamageFromWarriorCast = async (

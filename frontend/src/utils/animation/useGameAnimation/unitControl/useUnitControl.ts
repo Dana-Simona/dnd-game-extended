@@ -9,45 +9,9 @@ import {
 	executeRotate,
 	executeJump,
 	executeLeap,
+	executeShake,
 } from './unitAnimations';
-import type { UnitTransform } from '../../../../constants/animationStates/unitStates';
-
-export interface TriggerUnitAPI {
-	face: (sourceId: string, targetId: string) => Promise<void>;
-	dash: (
-		sourceId: string,
-		targetId: string,
-		distancePx?: number,
-		durationMs?: number,
-	) => Promise<void>;
-	fadeOut: (
-		unitId: string,
-		delayMs?: number,
-		durationMs?: number,
-	) => Promise<void>;
-	fadeIn: (
-		unitId: string,
-		delayMs?: number,
-		durationMs?: number,
-	) => Promise<void>;
-	reset: (unitId: string) => Promise<void>;
-	rotate: (
-		unitId: string,
-		degrees?: number,
-		durationMs?: number,
-	) => Promise<void>;
-	jump: (
-		sourceId: string,
-		targetId: string,
-		heightPx?: number,
-		durationMs?: number,
-	) => Promise<void>;
-	leap: (
-		unitId: string,
-		heightPx?: number,
-		durationMs?: number,
-	) => Promise<void>;
-}
+import type { TriggerUnitAPI, UnitTransform } from '../../../../constants/animationStates/unitStates';
 
 export const useUnitControl = (visualPositions: Record<string, Position>) => {
 	const [unitTransforms, setUnitTransforms] = useState<
@@ -144,6 +108,18 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		[],
 	);
 
+	const shake = useCallback(
+		async (unitId: string, intensityPx = 6, durationMs = 300) => {
+			await executeShake(
+				unitId,
+				intensityPx,
+				durationMs,
+				setUnitTransforms,
+			);
+		},
+		[],
+	);
+
 	const resetAllTransforms = useCallback(() => {
 		setUnitTransforms({});
 	}, []);
@@ -158,8 +134,19 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			rotate,
 			jump,
 			leap,
+			shake,
 		}),
-		[faceTarget, dash, fadeOut, fadeIn, resetTransform, rotate, jump, leap],
+		[
+			faceTarget,
+			dash,
+			fadeOut,
+			fadeIn,
+			resetTransform,
+			rotate,
+			jump,
+			leap,
+			shake,
+		],
 	);
 
 	return {
@@ -174,5 +161,6 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		rotate,
 		jump,
 		leap,
+		shake,
 	};
 };

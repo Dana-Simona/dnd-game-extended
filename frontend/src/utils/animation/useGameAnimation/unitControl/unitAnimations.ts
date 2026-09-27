@@ -268,3 +268,34 @@ export const executeLeap = async (
 
 	await new Promise((resolve) => setTimeout(resolve, durationMs / 2));
 };
+
+export const executeShake = async (
+	unitId: string,
+	intensityPx = 6,
+	durationMs = 300,
+	setTransforms: SetTransforms,
+) => {
+	const keyframeX = [
+		0,
+		-intensityPx,
+		intensityPx,
+		-intensityPx * 0.6,
+		intensityPx * 0.6,
+		0,
+	];
+
+	const shakeVariant: UnitTransform = {
+		x: keyframeX,
+		transition: {
+			duration: durationMs / 1000,
+			ease: 'easeInOut',
+		},
+	};
+
+	setTransforms((prev) => ({
+		...prev,
+		[unitId]: { ...prev[unitId], ...shakeVariant },
+	}));
+
+	await new Promise((resolve) => setTimeout(resolve, durationMs));
+};

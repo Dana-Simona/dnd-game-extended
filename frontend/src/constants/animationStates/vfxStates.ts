@@ -121,14 +121,14 @@ export interface TriggerVfxAPI {
 	iceExplode: (sourceId: string) => Promise<void>;
 	bloodDrip: (targetId: string) => Promise<void>;
 
-	iceFeet: (targetId: string) => Promise<void>;
+	toggleIceFeet: (targetId: string, visible: boolean) => Promise<void>;
 	lightningStrike: (targetId: string) => Promise<void>;
 	iceHit: (targetId: string) => Promise<void>;
 	groundBreak: (targetId: string) => Promise<void>;
 	dustLeap: (unitId: string) => Promise<void>;
 	landingDust: (unitId: string) => Promise<void>;
 	slash: (targetId: string) => Promise<void>;
-	targetSwirl: (targetId: string) => Promise<void>;
+	toggleTargetSwirl: (targetId: string, visible: boolean) => Promise<void>;
 	knivesProjectile: (sourceId: string, targetId: string) => Promise<void>;
 	arrowProjectile: (sourceId: string, targetId: string) => Promise<void>;
 

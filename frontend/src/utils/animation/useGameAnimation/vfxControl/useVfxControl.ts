@@ -30,7 +30,7 @@ export interface UseVfxControlReturn {
 		sourceId?: string,
 		extraProps?: Partial<VfxItem>,
 		customDurationMs?: number,
-		isPersistent?: boolean, // Added flag
+		isPersistent?: boolean,
 	) => Promise<void>;
 	removeVfxType: (type: VfxTypes) => void;
 	resetVfxList: () => void;
@@ -51,7 +51,7 @@ export const useVfxControl = (
 			sourceId?: string,
 			extraProps?: Partial<VfxItem>,
 			customDurationMs?: number,
-			isPersistent: boolean = false, // Controlled removal toggle
+			isPersistent: boolean = false,
 		): Promise<void> => {
 			const category = VfxTypeToCategoryMap[type];
 
@@ -100,7 +100,6 @@ export const useVfxControl = (
 
 			return new Promise((resolve) => {
 				setTimeout(() => {
-					// Only filter out the items if NOT marked as persistent
 					if (!isPersistent) {
 						const idsToRemove = new Set(
 							newItems.map((item) => item.id),
@@ -109,7 +108,7 @@ export const useVfxControl = (
 							prev.filter((item) => !idsToRemove.has(item.id)),
 						);
 					}
-					resolve(); // Resolve the animation phase/sequence promise on time
+					resolve();
 				}, duration);
 			});
 		},
@@ -145,7 +144,22 @@ export const useVfxControl = (
 			iceExplode: (sourceId) =>
 				spawnVFX(VfxTypes.ICE_EXPLODE, [], undefined, sourceId),
 			bloodDrip: (targetId) => spawnVFX(VfxTypes.BLOOD_DRIP, [targetId]),
-			iceFeet: (targetId) => spawnVFX(VfxTypes.ICE_FEET, [targetId]),
+
+			toggleIceFeet: async (targetId: string, visible: boolean) => {
+				if (visible) {
+					await spawnVFX(
+						VfxTypes.ICE_FEET,
+						[targetId],
+						undefined,
+						undefined,
+						undefined,
+						0,
+						true,
+					);
+				} else {
+					removeVfxType(VfxTypes.ICE_FEET);
+				}
+			},
 			lightningStrike: (targetId) =>
 				spawnVFX(VfxTypes.LIGHTNING_STRIKE, [targetId]),
 			iceHit: (targetId) => spawnVFX(VfxTypes.ICE_HIT, [targetId]),
@@ -154,8 +168,22 @@ export const useVfxControl = (
 			dustLeap: (unitId) => spawnVFX(VfxTypes.DUST_LEAP, [unitId]),
 			landingDust: (unitId) => spawnVFX(VfxTypes.DUST_LAND, [unitId]),
 			slash: (targetId) => spawnVFX(VfxTypes.SLASH, [targetId]),
-			targetSwirl: (targetId) =>
-				spawnVFX(VfxTypes.TARGET_SWIRL, [targetId]),
+
+			toggleTargetSwirl: async (targetId: string, visible: boolean) => {
+				if (visible) {
+					await spawnVFX(
+						VfxTypes.TARGET_SWIRL,
+						[targetId],
+						undefined,
+						undefined,
+						undefined,
+						0,
+						true,
+					);
+				} else {
+					removeVfxType(VfxTypes.TARGET_SWIRL);
+				}
+			},
 			knivesProjectile: (sourceId, targetId) =>
 				spawnVFX(
 					VfxTypes.KNIVES_PROJECTILE,
@@ -170,7 +198,7 @@ export const useVfxControl = (
 					undefined,
 					sourceId,
 				),
-			// Persistent = true: keeps screen modified until screenRestoreColor is called
+
 			screenDarken: (durationMs = 500) =>
 				spawnVFX(
 					VfxTypes.SCREEN_DARKEN,
@@ -212,7 +240,7 @@ export const useVfxControl = (
 					undefined,
 					{ durationMs },
 					durationMs,
-					false, // Restoring is temporary or transient
+					false,
 				);
 			},
 			bannerLevelUp: (amount) =>

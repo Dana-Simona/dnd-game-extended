@@ -9,16 +9,20 @@ const SCREEN_VFX_STYLES: Partial<
 	Record<VfxTypes | string, ReturnType<typeof css>>
 > = {
 	[VfxTypes.SCREEN_DARKEN]: css`
-		filter: brightness(0.5) saturate(170%) sepia(0.5);
+		filter: brightness(0.5) saturate(170%) sepia(0.5) grayscale(0%)
+			hue-rotate(0deg);
 	`,
 	[VfxTypes.SCREEN_RED_HUE]: css`
-		filter: sepia(1) hue-rotate(310deg) saturate(400%);
+		filter: brightness(1) saturate(400%) sepia(1) grayscale(0%)
+			hue-rotate(310deg);
 	`,
 	[VfxTypes.SCREEN_DESATURATE]: css`
-		filter: grayscale(100%);
+		filter: brightness(1) saturate(100%) sepia(0) grayscale(100%)
+			hue-rotate(0deg);
 	`,
 	[VfxTypes.SCREEN_RESTORE_COLOR]: css`
-		filter: brightness(1) grayscale(0%) sepia(0) saturate(100%) hue-rotate(0deg);
+		filter: brightness(1) saturate(100%) sepia(0) grayscale(0%)
+			hue-rotate(0deg);
 	`,
 };
 
@@ -55,6 +59,7 @@ export const BoardCanvas = styled.div`
 
 export const StaticLayerWrapper = styled.div<StaticLayerWrapperProps>`
 	position: relative;
+	filter: brightness(1) saturate(100%) sepia(0) grayscale(0%) hue-rotate(0deg);
 	transition: filter 0.5s ease-in-out;
 
 	${({ $activeVfxTypes }) =>

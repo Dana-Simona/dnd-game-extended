@@ -12,12 +12,44 @@ export type UnitTransform = Omit<TargetAndTransition, 'offset'> & {
 	offset?: { x: number; y: number };
 };
 
-export const UnitPreset = {
-	FACE: 'face',
-	DASH: 'dash',
-	RESET: 'reset',
-	FADE_IN: 'fadeIn',
-	FADE_OUT: 'fadeOut',
-} as const;
-
-export type UnitPreset = (typeof UnitPreset)[keyof typeof UnitPreset];
+export interface TriggerUnitAPI {
+	face: (sourceId: string, targetId: string) => Promise<void>;
+	dash: (
+		sourceId: string,
+		targetId: string,
+		distancePx?: number,
+		durationMs?: number,
+	) => Promise<void>;
+	fadeOut: (
+		unitId: string,
+		delayMs?: number,
+		durationMs?: number,
+	) => Promise<void>;
+	fadeIn: (
+		unitId: string,
+		delayMs?: number,
+		durationMs?: number,
+	) => Promise<void>;
+	reset: (unitId: string) => Promise<void>;
+	rotate: (
+		unitId: string,
+		degrees?: number,
+		durationMs?: number,
+	) => Promise<void>;
+	jump: (
+		sourceId: string,
+		targetId: string,
+		heightPx?: number,
+		durationMs?: number,
+	) => Promise<void>;
+	leap: (
+		unitId: string,
+		heightPx?: number,
+		durationMs?: number,
+	) => Promise<void>;
+	shake: (
+		unitId: string,
+		intensityPx?: number,
+		durationMs?: number,
+	) => Promise<void>;
+}

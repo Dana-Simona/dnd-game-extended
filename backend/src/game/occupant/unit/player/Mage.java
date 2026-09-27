@@ -7,7 +7,9 @@ import game.MessageCallback;
 import game.StepCounter;
 import game.cell.Position;
 import game.occupant.unit.enemy.Enemy;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Mage extends Player {
 
@@ -32,23 +34,30 @@ public class Mage extends Player {
 
     public void blizzard() {
         sendMessage(getName() + " cast Blizzard");
-        int hits = 0;
-        List<Enemy> enemies = getEnemiesInRange(getPosition(), abilityRange);
 
-        List<String> enemyIds = enemies.stream()
+        List<Enemy> availableEnemies = getEnemiesInRange(getPosition(), abilityRange);
+        List<Enemy> targetsToHit = new ArrayList<>();
+
+        while (targetsToHit.size() < this.hitsCount && !availableEnemies.isEmpty()) {
+            int randomIndex = ThreadLocalRandom.current().nextInt(availableEnemies.size());
+            targetsToHit.add(availableEnemies.get(randomIndex));
+        }
+
+        if (targetsToHit.isEmpty()) {
+            return;
+        }
+
+        List<String> enemyIds = targetsToHit.stream()
                 .map(Enemy::getId)
                 .toList();
 
         sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), enemyIds, null));
 
-        while (hits < this.hitsCount && !enemies.isEmpty()) {
-            int randomEnemyPlace = (int) (Math.random() * enemies.size());
-            Enemy randomEnemy = enemies.get(randomEnemyPlace);
-
-            randomEnemy.takeDamageFromAbility(this.spellPower, this.getName(), this.getId());
-            handleEnemyIfDead(randomEnemy);
-            enemies.removeIf(Enemy::isDead);
-            hits++;
+        for (Enemy enemy : targetsToHit) {
+            if (!enemy.isDead()) {
+                enemy.takeDamageFromAbility(this.spellPower, this.getName(), this.getId());
+                handleEnemyIfDead(enemy);
+            }
         }
     }
 

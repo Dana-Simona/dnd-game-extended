@@ -9,16 +9,19 @@ interface Props {
 
 const IceFeet: React.FC<Props> = ({ item }) => {
 	return (
-		<IceContainer style={{ left: `${item.x}px`, top: `${item.y}px` }}>
+		<IceContainer
+			$x={item.x}
+			$y={item.y}
+			initial={{ scaleY: 0, scaleX: 0.01, opacity: 0 }}
+			animate={{ scaleY: 0.06, scaleX: 0.06, opacity: 1 }}
+			transition={{
+				duration: 0.5,
+				ease: [0.16, 0.5, 0.3, 1],
+			}}
+		>
 			<IceImage
-				src='/vfx/effects/iceFeet.png' 
+				src='/vfx/effects/iceFeet.png'
 				alt='Ice Feet'
-				initial={{ scaleY: 0, scaleX: 0.5, opacity: 0 }}
-				animate={{ scaleY: 1, scaleX: 1, opacity: 1 }}
-				transition={{
-					duration: 0.5,
-					ease: [0.16, 1, 0.3, 1], 
-				}}
 			/>
 		</IceContainer>
 	);
@@ -26,14 +29,22 @@ const IceFeet: React.FC<Props> = ({ item }) => {
 
 export default IceFeet;
 
-const IceContainer = styled.div`
+const IceContainer = styled(motion.div).attrs<{ $x: number; $y: number }>(
+	({ $x, $y }) => ({
+		style: {
+			left: $x + 2,
+			top: $y + 10,
+			x: '-50%',
+			y: '-50%',
+		},
+	}),
+)<{ $x: number; $y: number }>`
 	position: absolute;
-	transform: translate(-50%, -100%);
 	pointer-events: none;
 	z-index: 10;
 `;
 
-const IceImage = styled(motion.img)`
+const IceImage = styled.img`
 	width: auto;
 	height: auto;
 	display: block;
