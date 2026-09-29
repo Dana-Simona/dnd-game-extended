@@ -126,6 +126,7 @@ public final class Game {
         }
 
         if (validAction) {
+            stepCounter.resetCount();
             if (targetPos != null) {
                 chosenPlayer.requestMove(targetPos);
             }

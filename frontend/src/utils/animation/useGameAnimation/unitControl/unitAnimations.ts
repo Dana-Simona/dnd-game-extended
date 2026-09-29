@@ -275,27 +275,51 @@ export const executeShake = async (
 	durationMs = 300,
 	setTransforms: SetTransforms,
 ) => {
-	const keyframeX = [
-		0,
-		-intensityPx,
-		intensityPx,
-		-intensityPx * 0.6,
-		intensityPx * 0.6,
-		0,
-	];
+	let basePositionX = 0;
 
-	const shakeVariant: UnitTransform = {
-		x: keyframeX,
-		transition: {
-			duration: durationMs / 1000,
-			ease: 'easeInOut',
-		},
-	};
+	setTransforms((prev) => {
+		const currentTransform = prev[unitId] || {};
+		const currentX =
+			typeof currentTransform.x === 'number'
+				? currentTransform.x
+				: (currentTransform.offset?.x ?? 0);
 
-	setTransforms((prev) => ({
-		...prev,
-		[unitId]: { ...prev[unitId], ...shakeVariant },
-	}));
+		basePositionX = currentX;
+
+		const keyframeX = [
+			currentX,
+			currentX - intensityPx,
+			currentX + intensityPx,
+			currentX - intensityPx * 0.6,
+			currentX + intensityPx * 0.6,
+			currentX,
+		];
+
+		return {
+			...prev,
+			[unitId]: {
+				...currentTransform,
+				x: keyframeX,
+				transition: {
+					duration: durationMs / 1000,
+					ease: 'easeInOut',
+				},
+			},
+		};
+	});
 
 	await new Promise((resolve) => setTimeout(resolve, durationMs));
+
+	setTransforms((prev) => {
+		const currentTransform = prev[unitId];
+		if (!currentTransform) return prev;
+
+		return {
+			...prev,
+			[unitId]: {
+				...currentTransform,
+				x: basePositionX,
+			},
+		};
+	});
 };

@@ -50,17 +50,51 @@ const ActiveLayer: React.FC<Props> = React.memo(
 					const currentY = visualPositions[unitId]?.y ?? unit.y;
 					const transform = unitTransforms[unitId] ?? {};
 
-					const offsetX =
-						typeof transform.x === 'number'
-							? transform.x
-							: (transform.offset?.x ?? 0);
-					const offsetY =
-						typeof transform.y === 'number'
-							? transform.y
-							: (transform.offset?.y ?? 0);
+					const baseX = currentX * tileSize;
+					const baseY = currentY * tileSize;
 
-					const targetX = currentX * tileSize + offsetX;
-					const targetY = currentY * tileSize + offsetY;
+					let targetX: number | number[];
+					if (Array.isArray(transform.x)) {
+						targetX = transform.x.map((xOffset) => {
+							const val =
+								typeof xOffset === 'number'
+									? xOffset
+									: parseFloat(String(xOffset));
+							return baseX + (isNaN(val) ? 0 : val);
+						});
+					} else {
+						const rawOffsetX =
+							typeof transform.x === 'number'
+								? transform.x
+								: (transform.offset?.x ?? 0);
+						const offsetX =
+							typeof rawOffsetX === 'number'
+								? rawOffsetX
+								: parseFloat(String(rawOffsetX));
+						targetX = baseX + (isNaN(offsetX) ? 0 : offsetX);
+					}
+
+					let targetY: number | number[];
+					if (Array.isArray(transform.y)) {
+						targetY = transform.y.map((yOffset) => {
+							const val =
+								typeof yOffset === 'number'
+									? yOffset
+									: parseFloat(String(yOffset));
+							return baseY + (isNaN(val) ? 0 : val);
+						});
+					} else {
+						const rawOffsetY =
+							typeof transform.y === 'number'
+								? transform.y
+								: (transform.offset?.y ?? 0);
+						const offsetY =
+							typeof rawOffsetY === 'number'
+								? rawOffsetY
+								: parseFloat(String(rawOffsetY));
+						targetY = baseY + (isNaN(offsetY) ? 0 : offsetY);
+					}
+
 					const targetOpacity = transform.opacity ?? 1;
 
 					const moveDelay = isPlayer ? PLAYER_MOVEMENT_DELAY : 0;
@@ -91,8 +125,12 @@ const ActiveLayer: React.FC<Props> = React.memo(
 							$tileSize={tileSize}
 							$zIndex={isPlayer ? 10 : 1}
 							initial={{
-								x: targetX,
-								y: targetY,
+								x: Array.isArray(targetX)
+									? targetX[0]
+									: targetX,
+								y: Array.isArray(targetY)
+									? targetY[0]
+									: targetY,
 								opacity: targetOpacity,
 							}}
 							animate={{

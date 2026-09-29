@@ -12,11 +12,16 @@ export const playTurnSequence = async (events: GameEvent[]) => {
 
 	const sortedSteps = Array.from(stepsMap.keys()).sort((a, b) => a - b);
 
-	for (const stepNum of sortedSteps) {
+	let i = 0;
+	while (i < sortedSteps.length) {
+		const stepNum = sortedSteps[i];
 		const stepEvents = stepsMap.get(stepNum) || [];
 
-		await Promise.all(
+		const skipValues = await Promise.all(
 			stepEvents.map((evt) => animationRegistry.execute(evt)),
 		);
+
+		const stepsToSkip = Math.max(1, ...skipValues);
+		i += stepsToSkip;
 	}
 };

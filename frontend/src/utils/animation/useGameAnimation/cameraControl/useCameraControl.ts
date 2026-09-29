@@ -5,7 +5,11 @@ import { useAnimationControls } from 'framer-motion';
 import type { Position } from '../unitControl/unitCalculations';
 import type { Unit } from '../../../../constants/interfaces/unit';
 import type { AllPlayerData } from '../../../../constants/interfaces/player';
-import { calcRangeZoom, calcTwoTargetCamera, getTargetCoords } from './cameraCalculations';
+import {
+	calcRangeZoom,
+	calcTwoTargetCamera,
+	getTargetCoords,
+} from './cameraCalculations';
 import type { TriggerCameraAPI } from '../../../../constants/animationStates/cameraStates';
 import {
 	cameraEffectVariants,
@@ -34,6 +38,7 @@ interface CameraFocusState {
 	zoom: number;
 	effect: 'idle' | 'shake' | 'thump';
 	effectIntensity: number;
+	effectBaseWidth?: number;
 	effectNonce: number;
 }
 
@@ -57,6 +62,7 @@ export const useCameraControl = (
 		zoom: defaultZoom,
 		effect: 'idle',
 		effectIntensity: 10,
+		effectBaseWidth: 10,
 		effectNonce: 0,
 	});
 
@@ -150,11 +156,16 @@ export const useCameraControl = (
 	);
 
 	const shake = useCallback(
-		async (intensity = 12, duration = 450): Promise<void> => {
+		async (
+			intensity = 12,
+			baseWidth = 10,
+			duration = 450,
+		): Promise<void> => {
 			setCameraState((prev) => ({
 				...prev,
 				effect: 'shake',
 				effectIntensity: intensity,
+				effectBaseWidth: baseWidth,
 				effectNonce: prev.effectNonce + 1,
 			}));
 			await delay(duration);
@@ -182,6 +193,7 @@ export const useCameraControl = (
 				zoom: defaultZoom,
 				effect: 'idle',
 				effectIntensity: 10,
+				effectBaseWidth: 10,
 				effectNonce: 0,
 			});
 			await delay(duration);
@@ -285,7 +297,10 @@ export const useCameraControl = (
 		() => ({
 			variants: cameraEffectVariants,
 			animate: effectControls,
-			custom: cameraState.effectIntensity,
+			custom: {
+				intensity: cameraState.effectIntensity,
+				baseWidth: cameraState.effectBaseWidth,
+			},
 			style: { transformOrigin: 'center center' },
 		}),
 		[effectControls, cameraState.effectIntensity],

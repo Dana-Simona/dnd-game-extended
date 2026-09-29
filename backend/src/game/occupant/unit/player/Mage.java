@@ -53,12 +53,12 @@ public class Mage extends Player {
 
         sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), enemyIds, null));
 
-        for (Enemy enemy : targetsToHit) {
+        targetsToHit.parallelStream().forEach(enemy -> {
             if (!enemy.isDead()) {
                 enemy.takeDamageFromAbility(this.spellPower, this.getName(), this.getId());
                 handleEnemyIfDead(enemy);
             }
-        }
+        });
     }
 
     @Override

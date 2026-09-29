@@ -244,7 +244,7 @@ public abstract class Unit extends Occupant {
         if (actualDamage > 0) {
             this.takeDamage(actualDamage);
             sendMessage(attackerName + " hit " + this.getName() + " for " + actualDamage + " ability damage");
-            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.TAKE_DAMAGE_FROM_ABILITY, attackerId, getId(), actualDamage));
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.TAKE_DAMAGE_FROM_ABILITY, this.getId(), attackerId, actualDamage));
         }
 
     }

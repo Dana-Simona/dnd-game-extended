@@ -12,7 +12,11 @@ export interface TriggerCameraAPI {
 		duration?: number,
 	) => Promise<void>;
 	zoomToRange: (range: number) => Promise<void>;
-	shake: (intensity?: number, duration?: number) => Promise<void>;
+	shake: (
+		intensity?: number,
+		baseWidth?: number,
+		duration?: number,
+	) => Promise<void>;
 	thump: (intensity?: number, duration?: number) => Promise<void>;
 	reset: (duration?: number) => Promise<void>;
 }

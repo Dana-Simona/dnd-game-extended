@@ -3,7 +3,7 @@ import type { Variants, TargetAndTransition } from 'framer-motion';
 export interface PanCustomParams {
 	pixelX: number;
 	pixelY: number;
-	zoom: number; 
+	zoom: number;
 	halfWidth?: number;
 	halfHeight?: number;
 }
@@ -74,29 +74,39 @@ export const panZoomTo = (params: PanZoomCustomParams): TargetAndTransition => {
 	};
 };
 
+export type ShakeParams = {
+	intensity?: number;
+	baseWidth?: number;
+};
+
 export const cameraEffectVariants: Variants = {
 	idle: { x: 0, y: 0, scale: 1 },
-	shake: (intensity: number = 10) => ({
-		x: [
-			0,
-			-intensity,
-			intensity,
-			-intensity * 0.7,
-			intensity * 0.7,
-			-intensity * 0.3,
-			0,
-		],
-		y: [
-			0,
-			intensity * 0.8,
-			-intensity * 0.8,
-			intensity * 0.5,
-			-intensity * 0.5,
-			-intensity * 0.2,
-			0,
-		],
-		transition: { duration: 0.45, ease: 'easeInOut' },
-	}),
+
+	shake: ({ intensity = 10, baseWidth = 10 }: ShakeParams = {}) => {
+		const count = Math.max(1, Math.round(intensity));
+		const x: number[] = [0];
+		const y: number[] = [0];
+
+		for (let i = 0; i < count; i++) {
+			const sign = i % 2 === 0 ? -1 : 1;
+			const decay = 1 - (i / count) * 0.7;
+
+			x.push(sign * baseWidth * decay);
+			y.push(-sign * (baseWidth * 0.8) * decay);
+		}
+
+		x.push(0);
+		y.push(0);
+
+		return {
+			x,
+			y,
+			transition: {
+				duration: Math.max(0.15, count * 0.05),
+				ease: 'easeInOut' as const,
+			},
+		};
+	},
 
 	thump: {
 		scale: [1, 1.1, 0.98, 1],

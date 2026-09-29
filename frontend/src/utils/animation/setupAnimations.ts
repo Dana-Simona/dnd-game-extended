@@ -50,7 +50,7 @@ export const setupAnimations = (controllers: Controllers) => {
 
 	animationRegistry.register(
 		ActionType.MELEE,
-		async (event: GameEvent, next: () => void) => {
+		async (event: GameEvent, skip: (steps?: number) => void) => {
 			const defender = event.targetIds?.[0];
 			const attacker = event.sourceId;
 			if (!attacker || !defender) return;
@@ -71,7 +71,7 @@ export const setupAnimations = (controllers: Controllers) => {
 				),
 			]);
 
-			next();
+			skip();
 
 			await controllers.triggerSpriteAnimation.melee(
 				attacker,
@@ -129,13 +129,12 @@ export const setupAnimations = (controllers: Controllers) => {
 
 	animationRegistry.register(
 		ActionType.ABILITY_CAST,
-		async (event: GameEvent, next: () => void) => {
+		async (event: GameEvent, skip: (steps?: number) => void) => {
 			const casterId = event.sourceId;
 			const victimsIds = event.targetIds;
 
-			// Guard clause: unblock queue if data is invalid
 			if (!casterId || !victimsIds || victimsIds.length === 0) {
-				next();
+				skip();
 				return;
 			}
 
@@ -144,40 +143,40 @@ export const setupAnimations = (controllers: Controllers) => {
 			if (caster?.unitType === UnitType.PLAYER) {
 				switch ((caster as Player)?.class) {
 					case ClassTypes.MAGE:
-						await mageCast(caster as Mage, victimsIds, next);
+						await mageCast(caster as Mage, victimsIds, skip);
 						break;
 					case ClassTypes.WARRIOR:
 						await warriorCast(
 							caster as Warrior,
 							victimsIds[0],
-							next,
+							skip,
 						);
 						break;
 					case ClassTypes.ROGUE:
-						await rogueCast(caster as Rogue, victimsIds, next);
+						await rogueCast(caster as Rogue, victimsIds, skip);
 						break;
 					case ClassTypes.HUNTER:
-						await hunterCast(caster as Hunter, victimsIds[0], next);
+						await hunterCast(caster as Hunter, victimsIds[0], skip);
 						break;
 					default:
-						next(); // Unblock queue for unhandled classes
+						skip();
 						break;
 				}
 			} else {
-				next(); // Unblock queue if unit is not a PLAYER
+				skip();
 			}
 		},
 	);
 
 	animationRegistry.register(
 		ActionType.TAKE_DAMAGE_FROM_ABILITY,
-		async (event: GameEvent, next: () => void) => {
-			const casterId = event.sourceId;
-			const victimId = event.targetIds[0];
+		async (event: GameEvent, skip: (steps?: number) => void) => {
+			const victimId = event.sourceId;
+			const casterId = event.targetIds[0];
 			const damageTaken = event.amount;
 
 			if (!casterId || !victimId || !damageTaken) {
-				next();
+				skip();
 				return;
 			}
 
@@ -186,35 +185,39 @@ export const setupAnimations = (controllers: Controllers) => {
 			if (caster?.unitType === UnitType.PLAYER) {
 				switch ((caster as Player)?.class) {
 					case ClassTypes.MAGE:
-						takeDamageFromMageCast(victimId, damageTaken);
+						await takeDamageFromMageCast(
+							victimId,
+							damageTaken,
+							skip,
+						);
 						break;
 					case ClassTypes.WARRIOR:
-						takeDamageFromWarriorCast(
+						await takeDamageFromWarriorCast(
 							casterId,
 							victimId,
 							damageTaken,
 						);
 						break;
 					case ClassTypes.ROGUE:
-						takeDamageFromRogueCast(
+						await takeDamageFromRogueCast(
 							casterId,
 							victimId,
 							damageTaken,
 						);
 						break;
 					case ClassTypes.HUNTER:
-						takeDamageFromHunterCast(
+						await takeDamageFromHunterCast(
 							casterId,
 							victimId,
 							damageTaken,
 						);
 						break;
 					default:
-						next();
+						skip();
 						break;
 				}
 			} else {
-				next();
+				skip();
 			}
 		},
 	);
@@ -290,7 +293,7 @@ export const setupAnimations = (controllers: Controllers) => {
 	const mageCast = async (
 		mage: Mage,
 		targets: string[],
-		next: () => void,
+		skip: (steps?: number) => void,
 	) => {
 		const mageId = mage.id;
 
@@ -302,6 +305,10 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerCamera.zoomIn(mageId),
 			(async () => {
 				await delay(1000);
+				controllers.triggerCamera.shake(30, 1);
+			})(),
+			(async () => {
+				await delay(1000);
 				controllers.triggerVfx.iceGather(mageId);
 				controllers.triggerVfx.blackClouds(true);
 				controllers.triggerVfx.screenDarken(1000);
@@ -310,9 +317,6 @@ export const setupAnimations = (controllers: Controllers) => {
 
 		await delay(500);
 
-		// zoom out to the mage's range sharply (mage still in center)
-		// ice particles explode from the wand
-		// all targets have growing ice at their feet
 		await Promise.all([
 			controllers.triggerCamera.zoomToRange(mage.range),
 			controllers.triggerVfx.iceExplode(mageId),
@@ -323,25 +327,9 @@ export const setupAnimations = (controllers: Controllers) => {
 
 		await delay(300);
 
-		targets.forEach((target, index) => {
-			setTimeout(async () => {
-				await Promise.all([
-					controllers.triggerVfx.lightningStrike(target),
-					controllers.triggerVfx.iceHit(target),
-					controllers.triggerSpriteAnimation.takeDamage(
-						target,
-						AnimationPhase.WINDUP,
-					),
-				]);
+		skip(1);
 
-				next();
-
-				await controllers.triggerSpriteAnimation.idle(target);
-			}, index * 500);
-		});
-
-		await delay(targets.length * 500 + 1000);
-
+		await delay(targets.length * 400 + 500);
 		await Promise.all([
 			controllers.triggerVfx.blackClouds(false),
 			controllers.triggerVfx.screenRestoreColor(1000),
@@ -352,7 +340,7 @@ export const setupAnimations = (controllers: Controllers) => {
 	const warriorCast = async (
 		warrior: Warrior,
 		target: string,
-		next: () => void,
+		skip: (steps?: number) => void,
 	) => {
 		const warriorId = warrior.id;
 
@@ -451,7 +439,7 @@ export const setupAnimations = (controllers: Controllers) => {
 	const rogueCast = async (
 		rogue: Rogue,
 		targets: string[],
-		next: () => void,
+		skip: (steps?: number) => void,
 	) => {
 		const rogueId = rogue.id;
 
@@ -561,7 +549,7 @@ export const setupAnimations = (controllers: Controllers) => {
 	const hunterCast = async (
 		hunter: Hunter,
 		target: string,
-		next: () => void,
+		skip: (steps?: number) => void,
 	) => {
 		const hunterId = hunter.id;
 
@@ -639,17 +627,22 @@ export const setupAnimations = (controllers: Controllers) => {
 	const takeDamageFromMageCast = async (
 		victim: string,
 		damageTaken: number,
+		skip: (steps?: number) => void,
 	) => {
-		// ---
-		// target plays hit animation (follow through)
-		// target shakes (via camera shake slightly on impact)
-		// target hp preview damage (in purple)
 		await Promise.all([
 			controllers.triggerSpriteAnimation.takeDamage(
 				victim,
-				AnimationPhase.FOLLOW_THROUGH,
+				AnimationPhase.WINDUP,
 			),
-			controllers.triggerUnit.shake(victim),
+			controllers.triggerVfx.lightningStrike(victim),
+			controllers.triggerVfx.iceHit(victim),
+			(async () => {
+				await delay(200);
+				controllers.triggerUnit.shake(victim, 10);
+			})(),
+		]);
+
+		await Promise.all([
 			controllers.triggerHpBar.showDamagePreview(
 				victim,
 				damageTaken,
@@ -657,14 +650,19 @@ export const setupAnimations = (controllers: Controllers) => {
 			),
 			controllers.triggerVfx.toggleIceFeet(victim, false),
 		]);
+		if (skip) skip();
+		await delay(150);
 
-		await delay(200);
+		await Promise.all([
+			controllers.triggerSpriteAnimation.takeDamage(
+				victim,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			controllers.triggerVfx.statDamage(victim, damageTaken),
+		]);
+		await controllers.triggerHpBar.drainHp(victim);
 
-		// ---
-		// target hp drains
-		// display damage taken stat
-		controllers.triggerHpBar.drainHp(victim);
-		await controllers.triggerVfx.statDamage(victim, damageTaken);
+		await delay(150);
 	};
 
 	const takeDamageFromWarriorCast = async (

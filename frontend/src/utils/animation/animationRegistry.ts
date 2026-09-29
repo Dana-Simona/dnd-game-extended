@@ -1,4 +1,10 @@
-type AnimationHandler = (event: any, next: () => void) => Promise<void>;
+import type { GameEvent } from '../../constants/gameEvent';
+
+type SkipFunction = (stepsToSkip?: number) => void;
+export type AnimationHandler = (
+	event: any,
+	skip: SkipFunction,
+) => Promise<void>;
 
 class AnimationRegistry {
 	private handlers = new Map<string, AnimationHandler>();
@@ -7,30 +13,25 @@ class AnimationRegistry {
 		this.handlers.set(type, handler);
 	}
 
-	async execute(event: any): Promise<void> {
-		const handler = this.handlers.get(event.type || event.action);
-		if (!handler) return;
+	async execute(event: GameEvent): Promise<number> {
+		const handler = this.handlers.get(event.type);
+		if (!handler) return 1;
 
-		return new Promise<void>((resolve) => {
-			let nextCalled = false;
+		return new Promise<number>((resolve) => {
+			let handled = false;
 
-			const next = () => {
-				if (!nextCalled) {
-					nextCalled = true;
-					resolve();
+			const skip: SkipFunction = (stepsToSkip = 1) => {
+				if (!handled) {
+					handled = true;
+					resolve(stepsToSkip);
 				}
 			};
 
-			handler(event, next)
-				.then(() => {
-					next();
-				})
+			handler(event, skip)
+				.then(() => skip(1))
 				.catch((err) => {
-					console.error(
-						`Error in animation handler for ${event.type}:`,
-						err,
-					);
-					next();
+					console.error(`Error in handler for ${event.type}:`, err);
+					skip(1);
 				});
 		});
 	}
