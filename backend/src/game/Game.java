@@ -106,6 +106,7 @@ public final class Game {
     private void playerInput(char c) {
         Position currentPos = chosenPlayer.getPosition();
         Position targetPos = null;
+        boolean isAbility = false;
         boolean validAction = true;
 
         switch (c) {
@@ -118,7 +119,7 @@ public final class Game {
             case 'a' ->
                 targetPos = new Position(currentPos.getX() - 1, currentPos.getY());
             case 'e' ->
-                chosenPlayer.abilityCast();
+                isAbility = true; 
             case 'q', 'p' -> {
             }
             default ->
@@ -129,7 +130,10 @@ public final class Game {
             stepCounter.resetCount();
             if (targetPos != null) {
                 chosenPlayer.requestMove(targetPos);
+            } else if (isAbility) {
+                chosenPlayer.abilityCast();
             }
+
             currentGameBoard.tickAll();
 
             if (currentGameBoard.isLevelComplete()) {

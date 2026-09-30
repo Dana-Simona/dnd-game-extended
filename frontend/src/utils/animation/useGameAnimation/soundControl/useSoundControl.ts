@@ -1,6 +1,12 @@
 import { useRef, useCallback, useEffect } from 'react';
 import { soundRegistry } from './soundRegistry';
-import type { SoundPreset, TriggerSoundAPI } from '../../../../constants/animationStates/soundStates';
+import type {
+	SoundPreset,
+	TriggerSoundAPI,
+} from '../../../../constants/animationStates/soundStates';
+
+const FADE_OUT_DURATION = 600; 
+const FADE_INTERVAL = 50; 
 
 export const useSoundControl = (
 	globalVolume: number = 1,
@@ -10,11 +16,41 @@ export const useSoundControl = (
 		new Map(),
 	);
 
-	const play = useCallback(
-		async (
-			preset: SoundPreset,
-			volumeOverride?: number,
+	const fadeAndStopAudio = useCallback(
+		(
+			audio: HTMLAudioElement,
+			duration: number = FADE_OUT_DURATION,
 		): Promise<void> => {
+			return new Promise((resolve) => {
+				if (audio.paused || audio.volume <= 0) {
+					audio.pause();
+					audio.currentTime = 0;
+					resolve();
+					return;
+				}
+
+				const initialVolume = audio.volume;
+				const steps = duration / FADE_INTERVAL;
+				const volumeStep = initialVolume / steps;
+
+				const fadeInterval = setInterval(() => {
+					if (audio.volume > volumeStep) {
+						audio.volume = Math.max(0, audio.volume - volumeStep);
+					} else {
+						audio.volume = 0;
+						audio.pause();
+						audio.currentTime = 0;
+						clearInterval(fadeInterval);
+						resolve();
+					}
+				}, FADE_INTERVAL);
+			});
+		},
+		[],
+	);
+
+	const play = useCallback(
+		async (preset: SoundPreset, volumeOverride?: number): Promise<void> => {
 			if (!enabled) return;
 
 			const config = soundRegistry[preset];
@@ -47,32 +83,51 @@ export const useSoundControl = (
 		[enabled, globalVolume],
 	);
 
-	const stop = useCallback(async (preset: SoundPreset): Promise<void> => {
-		const audios = activeAudios.current.get(preset);
-		if (audios) {
-			audios.forEach((audio) => {
-				audio.pause();
-				audio.currentTime = 0;
-			});
-			audios.clear();
-		}
-	}, []);
+	const stop = useCallback(
+		async (
+			preset: SoundPreset,
+			fadeDuration: number = FADE_OUT_DURATION,
+		): Promise<void> => {
+			const audios = activeAudios.current.get(preset);
+			if (!audios || audios.size === 0) return;
 
-	const stopAll = useCallback(async (): Promise<void> => {
-		activeAudios.current.forEach((audios) => {
-			audios.forEach((audio) => {
-				audio.pause();
-				audio.currentTime = 0;
-			});
+			const audioList = Array.from(audios);
 			audios.clear();
-		});
-	}, []);
+
+			await Promise.all(
+				audioList.map((audio) => fadeAndStopAudio(audio, fadeDuration)),
+			);
+		},
+		[fadeAndStopAudio],
+	);
+
+	const stopAll = useCallback(
+		async (fadeDuration: number = FADE_OUT_DURATION): Promise<void> => {
+			const allAudios: HTMLAudioElement[] = [];
+
+			activeAudios.current.forEach((audios) => {
+				audios.forEach((audio) => allAudios.push(audio));
+				audios.clear();
+			});
+
+			await Promise.all(
+				allAudios.map((audio) => fadeAndStopAudio(audio, fadeDuration)),
+			);
+		},
+		[fadeAndStopAudio],
+	);
 
 	useEffect(() => {
 		return () => {
-			stopAll();
+			activeAudios.current.forEach((audios) => {
+				audios.forEach((audio) => {
+					audio.pause();
+					audio.currentTime = 0;
+				});
+				audios.clear();
+			});
 		};
-	}, [stopAll]);
+	}, []);
 
 	return {
 		triggerSound: {

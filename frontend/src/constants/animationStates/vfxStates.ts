@@ -14,7 +14,6 @@ export const VfxTypes = {
 
 	ICE_FEET: 'IceFeet',
 	LIGHTNING_STRIKE: 'LightningStrike',
-	ICE_HIT: 'IceHit',
 	GROUND_BREAK: 'GroundBreak',
 	DUST_LEAP: 'DustLeap',
 	DUST_LAND: 'LandingSmoke',
@@ -72,7 +71,6 @@ export const VfxTypeToCategoryMap: Record<VfxTypes, VfxCategory> = {
 	[VfxTypes.ICE_EXPLODE]: VfxCategory.FRONT,
 	[VfxTypes.EFFECTS_HEAL]: VfxCategory.FRONT,
 	[VfxTypes.LIGHTNING_STRIKE]: VfxCategory.FRONT,
-	[VfxTypes.ICE_HIT]: VfxCategory.FRONT,
 	[VfxTypes.SLASH]: VfxCategory.FRONT,
 	[VfxTypes.KNIVES_PROJECTILE]: VfxCategory.FRONT,
 	[VfxTypes.ARROW_PROJECTILE]: VfxCategory.FRONT,
@@ -123,7 +121,6 @@ export interface TriggerVfxAPI {
 
 	toggleIceFeet: (targetId: string, visible: boolean) => Promise<void>;
 	lightningStrike: (targetId: string) => Promise<void>;
-	iceHit: (targetId: string) => Promise<void>;
 	groundBreak: (targetId: string) => Promise<void>;
 	dustLeap: (unitId: string) => Promise<void>;
 	landingDust: (unitId: string) => Promise<void>;

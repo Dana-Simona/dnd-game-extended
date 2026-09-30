@@ -2,7 +2,6 @@ import React from 'react';
 
 import Bleed from './effectVfxs/back/Bleed';
 import { VfxViewportLayer } from './vfxStyles';
-import IceHit from './effectVfxs/front/IceHit';
 import IceFeet from './effectVfxs/front/IceFeet';
 import ExpOrbs from './effectVfxs/front/ExpOrbs';
 import DustLeap from './effectVfxs/back/DustLeap';
@@ -48,7 +47,6 @@ const VFX_COMPONENTS: Partial<
 	[VfxTypes.ICE_EXPLODE]: IceExplode,
 	[VfxTypes.EFFECTS_HEAL]: EffectHeal,
 	[VfxTypes.LIGHTNING_STRIKE]: LightningStrike,
-	[VfxTypes.ICE_HIT]: IceHit,
 	[VfxTypes.SLASH]: Slash,
 	[VfxTypes.KNIVES_PROJECTILE]: KnivesProjectile,
 	[VfxTypes.ARROW_PROJECTILE]: ArrowProjectile,

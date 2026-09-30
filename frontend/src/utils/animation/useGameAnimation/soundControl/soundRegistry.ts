@@ -37,4 +37,49 @@ export const soundRegistry: Record<SoundPreset, SoundConfig> = {
 		volume: 0.8,
 		loop: false,
 	},
+	[SoundPreset.MAGE_MELEE]: {
+		files: ['/sfx/mage/melee.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.MAGE_GRUNT]: {
+		files: ['/sfx/mage/grunt.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.MOVE]: {
+		files: ['/sfx/move1.mp3', '/sfx/move2.mp3'],
+		volume: 0.3,
+		loop: false,
+	},
+	[SoundPreset.ENEMY_MELEE]: {
+		files: ['/sfx/enemies/melee.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.KNOCKBACK]: {
+		files: ['/sfx/knockback.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.SWISH_SHORT]: {
+		files: ['/sfx/swishShort.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.SWISH_MEDIUM]: {
+		files: ['/sfx/swishMedium.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.SWISH_BIG]: {
+		files: ['/sfx/swishBig.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.ROLL]: {
+		files: ['/sfx/roll.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
 };

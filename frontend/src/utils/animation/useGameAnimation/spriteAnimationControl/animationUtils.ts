@@ -1,4 +1,4 @@
-import { animationRegistry } from './animationRegistry';
+import { animationRegistry } from '../../animationRegistry';
 import { getUnitSpriteConfig } from '../../spriteAnimations';
 import type { Position } from '../unitControl/unitCalculations';
 import type { GameEvent } from '../../../../constants/gameEvent';

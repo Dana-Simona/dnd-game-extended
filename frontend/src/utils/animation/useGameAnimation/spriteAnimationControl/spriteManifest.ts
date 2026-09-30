@@ -1,5 +1,5 @@
-import { SpritePresets } from '../../constants/animationStates/spriteStates';
-import type { SpriteProps } from '../sprite/Sprite';
+import { SpritePresets } from '../../../../constants/animationStates/spriteStates';
+import type { SpriteProps } from '../../../sprite/Sprite';
 
 type AnimMeta = Omit<SpriteProps, 'imagePath'>;
 

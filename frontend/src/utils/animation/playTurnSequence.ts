@@ -1,4 +1,4 @@
-import { animationRegistry } from './useGameAnimation/spriteAnimationControl/animationRegistry';
+import { animationRegistry } from './animationRegistry';
 import type { GameEvent } from '../../constants/gameEvent';
 
 export const playTurnSequence = async (events: GameEvent[]) => {

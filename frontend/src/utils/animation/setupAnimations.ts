@@ -4,7 +4,7 @@ import { type TriggerVfxAPI } from '../../constants/animationStates/vfxStates';
 import type { TriggerHpBarAPI } from '../../constants/animationStates/hpStates';
 import type { TriggerUnitAPI } from '../../constants/animationStates/unitStates';
 import type { TriggerCameraAPI } from '../../constants/animationStates/cameraStates';
-import { animationRegistry } from './useGameAnimation/spriteAnimationControl/animationRegistry';
+import { animationRegistry } from './animationRegistry';
 import {
 	SoundPreset,
 	type TriggerSoundAPI,
@@ -36,8 +36,20 @@ interface Controllers {
 export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(ActionType.MOVE, async (event: GameEvent) => {
 		if (!event.sourceId) return;
+		const unit = controllers.getUnitById(event.sourceId);
+		const player = unit?.unitType === UnitType.PLAYER && (unit as Player);
 
-		await controllers.triggerSpriteAnimation.move(event.sourceId);
+		await Promise.all([
+			controllers.triggerSpriteAnimation.move(event.sourceId),
+			(async () => {
+				if (!!player) {
+					if (player.class === ClassTypes.MAGE) {
+						await delay(350);
+					}
+					controllers.triggerSound.play(SoundPreset.MOVE);
+				}
+			})(),
+		]);
 	});
 
 	animationRegistry.register(ActionType.DIE, async (event: GameEvent) => {
@@ -60,6 +72,10 @@ export const setupAnimations = (controllers: Controllers) => {
 			const attacker = event.sourceId;
 			if (!attacker || !defender) return;
 
+			const unit = controllers.getUnitById(attacker);
+			const player =
+				unit?.unitType === UnitType.PLAYER ? (unit as Player) : null;
+
 			await Promise.all([
 				controllers.triggerUnit.face(attacker, defender),
 				controllers.triggerUnit.face(defender, attacker),
@@ -70,13 +86,24 @@ export const setupAnimations = (controllers: Controllers) => {
 					attacker,
 					AnimationPhase.WINDUP,
 				),
+				controllers.triggerSound.play(SoundPreset.SWISH_SHORT),
 				controllers.triggerSpriteAnimation.takeDamage(
 					defender,
 					AnimationPhase.WINDUP,
 				),
 			]);
 
+			if (!player) {
+				controllers.triggerSound.play(SoundPreset.ENEMY_MELEE);
+			}
+
 			skip();
+
+			if (player) {
+				if (player.class === ClassTypes.MAGE) {
+					controllers.triggerSound.play(SoundPreset.MAGE_MELEE);
+				}
+			}
 
 			await controllers.triggerSpriteAnimation.melee(
 				attacker,
@@ -91,6 +118,18 @@ export const setupAnimations = (controllers: Controllers) => {
 		const finalDamage = event.amount;
 
 		if (!defender || !attacker || !finalDamage) return;
+		const unit = controllers.getUnitById(defender);
+		const finalHealth = unit ? unit.currentHealth - finalDamage : null;
+		const isDead = finalHealth !== null && finalHealth <= 0;
+
+		controllers.triggerSound.play(SoundPreset.KNOCKBACK);
+		if (unit?.unitType === UnitType.PLAYER) {
+			switch ((unit as Player).class) {
+				case ClassTypes.MAGE:
+					controllers.triggerSound.play(SoundPreset.MAGE_GRUNT);
+					break;
+			}
+		}
 
 		await Promise.all([
 			controllers.triggerSpriteAnimation.takeDamage(
@@ -104,14 +143,12 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerVfx.statDamage(defender, finalDamage),
 		]);
 
-		const unit = controllers.getUnitById(defender);
-		const finalHealth = unit ? unit.currentHealth - finalDamage : null;
-		const isDead = finalHealth !== null && finalHealth <= 0;
-
 		await Promise.all([
 			!isDead && controllers.triggerUnit.reset(defender),
 			controllers.triggerHpBar.drainHp(defender),
 		]);
+
+		controllers.triggerSound.stopAll();
 	};
 
 	animationRegistry.register(
@@ -280,10 +317,11 @@ export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(
 		ActionType.ROLL_DEFENSE,
 		async (event: GameEvent) => {
-			if (!event.sourceId || !event.amount) return;
+			if (!event.sourceId) return;
+			controllers.triggerSound.play(SoundPreset.ROLL);
 			await controllers.triggerVfx.rollDefense(
 				event.sourceId,
-				event.amount,
+				event.amount || 0,
 			);
 		},
 	);
@@ -649,7 +687,6 @@ export const setupAnimations = (controllers: Controllers) => {
 			),
 			controllers.triggerVfx.lightningStrike(victim),
 			controllers.triggerSound.play(SoundPreset.MAGE_BLIZZARD_HIT),
-			controllers.triggerVfx.iceHit(victim), //todo
 			(async () => {
 				await delay(200);
 				controllers.triggerUnit.shake(victim, 10);
@@ -660,7 +697,7 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerHpBar.showDamagePreview(
 				victim,
 				damageTaken,
-				'purple',
+				'#cc98ff',
 			),
 			controllers.triggerVfx.toggleIceFeet(victim, false),
 		]);

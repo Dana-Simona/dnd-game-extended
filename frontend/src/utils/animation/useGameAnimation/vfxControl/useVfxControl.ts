@@ -162,7 +162,6 @@ export const useVfxControl = (
 			},
 			lightningStrike: (targetId) =>
 				spawnVFX(VfxTypes.LIGHTNING_STRIKE, [targetId]),
-			iceHit: (targetId) => spawnVFX(VfxTypes.ICE_HIT, [targetId]),
 			groundBreak: (targetId) =>
 				spawnVFX(VfxTypes.GROUND_BREAK, [targetId]),
 			dustLeap: (unitId) => spawnVFX(VfxTypes.DUST_LEAP, [unitId]),

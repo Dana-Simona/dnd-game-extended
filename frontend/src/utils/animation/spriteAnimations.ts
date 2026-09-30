@@ -1,5 +1,5 @@
 import type { SpriteProps } from '../sprite/Sprite';
-import { SPRITE_MANIFEST, DEFAULT_ANIM_META } from './spriteManifest';
+import { SPRITE_MANIFEST, DEFAULT_ANIM_META } from './useGameAnimation/spriteAnimationControl/spriteManifest';
 import { UnitType, type Unit } from '../../constants/interfaces/unit';
 import { SpritePresets } from '../../constants/animationStates/spriteStates';
 import type { AllPlayerData, Player } from '../../constants/interfaces/player';

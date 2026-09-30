@@ -11,6 +11,7 @@ interface HealthBarProps {
 	currentHp?: number;
 	previewHp?: number;
 	maxHp?: number;
+	color?: string;
 	isEnemy: boolean;
 	offsetY: number;
 	hpState?: HpState;
@@ -26,6 +27,7 @@ const HealthBar: React.FC<HealthBarProps> = ({
 	currentHp: propCurrentHp,
 	previewHp: propPreviewHp,
 	maxHp: propMaxHp,
+	color: propColor,
 	isEnemy,
 	offsetY,
 	hpState,
@@ -37,6 +39,7 @@ const HealthBar: React.FC<HealthBarProps> = ({
 	const currentHp = hpState?.currentHp ?? propCurrentHp ?? 0;
 	const previewHp = hpState?.previewHp ?? propPreviewHp;
 	const maxHp = hpState?.maxHp ?? propMaxHp ?? 1;
+	const previewColor = hpState?.color ?? propColor;
 
 	const validMaxHp = Math.max(1, maxHp);
 	const safeCurrentHp = Math.max(0, Math.min(currentHp, validMaxHp));
@@ -61,6 +64,7 @@ const HealthBar: React.FC<HealthBarProps> = ({
 			/>
 
 			<PreviewBarFill
+				$color={previewColor}
 				initial={false}
 				animate={{
 					left: `${mainPercentage}%`,

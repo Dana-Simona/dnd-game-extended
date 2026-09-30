@@ -1,4 +1,4 @@
-import type { GameEvent } from '../../../../constants/gameEvent';
+import type { GameEvent } from '../../constants/gameEvent';
 
 type SkipFunction = (stepsToSkip?: number) => void;
 export type AnimationHandler = (
@@ -16,6 +16,8 @@ class AnimationRegistry {
 	async execute(event: GameEvent): Promise<number> {
 		const handler = this.handlers.get(event.type);
 		if (!handler) return 1;
+
+		console.log(event);
 
 		return new Promise<number>((resolve) => {
 			let handled = false;

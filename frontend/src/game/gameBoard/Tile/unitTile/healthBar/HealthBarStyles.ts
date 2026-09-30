@@ -29,12 +29,12 @@ export const BarFill = styled(motion.div)<{ $hasPreview?: boolean }>`
 	background-color: #ef4444;
 `;
 
-export const PreviewBarFill = styled(motion.div)`
+export const PreviewBarFill = styled(motion.div)<{ $color?: string }>`
 	position: absolute;
 	top: 0;
 	height: 100%;
 	border-radius: 0 1px 1px 0;
-	background-color: #ffcc33;
+	background-color: ${({ $color }) => $color ?? '#ffcc33'};
 `;
 
 export const HealthText = styled.span`

@@ -8,7 +8,9 @@ import game.StepCounter;
 import game.cell.Position;
 import game.occupant.unit.enemy.Enemy;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Mage extends Player {
@@ -42,7 +44,6 @@ public class Mage extends Player {
             int randomIndex = ThreadLocalRandom.current().nextInt(availableEnemies.size());
             targetsToHit.add(availableEnemies.get(randomIndex));
         }
-
         if (targetsToHit.isEmpty()) {
             return;
         }
@@ -53,12 +54,42 @@ public class Mage extends Player {
 
         sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), enemyIds, null));
 
-        targetsToHit.parallelStream().forEach(enemy -> {
+        Map<Enemy, Integer> preRolledDefenses = new HashMap<>();
+        for (Enemy enemy : targetsToHit) {
             if (!enemy.isDead()) {
-                enemy.takeDamageFromAbility(this.spellPower, this.getName(), this.getId());
+                int defenseRoll = (int) (Math.random() * (enemy.getDefensePoints() + 1));
+                sendMessage(enemy.getName() + " rolled " + defenseRoll + " defense points.");
+                sendEvent(new GameEvent(stepCounter.getCurrentStep(), ActionType.ROLL_DEFENSE, enemy.getId(), defenseRoll));
+
+                preRolledDefenses.put(enemy, defenseRoll);
+            }
+        }
+
+        for (Enemy enemy : targetsToHit) {
+            if (!enemy.isDead() && preRolledDefenses.containsKey(enemy)) {
+                int defenseRoll = preRolledDefenses.get(enemy);
+
+                this.takeDamageFromAbility(enemy, this.spellPower, defenseRoll);
                 handleEnemyIfDead(enemy);
             }
-        });
+        }
+    }
+
+    public void takeDamageFromAbility(Enemy target, int damageAmount, int defenseRoll) {
+        if (damageAmount < 0) {
+            throw new IllegalArgumentException("damage dealt can't be negative");
+        }
+        if (target == null) {
+            throw new IllegalArgumentException("unit can't be null");
+        }
+
+        int actualDamage = damageAmount - defenseRoll;
+
+        if (actualDamage > 0) {
+            target.takeDamage(actualDamage);
+            sendMessage(this.getName() + " hit " + target.getName() + " for " + actualDamage + " ability damage");
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.TAKE_DAMAGE_FROM_ABILITY, target.getId(), this.getId(), actualDamage));
+        }
     }
 
     @Override
