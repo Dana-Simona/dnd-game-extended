@@ -82,4 +82,14 @@ export const soundRegistry: Record<SoundPreset, SoundConfig> = {
 		volume: 0.8,
 		loop: false,
 	},
+	[SoundPreset.EXP]: {
+		files: ['/sfx/exp1.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.ENEMY_DIE]: {
+		files: ['/sfx/enemies/die.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
 };

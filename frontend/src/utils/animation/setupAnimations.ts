@@ -60,6 +60,7 @@ export const setupAnimations = (controllers: Controllers) => {
 			event.sourceId,
 			SpritePresets.DIE,
 		);
+		controllers.triggerSound.play(SoundPreset.ENEMY_DIE);
 
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 		await controllers.triggerUnit.fadeOut(event.sourceId, 400, 200);
@@ -272,6 +273,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		if (isEnemy) {
 			await controllers.triggerVfx.expOrbs(targetId, event.amount);
 		}
+		controllers.triggerSound.play(SoundPreset.EXP);
 		await controllers.triggerVfx.statExp(event.sourceId, event.amount);
 	});
 
@@ -306,10 +308,10 @@ export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(
 		ActionType.ROLL_ATTACK,
 		async (event: GameEvent) => {
-			if (!event.sourceId || !event.amount) return;
+			if (!event.sourceId) return;
 			await controllers.triggerVfx.rollAttack(
 				event.sourceId,
-				event.amount,
+				event.amount || 0,
 			);
 		},
 	);

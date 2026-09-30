@@ -20,6 +20,8 @@ export const SoundPreset = {
 	SWISH_MEDIUM: Symbol(),
 	SWISH_BIG: Symbol(),
 	ROLL: Symbol(),
+	EXP: Symbol(),
+	ENEMY_DIE: Symbol(),
 } as const;
 
 export type SoundPreset = (typeof SoundPreset)[keyof typeof SoundPreset];

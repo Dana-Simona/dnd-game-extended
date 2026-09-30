@@ -5,6 +5,14 @@ import { motion } from 'framer-motion';
 
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 
+const EXP_SOUNDS = [
+	'/sfx/exp1.mp3',
+	'/sfx/exp2.mp3',
+	'/sfx/exp3.mp3',
+	'/sfx/exp4.mp3',
+	'/sfx/exp5.mp3',
+];
+
 interface Props {
 	item: VfxItem;
 }
@@ -91,7 +99,7 @@ const SingleOrb: React.FC<{ item: VfxItem; index: number }> = ({
 	useEffect(() => {
 		const sequence = async () => {
 			const target = calculateScatterTarget(item.x, item.y);
-			const delay = index * 0.05;
+			const delay = index * 0.2;
 
 			await animateScatterArc(
 				controls,
@@ -100,6 +108,20 @@ const SingleOrb: React.FC<{ item: VfxItem; index: number }> = ({
 				delay,
 			);
 			await animateHoverBob(controls, target.dropY);
+
+			if (typeof Audio !== 'undefined' && EXP_SOUNDS.length > 0) {
+				const randomSoundFile =
+					EXP_SOUNDS[Math.floor(Math.random() * EXP_SOUNDS.length)];
+				const audio = new Audio(randomSoundFile);
+				audio.volume = 0.4;
+				audio.play().catch((err) => {
+					console.warn(
+						`Failed to play exp sound: ${randomSoundFile}`,
+						err,
+					);
+				});
+			}
+
 			await animateFlyToBottomRight(
 				controls,
 				target.scatterX,
@@ -126,6 +148,20 @@ const ExpOrbs: React.FC<Props> = ({ item }) => {
 		const expAmount = item.amount || 1;
 		return Math.max(1, Math.min(15, Math.ceil(expAmount / 10)));
 	}, [item.amount]);
+
+	// Play a single group pop sound when the component mounts
+	useEffect(() => {
+		if (typeof Audio !== 'undefined') {
+			const popAudio = new Audio('/sfx/expPop.mp3');
+			popAudio.volume = 0.5; // Adjust the pop volume as needed
+			popAudio.play().catch((err) => {
+				console.warn(
+					'Failed to play group pop sound: /sfx/expPop.mp3',
+					err,
+				);
+			});
+		}
+	}, []); // Empty dependency array ensures it only plays once for the entire batch
 
 	return (
 		<>
