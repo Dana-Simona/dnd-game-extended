@@ -1,4 +1,4 @@
-import type { GameEvent } from '../../constants/gameEvent';
+import type { GameEvent } from '../../../../constants/gameEvent';
 
 type SkipFunction = (stepsToSkip?: number) => void;
 export type AnimationHandler = (

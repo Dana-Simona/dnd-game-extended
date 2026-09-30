@@ -11,6 +11,7 @@ import { useCameraControl } from './cameraControl/useCameraControl';
 import type { AllPlayerData } from '../../../constants/interfaces/player';
 import { buildTargetPositions } from './spriteAnimationControl/animationUtils';
 import { useSpriteAnimationControl } from './spriteAnimationControl/useSpriteAnimationControl';
+import { useSoundControl } from './soundControl/useSoundControl';
 
 export const useGameAnimation = (
 	units: Unit[],
@@ -59,6 +60,8 @@ export const useGameAnimation = (
 		[units, player],
 	);
 
+	const { triggerSound } = useSoundControl();
+
 	useEffect(() => {
 		setupAnimations({
 			triggerSpriteAnimation,
@@ -66,6 +69,7 @@ export const useGameAnimation = (
 			triggerCamera,
 			triggerUnit,
 			triggerHpBar,
+			triggerSound,
 			getUnitById,
 		});
 	}, [
@@ -74,6 +78,7 @@ export const useGameAnimation = (
 		triggerCamera,
 		triggerUnit,
 		triggerHpBar,
+		triggerSound,
 		getUnitById,
 	]);
 

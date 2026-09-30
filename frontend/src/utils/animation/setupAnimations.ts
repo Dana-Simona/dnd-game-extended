@@ -1,10 +1,14 @@
 import { ClassTypes } from '../../constants/classTypes';
-import { animationRegistry } from './animationRegistry';
 import { ActionType, type GameEvent } from '../../constants/gameEvent';
 import { type TriggerVfxAPI } from '../../constants/animationStates/vfxStates';
 import type { TriggerHpBarAPI } from '../../constants/animationStates/hpStates';
 import type { TriggerUnitAPI } from '../../constants/animationStates/unitStates';
 import type { TriggerCameraAPI } from '../../constants/animationStates/cameraStates';
+import { animationRegistry } from './useGameAnimation/spriteAnimationControl/animationRegistry';
+import {
+	SoundPreset,
+	type TriggerSoundAPI,
+} from '../../constants/animationStates/soundStates';
 import {
 	AnimationPhase,
 	SpritePresets,
@@ -25,6 +29,7 @@ interface Controllers {
 	triggerUnit: TriggerUnitAPI;
 	triggerHpBar: TriggerHpBarAPI;
 	triggerVfx: TriggerVfxAPI;
+	triggerSound: TriggerSoundAPI;
 	getUnitById: (id: string) => Unit | undefined;
 }
 
@@ -302,6 +307,8 @@ export const setupAnimations = (controllers: Controllers) => {
 				mageId,
 				SpritePresets.ABILITY_CAST,
 			),
+			controllers.triggerSound.play(SoundPreset.MAGE_RAISE_WAND),
+			controllers.triggerSound.play(SoundPreset.MAGE_BLIZZARD_STORM),
 			controllers.triggerCamera.zoomIn(mageId),
 			(async () => {
 				await delay(1000);
@@ -310,6 +317,7 @@ export const setupAnimations = (controllers: Controllers) => {
 			(async () => {
 				await delay(1000);
 				controllers.triggerVfx.iceGather(mageId);
+				controllers.triggerSound.play(SoundPreset.MAGE_WAND_CHARGE);
 				controllers.triggerVfx.blackClouds(true);
 				controllers.triggerVfx.screenDarken(1000);
 			})(),
@@ -319,22 +327,27 @@ export const setupAnimations = (controllers: Controllers) => {
 
 		await Promise.all([
 			controllers.triggerCamera.zoomToRange(mage.range),
+			controllers.triggerSound.play(SoundPreset.MAGE_RAISE_WAND_BURST),
+			controllers.triggerSound.stop(SoundPreset.MAGE_RAISE_WAND),
 			controllers.triggerVfx.iceExplode(mageId),
-			...targets.map((target) =>
-				controllers.triggerVfx.toggleIceFeet(target, true),
+			...targets.map(
+				(target) => controllers.triggerVfx.toggleIceFeet(target, true),
+				controllers.triggerSound.play(SoundPreset.MAGE_ICE_FEET),
 			),
 		]);
 
 		await delay(300);
 
 		skip(1);
+		controllers.triggerSound.play(SoundPreset.MAGE_ICE_FEET);
 
-		await delay(targets.length * 400 + 500);
+		await delay(targets.length * 1000 + 1000);
 		await Promise.all([
 			controllers.triggerVfx.blackClouds(false),
 			controllers.triggerVfx.screenRestoreColor(1000),
 			controllers.triggerSpriteAnimation.stopLoop(mageId),
 		]);
+		await controllers.triggerSound.stopAll();
 	};
 
 	const warriorCast = async (
@@ -635,7 +648,8 @@ export const setupAnimations = (controllers: Controllers) => {
 				AnimationPhase.WINDUP,
 			),
 			controllers.triggerVfx.lightningStrike(victim),
-			controllers.triggerVfx.iceHit(victim),
+			controllers.triggerSound.play(SoundPreset.MAGE_BLIZZARD_HIT),
+			controllers.triggerVfx.iceHit(victim), //todo
 			(async () => {
 				await delay(200);
 				controllers.triggerUnit.shake(victim, 10);
