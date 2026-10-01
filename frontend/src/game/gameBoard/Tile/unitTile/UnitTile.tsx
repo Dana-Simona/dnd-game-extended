@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 
 import HealthBar from './healthBar/HealthBar';
 import RangeRing from './rangeRing/RangeRing';
+import { SpriteTileWrapper, SpriteFlipWrapper } from '../TileStyles';
 import type { Player } from '../../../../constants/interfaces/player';
 import type { Monster } from '../../../../constants/interfaces/monster';
 import Sprite, { type SpriteProps } from '../../../../utils/sprite/Sprite';
 import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
 import { UnitFacing } from '../../../../constants/animationStates/unitStates';
+import type { HpState } from '../../../../constants/animationStates/hpStates';
 import type { AnimationPhase } from '../../../../constants/animationStates/spriteStates';
 import {
+	EnemyNameContainer,
+	EnemyName,
 	PositionedSpriteContainer,
-	SpriteTileWrapper,
-	SpriteFlipWrapper,
-} from '../TileStyles';
-import type { HpState } from '../../../../constants/animationStates/hpStates';
+} from './UnitTileStyles';
 
 interface Props {
 	unit?: Unit;
@@ -70,15 +71,18 @@ const UnitTile: React.FC<Props> = ({
 				$frameHeight={spriteProps.height}
 				$offsetY={offsetY}
 			>
-				{unit && (
-					<HealthBar
-						currentHp={currentHp}
-						previewHp={previewHp}
-						maxHp={maxHp}
-						isEnemy={!isPlayer}
-						offsetY={offsetY}
-						hpState={hpState}
-					/>
+				{unit && !isPlayer && (
+					<EnemyNameContainer>
+						<EnemyName>{unit.name}</EnemyName>
+						<HealthBar
+							currentHp={currentHp}
+							previewHp={previewHp}
+							maxHp={maxHp}
+							isEnemy={!isPlayer}
+							offsetY={offsetY}
+							hpState={hpState}
+						/>
+					</EnemyNameContainer>
 				)}
 				<SpriteFlipWrapper
 					$isFlipped={facing === UnitFacing.LEFT}

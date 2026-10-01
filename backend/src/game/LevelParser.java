@@ -45,19 +45,19 @@ public class LevelParser {
                     player.setMovementManager(new MovementManager(boardOutcome, player, callback));
                     return new Floor(player);
                 }),
-                monster('s', "Gold Cloak", 80, 8, 3, 3, 25),
-                monster('k', "Knight", 200, 14, 8, 4, 50),
-                monster('q', "Queen's Guard", 400, 20, 15, 5, 100),
-                monster('z', "Wright", 600, 30, 15, 3, 100),
-                monster('b', "Bear", 1000, 75, 30, 4, 250),
-                monster('g', "Giant", 1500, 100, 40, 5, 500),
-                monster('w', "White Walker", 2000, 150, 50, 6, 1000),
-                boss('M', "The Mountain", 1000, 60, 25, 6, 500, 5),
-                boss('C', "Queen Cersei", 100, 10, 10, 1, 1000, 8),
-                boss('K', "Night's King", 5000, 300, 150, 8, 5000, 3),
+                monster('s', "Bone Ratchet", 40, 8, 1, 3, 25),
+                monster('k', "Hell Hound", 70, 12, 2, 4, 50),
+                monster('q', "Abyssal Sentinel", 120, 18, 4, 5, 100),
+                monster('z', "Soul-Eater", 180, 25, 6, 3, 150),
+                monster('b', "Dreadfang Maw", 300, 35, 8, 4, 250),
+                monster('g', "Leviathan", 500, 50, 10, 5, 500),
+                monster('w', "Void Monarch", 800, 70, 15, 6, 1000),
+                boss('M', "Malakor the Unbroken", 1500, 80, 20, 6, 2000, 5),
+                boss('C', "Vespera, Queen of Ashes", 800, 40, 10, 8, 1000, 3),
+                boss('K', "Balthazar, The Celestial Executioner", 3000, 120, 30, 8, 5000, 4),
                 trap('B', "Bonus Trap", 1, 1, 1, 250, 1, 5),
-                trap('Q', "Queen's Trap", 250, 50, 10, 100, 3, 7),
-                trap('D', "Death Trap", 500, 100, 20, 250, 1, 10)
+                trap('Q', "Queens Trap", 250, 50, 10, 100, 3, 7), 
+                trap('D', "Death Trap", 500, 100, 20, 250, 1, 10) 
         );
     }
 

@@ -34,7 +34,7 @@ const ClassSelection: React.FC = () => {
 			spriteProps: {
 				...getUnitSpriteConfig(
 					{
-						name: 'jonsnow',
+						name: 'valor',
 						class: ClassTypes.WARRIOR,
 						unitType: UnitType.PLAYER,
 					} as AllPlayerData,
@@ -57,7 +57,7 @@ const ClassSelection: React.FC = () => {
 			spriteProps: {
 				...getUnitSpriteConfig(
 					{
-						name: 'melisandre',
+						name: 'aurora',
 						class: ClassTypes.MAGE,
 						unitType: UnitType.PLAYER,
 					} as AllPlayerData,
@@ -80,7 +80,7 @@ const ClassSelection: React.FC = () => {
 			spriteProps: {
 				...getUnitSpriteConfig(
 					{
-						name: 'aryastark',
+						name: 'scythe',
 						class: ClassTypes.ROGUE,
 						unitType: UnitType.PLAYER,
 					} as AllPlayerData,
@@ -103,7 +103,7 @@ const ClassSelection: React.FC = () => {
 			spriteProps: {
 				...getUnitSpriteConfig(
 					{
-						name: 'ygritte',
+						name: 'vaskaara',
 						class: ClassTypes.HUNTER,
 						unitType: UnitType.PLAYER,
 					} as AllPlayerData,

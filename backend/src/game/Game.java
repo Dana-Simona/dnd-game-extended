@@ -39,13 +39,23 @@ public final class Game {
 
     public List<Player> getAvailablePlayers() {
         List<Player> availablePlayers = new ArrayList<>();
-        availablePlayers.add(new Warrior("Jon Snow", 300, 300, 4, 3, new Position(0, 0), messageCallback, null, stepCounter));
-        availablePlayers.add(new Warrior("The Hound", 400, 20, 6, 5, new Position(0, 0), messageCallback, null, stepCounter));
-        availablePlayers.add(new Mage("Melisandre", 100, 50, 1, new Position(0, 0), messageCallback, 300, 30, 15, 5, 6, null, stepCounter));
-        availablePlayers.add(new Mage("Thoros of Myr", 250, 25, 4, new Position(0, 0), messageCallback, 150, 20, 20, 3, 4, null, stepCounter));
-        availablePlayers.add(new Rogue("Arya Stark", 150, 40, 2, new Position(0, 0), 20, messageCallback, null, stepCounter));
-        availablePlayers.add(new Rogue("Bronn", 250, 35, 3, new Position(0, 0), 50, messageCallback, null, stepCounter));
-        availablePlayers.add(new Hunter("Ygritte", 220, 30, 2, new Position(0, 0), 6, messageCallback, null, stepCounter));
+
+        availablePlayers.add(new Mage("Aurora", 140, 15, 2, new Position(0, 0), messageCallback, 300, 35, 30, 4, 6, null, stepCounter));
+        availablePlayers.add(new Mage("Kaeleen", 220, 22, 4, new Position(0, 0), messageCallback, 200, 25, 20, 5, 5, null, stepCounter));
+        availablePlayers.add(new Mage("Astria", 280, 28, 6, new Position(0, 0), messageCallback, 150, 20, 18, 3, 4, null, stepCounter));
+
+        availablePlayers.add(new Warrior("Valor", 320, 38, 4, 3, new Position(0, 0), messageCallback, null, stepCounter));
+        availablePlayers.add(new Warrior("Vane", 400, 28, 7, 4, new Position(0, 0), messageCallback, null, stepCounter));
+        availablePlayers.add(new Warrior("Orion", 480, 22, 10, 5, new Position(0, 0), messageCallback, null, stepCounter));
+
+        availablePlayers.add(new Rogue("Scythe", 180, 42, 2, new Position(0, 0), 20, messageCallback, null, stepCounter));
+        availablePlayers.add(new Rogue("Vessel", 250, 35, 4, new Position(0, 0), 35, messageCallback, null, stepCounter));
+        availablePlayers.add(new Rogue("Echo", 290, 30, 6, new Position(0, 0), 45, messageCallback, null, stepCounter));
+
+        availablePlayers.add(new Hunter("Vaskaara", 200, 38, 2, new Position(0, 0), 7, messageCallback, null, stepCounter));
+        availablePlayers.add(new Hunter("Blight", 240, 30, 4, new Position(0, 0), 5, messageCallback, null, stepCounter));
+        availablePlayers.add(new Hunter("Trakiraa", 290, 25, 6, new Position(0, 0), 4, messageCallback, null, stepCounter));
+
         return availablePlayers;
     }
 
@@ -119,7 +129,7 @@ public final class Game {
             case 'a' ->
                 targetPos = new Position(currentPos.getX() - 1, currentPos.getY());
             case 'e' ->
-                isAbility = true; 
+                isAbility = true;
             case 'q', 'p' -> {
             }
             default ->

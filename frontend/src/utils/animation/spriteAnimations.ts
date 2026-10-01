@@ -1,20 +1,33 @@
 import type { SpriteProps } from '../sprite/Sprite';
-import { SPRITE_MANIFEST, DEFAULT_ANIM_META } from './useGameAnimation/spriteAnimationControl/spriteManifest';
 import { UnitType, type Unit } from '../../constants/interfaces/unit';
 import { SpritePresets } from '../../constants/animationStates/spriteStates';
 import type { AllPlayerData, Player } from '../../constants/interfaces/player';
+import {
+	SPRITE_MANIFEST,
+	DEFAULT_ANIM_META,
+} from './useGameAnimation/spriteAnimationControl/spriteManifest';
 
-export const sanitize = (str?: string, defaultValue = 'idle'): string =>
-	!str ? defaultValue : str.toLowerCase().replace(/[\s']+/g, '');
+export const sanitize = (str?: string, defaultValue = 'idle'): string => {
+	const words = str?.match(/[a-zA-Z]+/g) ?? defaultValue.match(/[a-zA-Z]+/g);
+	if (!words || words.length === 0) return defaultValue;
+
+	return words
+		.map((word, index) =>
+			index === 0
+				? word.toLowerCase()
+				: word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+		)
+		.join('');
+};
 
 const getDefaultPlayerIdentity = (action: SpritePresets) => ({
-	manifestKey: 'player_warrior_jonsnow',
-	imagePath: `/sprites/player/warrior/jonsnow/${sanitize(action)}.png`,
+	manifestKey: 'player_mage_aurora',
+	imagePath: `/sprites/player/mage/aurora/${sanitize(action)}.png`,
 });
 
 const getPlayerIdentity = (player: Player, action: SpritePresets) => {
-	const cls = sanitize(player.class, 'warrior');
-	const name = sanitize(player.name, 'jonsnow');
+	const cls = sanitize(player.class, 'mage');
+	const name = sanitize(player.name, 'aurora');
 	const anim = sanitize(action);
 	return {
 		manifestKey: `player_${cls}_${name}`,
@@ -26,8 +39,10 @@ const getEnemyIdentity = (
 	unit: Unit | AllPlayerData,
 	action: SpritePresets,
 ) => {
-	const name = sanitize(unit.name, 'knight');
+	const name = sanitize(unit.name, 'boneRatchet');
 	const anim = sanitize(action);
+	console.log(`/sprites/enemies/${name}/${anim}.png`);
+
 	return {
 		manifestKey: `enemy_${name}`,
 		imagePath: `/sprites/enemies/${name}/${anim}.png`,

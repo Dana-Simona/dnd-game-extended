@@ -6,11 +6,6 @@ interface StaticTileProps {
 	$posY: number;
 }
 
-interface PositionedSpriteProps {
-	$frameHeight: number;
-	$offsetY?: number;
-}
-
 interface SpriteFlipProps {
 	$isFlipped?: boolean;
 	$isPlayer?: boolean;
@@ -21,20 +16,6 @@ export const SpriteTileWrapper = styled.div`
 	height: 32px;
 	position: relative;
 	overflow: visible;
-`;
-
-export const PositionedSpriteContainer = styled.div<PositionedSpriteProps>`
-	position: absolute;
-	left: 50%;
-	top: 0;
-	pointer-events: none;
-	transform: translate(
-		-50%,
-		calc(
-			-${(props) => props.$frameHeight - 32}px +
-				${(props) => props.$offsetY || 0}px
-		)
-	);
 `;
 
 export const SpriteFlipWrapper = styled.div<SpriteFlipProps>`
