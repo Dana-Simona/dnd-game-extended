@@ -154,13 +154,13 @@ export const tiles: ITile[] = [
 	{
 		//24
 		imageSrc: propsTileset,
-		coordinates: { x: [5], y: [8] },
+		coordinates: { x: [5], y: [9] },
 	},
 	{
 		//25
 		imageSrc: propsTileset,
-		size: { horizontalTiles: 1, verticalTiles: 2 },
-		coordinates: { x: [5], y: [9] },
+		size: { horizontalTiles: 3, verticalTiles: 3 },
+		coordinates: { x: [13], y: [0] },
 	},
 	{
 		//26
@@ -414,5 +414,45 @@ export const tiles: ITile[] = [
 		imageSrc: plantsTileset,
 		size: { horizontalTiles: 3, verticalTiles: 5 },
 		coordinates: { x: [9], y: [0] },
+	},
+	{
+		imageSrc: wallTileset,
+		coordinates: { x: [4], y: [4] },
+	},
+	{
+		imageSrc: wallTileset,
+		coordinates: { x: [4], y: [1] },
+	},
+	{
+		imageSrc: wallTileset,
+		coordinates: { x: [5], y: [2] },
+	},
+	{
+		imageSrc: wallTileset,
+		coordinates: { x: [5], y: [1] },
+	},
+	{
+		imageSrc: wallTileset,
+		coordinates: { x: [8], y: [1] },
+	},
+	{
+		imageSrc: wallTileset,
+		coordinates: { x: [8], y: [4] },
+	},
+	{
+		imageSrc: wallTileset,
+		coordinates: { x: [9], y: [9] },
+	},
+	{
+		imageSrc: wallTileset,
+		coordinates: { x: [9], y: [8] },
+	},
+	{
+		imageSrc: wallTileset,
+		coordinates: { x: [9], y: [7] },
+	},
+	{
+		imageSrc: wallTileset,
+		coordinates: { x: [9], y: [6] },
 	},
 ];

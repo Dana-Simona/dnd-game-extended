@@ -39,6 +39,7 @@ public class LevelParser {
                 entry('#', p -> new Wall()),
                 entry('^', p -> new StairCase(true)),
                 entry('>', p -> new StairCase(false)),
+                entry('<', p -> new StairCase(false)),
                 entry('.', p -> new Floor()),
                 entry('@', p -> {
                     player.setPosition(p.getX(), p.getY());

@@ -97,6 +97,7 @@ export const LayerList = styled.div`
 	margin-bottom: 16px;
 	max-height: 150px;
 	overflow-y: auto;
+	min-height: 100px;
 `;
 
 export const LayerItem = styled.div`
@@ -175,6 +176,7 @@ export const OutputTextArea = styled.textarea`
 	margin-bottom: 16px;
 	white-space: pre;
 	box-sizing: border-box;
+	min-height: 100px;
 
 	&:focus {
 		outline: none;
