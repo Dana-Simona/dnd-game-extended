@@ -1,9 +1,9 @@
 import { Route, Routes } from 'react-router-dom';
+
 import Game from './game/Game';
 import MainMenu from './mainMenu/MainMenu';
 import NotFound from './notFound/NotFound';
 import { ROUTES } from './constants/routes';
-import LevelSelection from './levelSelection/LevelSelection';
 import ClassSelection from './classSelection/ClassSelection';
 import CharacterSelection from './classSelection/characterSelection/CharacterSelection';
 import { CharacterProvider } from './utils/characterContext/CharacterContext';
@@ -26,11 +26,6 @@ const App: React.FC = () => {
 				<Route
 					path={`${ROUTES.CHARACTER_SELECTION}/:classType?`}
 					element={<CharacterSelection />}
-				/>
-
-				<Route
-					path={ROUTES.LEVEL_SELECTION}
-					element={<LevelSelection />}
 				/>
 
 				<Route

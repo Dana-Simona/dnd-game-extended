@@ -11,6 +11,7 @@ import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import { getUnitSpriteConfig } from '../../utils/animation/spriteAnimations';
 import { UnitType } from '../../constants/interfaces/unit';
 import { SpritePresets } from '../../constants/animationStates/spriteStates';
+import { ROUTES } from '../../constants/routes';
 
 export type Character = AllPlayerData & CharacterDisplayOptions;
 
@@ -36,7 +37,7 @@ export const CharacterSelection: React.FC = () => {
 					throw new Error('Failed to select player on server');
 
 				selectCharacter(player);
-				navigate('/levelSelection');
+				navigate(ROUTES.GAME);
 			})
 			.catch((err) => console.error('Error selecting player:', err));
 	};
@@ -54,7 +55,7 @@ export const CharacterSelection: React.FC = () => {
 				const enrichedCharacters: Character[] = data.map(
 					(player, index) => {
 						const spriteConfig = getUnitSpriteConfig(
-							{ ...player, unitType: UnitType.PLAYER},
+							{ ...player, unitType: UnitType.PLAYER },
 							SpritePresets.IDLE,
 						);
 

@@ -45,11 +45,12 @@ export const useAuthGuard = (character: unknown) => {
 	}, [character, navigate]);
 };
 
-export const useGame = (level?: string) => {
+export const useGame = () => {
 	const { character, updateCharacter } = useCharacter();
 	const [board, setBoard] = useState<string[]>([]);
 	const [actionCount, setActionCount] = useState<number>(0);
 	const [enemies, setEnemies] = useState<Unit[]>([]);
+	const [isLevelLoaded, setIsLevelLoaded] = useState<boolean>(false);
 
 	const isProcessingRef = useRef<boolean>(false);
 
@@ -120,9 +121,8 @@ export const useGame = (level?: string) => {
 	);
 
 	const loadLevel = useCallback(
-		async (lvl?: string, signal?: AbortSignal) => {
-			const idx = lvl ? parseInt(lvl, 10) : 0;
-			const data = await postApi('select-level', idx.toString(), signal);
+		async (signal?: AbortSignal) => {
+			const data = await postApi('select-level', '1', signal);
 			applyBoardState(data);
 			applyUnitState(data, filterEnemies(data.units));
 		},
@@ -130,14 +130,27 @@ export const useGame = (level?: string) => {
 	);
 
 	useEffect(() => {
-		if (!character) return;
+		if (!character || isLevelLoaded) return;
+
 		const controller = new AbortController();
-		loadLevel(level, controller.signal).catch((err) => {
-			if (err?.name !== 'AbortError')
-				console.error('Level load error:', err);
-		});
+
+		const initLevel = async () => {
+			try {
+				await loadLevel(controller.signal);
+				if (!controller.signal.aborted) {
+					setIsLevelLoaded(true);
+				}
+			} catch (err: any) {
+				if (err?.name !== 'AbortError') {
+					console.error('Level load error:', err);
+				}
+			}
+		};
+
+		initLevel();
+
 		return () => controller.abort();
-	}, [level]);
+	}, [character, isLevelLoaded, loadLevel]);
 
 	useEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {

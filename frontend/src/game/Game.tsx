@@ -1,6 +1,4 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-
 import { useGame } from './useGame';
 import { GameLog } from './gameLog/GameLog';
 import { Container, Stats } from './GameStyles';
@@ -8,8 +6,7 @@ import { GameBoard } from './gameBoard/GameBoard';
 import { PlayerStats } from './playerStats/PlayerStats';
 
 export const Game: React.FC = () => {
-	const { level } = useParams<{ level: string }>();
-	const game = useGame(level);
+	const game = useGame();
 
 	return (
 		<Container>
