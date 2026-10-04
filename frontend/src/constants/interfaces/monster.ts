@@ -5,9 +5,7 @@ export interface Enemy extends Unit {
 }
 
 export interface Trap extends Enemy {
-	experienceValue: number;
-	visibilityTime: number;
-	invisibilityTime: number;
+	isVisible: boolean;
 }
 
 export interface Monster extends Enemy {

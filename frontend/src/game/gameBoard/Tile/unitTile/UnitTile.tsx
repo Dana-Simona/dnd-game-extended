@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 
 import HealthBar from './healthBar/HealthBar';
 import RangeRing from './rangeRing/RangeRing';
 import { SpriteTileWrapper, SpriteFlipWrapper } from '../TileStyles';
 import type { Player } from '../../../../constants/interfaces/player';
-import type { Monster } from '../../../../constants/interfaces/monster';
 import Sprite, { type SpriteProps } from '../../../../utils/sprite/Sprite';
 import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
 import { UnitFacing } from '../../../../constants/animationStates/unitStates';
 import type { HpState } from '../../../../constants/animationStates/hpStates';
+import type { Monster, Trap } from '../../../../constants/interfaces/monster';
 import type { AnimationPhase } from '../../../../constants/animationStates/spriteStates';
 import {
 	EnemyNameContainer,
 	EnemyName,
 	PositionedSpriteContainer,
 } from './UnitTileStyles';
+import TrapUnit from '../../../trap/TrapUnit';
 
 interface Props {
 	unit?: Unit;
@@ -51,6 +53,7 @@ const UnitTile: React.FC<Props> = ({
 	}
 
 	const isPlayer = unit?.unitType === UnitType.PLAYER;
+	const isTrap = unit?.unitType === UnitType.TRAP;
 
 	const effectiveFacing =
 		facing ?? (isPlayer ? UnitFacing.RIGHT : UnitFacing.LEFT);
@@ -58,6 +61,10 @@ const UnitTile: React.FC<Props> = ({
 	const currentHp = hpState?.currentHp ?? unit?.currentHealth ?? 0;
 	const maxHp = hpState?.maxHp ?? unit?.health ?? 1;
 	const previewHp = hpState?.previewHp;
+
+	if (isTrap) {
+		console.log((unit as Trap).isVisible);
+	}
 
 	return (
 		<SpriteTileWrapper
@@ -75,7 +82,7 @@ const UnitTile: React.FC<Props> = ({
 				$frameHeight={spriteProps.height}
 				$offsetY={offsetY}
 			>
-				{unit && !isPlayer && (
+				{unit && !isPlayer && isTrap && (unit as Trap).isVisible && (
 					<EnemyNameContainer>
 						<EnemyName>{unit.name}</EnemyName>
 						<HealthBar
@@ -87,15 +94,26 @@ const UnitTile: React.FC<Props> = ({
 						/>
 					</EnemyNameContainer>
 				)}
-				<SpriteFlipWrapper
-					$isFlipped={effectiveFacing === UnitFacing.LEFT}
-					$isPlayer={isPlayer}
-				>
-					<Sprite
-						{...spriteProps}
-						phase={phase}
-					/>
-				</SpriteFlipWrapper>
+
+				<AnimatePresence>
+					{isTrap && (unit as Trap).isVisible ? (
+						<TrapUnit
+							key='trap-unit'
+							trap={unit as Trap}
+						/>
+					) : (
+						<SpriteFlipWrapper
+							key='sprite-unit'
+							$isFlipped={effectiveFacing === UnitFacing.LEFT}
+							$isPlayer={isPlayer}
+						>
+							<Sprite
+								{...spriteProps}
+								phase={phase}
+							/>
+						</SpriteFlipWrapper>
+					)}
+				</AnimatePresence>
 			</PositionedSpriteContainer>
 		</SpriteTileWrapper>
 	);
