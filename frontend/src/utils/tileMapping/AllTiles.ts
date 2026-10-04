@@ -1,9 +1,9 @@
-import grassTileset from '../../assets/tiles/Texture/TX Tileset Grass.png';
-import wallTileset from '../../assets/tiles/Texture/TX Tileset Wall.png';
-import stoneTileset from '../../assets/tiles/Texture/TX Tileset Stone Ground.png';
-import stairsTileset from '../../assets/tiles/Texture/TX Struct.png';
-import propsTileset from '../../assets/tiles/Texture/TX Props.png';
-import plantsTileset from '../../assets/tiles/Texture/TX Plant.png';
+const grassTileset = '/tiles/grass.png';
+const wallTileset = '/tiles/walls.png';
+const stoneTileset = '/tiles/stone.png';
+const stairsTileset = '/tiles/stairs.png';
+const propsTileset = '/tiles/props.png';
+const plantsTileset = '/tiles/plants.png';
 
 export interface ITile {
 	imageSrc: string;

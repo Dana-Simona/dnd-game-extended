@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
 export const BarContainer = styled.div`
-	position: relative; /* Relative inside flex container */
+	position: relative; 
 	width: 32px;
 	height: 6px;
 	background-color: rgba(10, 10, 12, 0.75);

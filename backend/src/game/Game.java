@@ -22,6 +22,10 @@ public final class Game {
         selectPlayer(0);
     }
 
+    public Integer getCurrentLevel() {
+        return this.currentLevelIndex + 1;
+    }
+
     private void loadAllFiles() {
         this.levels = new ArrayList<>();
 

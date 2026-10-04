@@ -1,53 +1,39 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import Tile from '../../Tile/Tile';
 import { StaticLayerContainer, BoardRow } from './StaticLayerStyles';
-import { getTileConfig } from '../../../../utils/tileMapping/tileMapping';
 
 interface StaticLayerProps {
-	board: string[];
+	layer: number[][];
 }
 
-const StaticLayer: React.FC<StaticLayerProps> = React.memo(({ board }) => {
-	const sanitizedBoard = useMemo(() => {
-		if (!board) return [];
-		return board.map((row, rowIndex) =>
-			row
-				.split('')
-				.map((char, colIndex) => {
-					const config = getTileConfig(
-						char,
-						colIndex,
-						rowIndex,
-						board,
+const StaticLayer: React.FC<StaticLayerProps> = React.memo(
+	({ layer }) => {
+		if (!layer || !Array.isArray(layer) || layer.length === 0) {
+			return null;
+		}
+
+		return (
+			<StaticLayerContainer>
+				{layer.map((row, rowIndex) => {
+					if (!Array.isArray(row)) return null;
+
+					return (
+						<BoardRow key={rowIndex}>
+							{row.map((tileId, colIndex) => (
+								<Tile
+									key={`${rowIndex}-${colIndex}`}
+									tileId={tileId}
+									x={colIndex}
+									y={rowIndex}
+								/>
+							))}
+						</BoardRow>
 					);
-					return config.type === 'sprite' ? '.' : char;
-				})
-				.join(''),
+				})}
+			</StaticLayerContainer>
 		);
-	}, [board]);
-
-	if (!board || board.length === 0) {
-		return <p>Loading board...</p>;
-	}
-
-	return (
-		<StaticLayerContainer>
-			{sanitizedBoard.map((row, rowIndex) => (
-				<BoardRow key={rowIndex}>
-					{row.split('').map((char, colIndex) => (
-						<Tile
-							key={`${rowIndex}-${colIndex}`}
-							char={char}
-							x={colIndex}
-							y={rowIndex}
-							grid={sanitizedBoard} 
-						/>
-					))}
-				</BoardRow>
-			))}
-		</StaticLayerContainer>
-	);
-});
+	},
+);
 
 StaticLayer.displayName = 'StaticLayer';
 

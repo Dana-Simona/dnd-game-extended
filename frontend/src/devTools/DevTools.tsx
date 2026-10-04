@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+
 import * as S from './DevToolsStyles';
 import { tiles } from '../utils/tileMapping/AllTiles';
 
@@ -22,7 +23,7 @@ interface LevelLayer {
 	zIndex: number;
 }
 
-const allLevelFiles = import.meta.glob('/src/constants/levels_dir/*/*.*', {
+const allLevelFiles = import.meta.glob('/public/levels/*/*.*', {
 	eager: true,
 });
 
@@ -65,7 +66,8 @@ const DevTools: React.FC = () => {
 
 		filePaths.forEach((path) => {
 			const parts = path.split('/');
-			const dirIndex = parts.indexOf('levels_dir');
+			// Updated to look for 'levels' folder instead of 'levels_dir'
+			const dirIndex = parts.indexOf('levels');
 			if (dirIndex !== -1 && parts[dirIndex + 1]) {
 				levelNamesSet.add(parts[dirIndex + 1]);
 			}
@@ -113,7 +115,8 @@ const DevTools: React.FC = () => {
 
 		const loadedLayers: LevelLayer[] = [];
 		const matchingPaths = Object.keys(allLevelFiles)
-			.filter((path) => path.includes(`/levels_dir/${selectedLevel}/`))
+			// Updated to use `/levels/` instead of `/levels_dir/`
+			.filter((path) => path.includes(`/levels/${selectedLevel}/`))
 			.sort();
 
 		matchingPaths.forEach((path, index) => {

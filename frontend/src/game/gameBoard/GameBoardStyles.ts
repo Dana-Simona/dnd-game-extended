@@ -58,6 +58,8 @@ export const BoardCanvas = styled.div`
 `;
 
 export const StaticLayerWrapper = styled.div<StaticLayerWrapperProps>`
+	display: grid;
+	grid-template-areas: 'stack';
 	position: relative;
 	filter: brightness(1) saturate(100%) sepia(0) grayscale(0%) hue-rotate(0deg);
 	transition: filter 0.5s ease-in-out;

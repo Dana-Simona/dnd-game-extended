@@ -7,7 +7,7 @@ interface PositionedSpriteProps {
 
 export const EnemyNameContainer = styled.div`
 	position: absolute;
-	top: 5px;
+	top: 0;
 	left: 50%;
 	transform: translateX(-50%);
 	width: max-content;

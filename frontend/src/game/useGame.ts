@@ -14,6 +14,7 @@ interface BoardData {
 	player: AllPlayerData;
 	units: AllPlayerData[];
 	events?: GameEvent[];
+	level: number;
 }
 
 const VALID_KEYS = new Set(['w', 'a', 's', 'd', 'e', 'q']);
@@ -48,6 +49,7 @@ export const useAuthGuard = (character: unknown) => {
 export const useGame = () => {
 	const { character, updateCharacter } = useCharacter();
 	const [board, setBoard] = useState<string[]>([]);
+	const [level, setLevel] = useState<number>(1);
 	const [actionCount, setActionCount] = useState<number>(0);
 	const [enemies, setEnemies] = useState<Unit[]>([]);
 	const [isLevelLoaded, setIsLevelLoaded] = useState<boolean>(false);
@@ -73,6 +75,11 @@ export const useGame = () => {
 
 	const applyBoardState = useCallback((data: BoardData) => {
 		setBoard(data.grid);
+
+		if (typeof data.level === 'number' && data.level > 0) {
+			setLevel(data.level);
+		}
+
 		setActionCount((prev) => prev + 1);
 	}, []);
 
@@ -121,8 +128,13 @@ export const useGame = () => {
 	);
 
 	const loadLevel = useCallback(
-		async (signal?: AbortSignal) => {
-			const data = await postApi('select-level', '1', signal);
+		async (targetLevel: number = 1, signal?: AbortSignal) => {
+			setLevel(targetLevel);
+			const data = await postApi(
+				'select-level',
+				targetLevel.toString(),
+				signal,
+			);
 			applyBoardState(data);
 			applyUnitState(data, filterEnemies(data.units));
 		},
@@ -136,7 +148,7 @@ export const useGame = () => {
 
 		const initLevel = async () => {
 			try {
-				await loadLevel(controller.signal);
+				await loadLevel(1, controller.signal);
 				if (!controller.signal.aborted) {
 					setIsLevelLoaded(true);
 				}
@@ -163,6 +175,7 @@ export const useGame = () => {
 
 	return {
 		board,
+		level,
 		actionCount,
 		enemies,
 		activeSpriteStates,

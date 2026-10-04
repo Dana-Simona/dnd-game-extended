@@ -341,8 +341,8 @@ export const SPRITE_MANIFEST: Record<
 		[SpritePresets.MOVE]: {
 			width: 96,
 			height: 64,
-			frameCount: 8,
-			fps: 6,
+			frameCount: 5,
+			fps: 8,
 			offsetY: 15,
 		},
 		[SpritePresets.DIE]: {

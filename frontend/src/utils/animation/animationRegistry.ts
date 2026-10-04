@@ -17,8 +17,6 @@ class AnimationRegistry {
 		const handler = this.handlers.get(event.type);
 		if (!handler) return 1;
 
-		console.log(event);
-
 		return new Promise<number>((resolve) => {
 			let handled = false;
 

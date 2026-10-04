@@ -41,7 +41,6 @@ const getEnemyIdentity = (
 ) => {
 	const name = sanitize(unit.name, 'boneRatchet');
 	const anim = sanitize(action);
-	console.log(`/sprites/enemies/${name}/${anim}.png`);
 
 	return {
 		manifestKey: `enemy_${name}`,

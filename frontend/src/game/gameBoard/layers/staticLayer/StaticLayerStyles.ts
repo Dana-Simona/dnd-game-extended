@@ -1,9 +1,11 @@
 import styled from 'styled-components';
 
 export const StaticLayerContainer = styled.div`
-	position: relative;
+	grid-area: stack;
+	pointer-events: none;
 `;
 
 export const BoardRow = styled.div`
 	display: flex;
+	height: 32px;
 `;

@@ -33,11 +33,18 @@ export const SpriteFlipWrapper = styled.div<SpriteFlipProps>`
 	}}
 `;
 
+export const EmptyTile = styled.div`
+	width: 32px;
+	height: 32px;
+	flex-shrink: 0;
+`;
+
 export const StaticTile = styled.div<StaticTileProps>`
 	width: 32px;
 	height: 32px;
-	background-color: #717520;
-	background-image: url(${(props) => props.$imagePath});
+	flex-shrink: 0;
+	background-color: transparent;
+	background-image: url('${(props) => props.$imagePath}');
 	background-position: -${(props) => props.$posX}px -${(props) =>
 			props.$posY}px;
 	background-repeat: no-repeat;

@@ -160,6 +160,8 @@ public class MainServer {
     private static String getGameStateJson() {
         StringBuilder json = new StringBuilder("{");
 
+        json.append("\"level\":").append(game.getCurrentLevel()).append(",");
+
         json.append("\"grid\":[");
         String[] lines = game.getBoardAsLines();
         for (int i = 0; i < lines.length; i++) {

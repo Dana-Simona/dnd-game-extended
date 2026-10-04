@@ -1,15 +1,13 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import type { MotionProps } from 'framer-motion';
 
 import ActiveLayer from './layers/activeLayer/ActiveLayer';
 import StaticLayer from './layers/staticLayer/StaticLayer';
 import type { Unit } from '../../constants/interfaces/unit';
-import { useViewport, combineUnits } from './useGameBoard';
 import { VfxLayer } from './layers/vfxLayers/effectsLayer/VfxLayer';
-import {
-	VfxCategory,
-	type VfxItem,
-} from '../../constants/animationStates/vfxStates';
+import type { VfxItem } from '../../constants/animationStates/vfxStates';
+import type { HpStateMap } from '../../constants/animationStates/hpStates';
+import { PortalVfxLayer } from './layers/vfxLayers/portalLayer/PortalVfxLayer';
 import {
 	ViewportContainer,
 	Board,
@@ -17,17 +15,17 @@ import {
 	BoardCanvas,
 	StaticLayerWrapper,
 } from './GameBoardStyles';
-import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import type { UnitTransform } from '../../constants/animationStates/unitStates';
 import type {
 	SpritePresets,
 	AnimationPhase,
 } from '../../constants/animationStates/spriteStates';
-import type { HpStateMap } from '../../constants/animationStates/hpStates';
-import { PortalVfxLayer } from './layers/vfxLayers/portalLayer/PortalVfxLayer';
+
+import { useGameBoardLogic } from './useGameBoard';
 
 export interface Props {
 	board: string[];
+	level?: number;
 	enemies: Unit[];
 	activeSpriteStates?: Record<string, SpritePresets>;
 	activeUnitPhases?: Record<string, AnimationPhase>;
@@ -43,6 +41,7 @@ const TILE_SIZE = 32;
 
 export const GameBoard: React.FC<Props> = ({
 	board,
+	level = 1,
 	enemies,
 	activeSpriteStates = {},
 	activeUnitPhases = {},
@@ -53,34 +52,16 @@ export const GameBoard: React.FC<Props> = ({
 	activeVfxList = [],
 	hpStates,
 }) => {
-	const { character } = useCharacter();
-	const { viewportRef } = useViewport();
-
-	const { screenVfxs, backVfxs, frontVfxs, portalVfxs } = useMemo(() => {
-		const screenVfxs: VfxItem[] = [];
-		const backVfxs: VfxItem[] = [];
-		const frontVfxs: VfxItem[] = [];
-		const portalVfxs: VfxItem[] = [];
-
-		for (const vfx of activeVfxList) {
-			switch (vfx.category) {
-				case VfxCategory.SCREEN_COLOR:
-					screenVfxs.push(vfx);
-					break;
-				case VfxCategory.BACK:
-					backVfxs.push(vfx);
-					break;
-				case VfxCategory.FRONT:
-					frontVfxs.push(vfx);
-					break;
-				case VfxCategory.PORTAL:
-					portalVfxs.push(vfx);
-					break;
-			}
-		}
-
-		return { screenVfxs, backVfxs, frontVfxs, portalVfxs };
-	}, [activeVfxList]);
+	const {
+		character,
+		viewportRef,
+		layers,
+		backVfxs,
+		frontVfxs,
+		portalVfxs,
+		allUnits,
+		activeScreenVfxTypes,
+	} = useGameBoardLogic(level, enemies, activeVfxList);
 
 	if (!character) {
 		return (
@@ -90,9 +71,6 @@ export const GameBoard: React.FC<Props> = ({
 		);
 	}
 
-	const allUnits = combineUnits(character, enemies);
-	const activeScreenVfxTypes = screenVfxs.map((v) => v.type);
-
 	return (
 		<ViewportContainer ref={viewportRef}>
 			<Board {...panZoomMotion}>
@@ -101,9 +79,16 @@ export const GameBoard: React.FC<Props> = ({
 						<StaticLayerWrapper
 							$activeVfxTypes={activeScreenVfxTypes}
 						>
-							<StaticLayer board={board} />
+							{layers.map((layerMatrix, index) => (
+								<StaticLayer
+									key={index}
+									layer={layerMatrix}
+								/>
+							))}
 						</StaticLayerWrapper>
+
 						<VfxLayer vfxList={backVfxs} />
+
 						<ActiveLayer
 							units={allUnits}
 							characterId={character.id}
@@ -115,6 +100,7 @@ export const GameBoard: React.FC<Props> = ({
 							unitTransforms={unitTransforms}
 							hpStates={hpStates}
 						/>
+
 						<VfxLayer vfxList={frontVfxs} />
 					</BoardCanvas>
 				</BoardEffectLayer>
