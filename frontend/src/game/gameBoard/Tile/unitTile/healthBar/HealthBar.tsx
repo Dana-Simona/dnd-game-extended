@@ -13,7 +13,6 @@ interface HealthBarProps {
 	maxHp?: number;
 	color?: string;
 	isEnemy: boolean;
-	offsetY: number;
 	hpState?: HpState;
 }
 
@@ -29,7 +28,6 @@ const HealthBar: React.FC<HealthBarProps> = ({
 	maxHp: propMaxHp,
 	color: propColor,
 	isEnemy,
-	offsetY,
 	hpState,
 }) => {
 	if (!isEnemy) {
@@ -55,7 +53,7 @@ const HealthBar: React.FC<HealthBarProps> = ({
 	const hasPreview = previewPercentage > 0;
 
 	return (
-		<BarContainer $offsetY={offsetY}>
+		<BarContainer>
 			<BarFill
 				$hasPreview={hasPreview}
 				initial={false}

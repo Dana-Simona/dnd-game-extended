@@ -1,11 +1,8 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
-export const BarContainer = styled.div<{ $offsetY?: number }>`
-	position: absolute;
-	top: ${({ $offsetY = 0 }) => `${-8 + $offsetY}px`};
-	left: 50%;
-	transform: translateX(-50%);
+export const BarContainer = styled.div`
+	position: relative; /* Relative inside flex container */
 	width: 32px;
 	height: 6px;
 	background-color: rgba(10, 10, 12, 0.75);

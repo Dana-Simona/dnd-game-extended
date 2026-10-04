@@ -31,7 +31,7 @@ const UnitTile: React.FC<Props> = ({
 	spriteProps,
 	phase,
 	offsetY,
-	facing = UnitFacing.RIGHT,
+	facing,
 	tileSize = 32,
 	hpState,
 }) => {
@@ -51,6 +51,10 @@ const UnitTile: React.FC<Props> = ({
 	}
 
 	const isPlayer = unit?.unitType === UnitType.PLAYER;
+
+	const effectiveFacing =
+		facing ?? (isPlayer ? UnitFacing.RIGHT : UnitFacing.LEFT);
+
 	const currentHp = hpState?.currentHp ?? unit?.currentHealth ?? 0;
 	const maxHp = hpState?.maxHp ?? unit?.health ?? 1;
 	const previewHp = hpState?.previewHp;
@@ -79,13 +83,12 @@ const UnitTile: React.FC<Props> = ({
 							previewHp={previewHp}
 							maxHp={maxHp}
 							isEnemy={!isPlayer}
-							offsetY={offsetY}
 							hpState={hpState}
 						/>
 					</EnemyNameContainer>
 				)}
 				<SpriteFlipWrapper
-					$isFlipped={facing === UnitFacing.LEFT}
+					$isFlipped={effectiveFacing === UnitFacing.LEFT}
 					$isPlayer={isPlayer}
 				>
 					<Sprite

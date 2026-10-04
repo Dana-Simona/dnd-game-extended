@@ -1,8 +1,10 @@
 import React from 'react';
 import type { Transition } from 'framer-motion';
+
 import Tile from '../../Tile/Tile';
 import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
 import { ActiveLayerContainer, AnimatedUnitWrapper } from './ActiveLayerStyles';
+import type { HpStateMap } from '../../../../constants/animationStates/hpStates';
 import {
 	UnitFacing,
 	type UnitTransform,
@@ -11,7 +13,6 @@ import type {
 	SpritePresets,
 	AnimationPhase,
 } from '../../../../constants/animationStates/spriteStates';
-import type { HpStateMap } from '../../../../constants/animationStates/hpStates';
 
 interface Props {
 	units: Unit[];
@@ -113,11 +114,16 @@ const ActiveLayer: React.FC<Props> = React.memo(
 							opacity: { duration: 0.2, ease: 'easeInOut' },
 						};
 
+					const defaultFacing = isPlayer
+						? UnitFacing.RIGHT
+						: UnitFacing.LEFT;
 					const facing =
 						transform.facing ??
-						(transform.scaleX === -1
-							? UnitFacing.LEFT
-							: UnitFacing.RIGHT);
+						(transform.scaleX !== undefined
+							? transform.scaleX === -1
+								? UnitFacing.LEFT
+								: UnitFacing.RIGHT
+							: defaultFacing);
 
 					return (
 						<AnimatedUnitWrapper

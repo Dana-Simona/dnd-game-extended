@@ -51,11 +51,7 @@ public class LevelParser {
                 monster('q', "Abyssal Sentinel", 120, 18, 4, 5, 100),
                 monster('z', "Soul-Eater", 180, 25, 6, 3, 150),
                 monster('b', "Void Monarch", 300, 35, 8, 4, 250),
-                // monster('g', "Leviathan", 500, 50, 10, 5, 500),
-                // monster('w', "Void Monarch", 800, 70, 15, 6, 1000),
                 boss('M', "Malakor the Unbroken", 1500, 80, 20, 6, 2000, 5),
-                // boss('C', "Vespera, Queen of Ashes", 800, 40, 10, 8, 1000, 3),
-                // boss('K', "Balthazar, The Celestial Executioner", 3000, 120, 30, 8, 5000, 4),
                 trap('B', "Bonus Trap", 1, 1, 1, 250, 1, 5),
                 trap('Q', "Queens Trap", 250, 50, 10, 100, 3, 7), 
                 trap('D', "Death Trap", 500, 100, 20, 250, 1, 10) 

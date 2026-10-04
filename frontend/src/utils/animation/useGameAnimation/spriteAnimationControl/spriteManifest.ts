@@ -300,7 +300,7 @@ export const SPRITE_MANIFEST: Record<
 		[SpritePresets.MOVE]: {
 			width: 170,
 			height: 96,
-			frameCount: 8,
+			frameCount: 4,
 			fps: 6,
 			offsetY: 15,
 		},
@@ -407,7 +407,7 @@ export const SPRITE_MANIFEST: Record<
 			height: 128,
 			frameCount: 41,
 			impactFrame: 26,
-			fps: 6,
+			fps: 8,
 			offsetY: 60,
 		},
 	},
