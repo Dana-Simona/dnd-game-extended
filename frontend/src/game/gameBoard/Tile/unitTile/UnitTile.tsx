@@ -69,6 +69,7 @@ const UnitTile: React.FC<Props> = ({
 
 	const isTrapShown =
 		isTrap && ((unit as Trap).isVisible || !!trapState?.revealed);
+	const showEnemyInfo = !isPlayer && (!isTrap || isTrapShown);
 
 	return (
 		<SpriteTileWrapper
@@ -82,23 +83,23 @@ const UnitTile: React.FC<Props> = ({
 				tileSize={tileSize}
 			/>
 
+			{unit && showEnemyInfo && (
+				<EnemyNameContainer>
+					<EnemyName>{unit.name}</EnemyName>
+					<HealthBar
+						currentHp={currentHp}
+						previewHp={previewHp}
+						maxHp={maxHp}
+						isEnemy={!isPlayer}
+						hpState={hpState}
+					/>
+				</EnemyNameContainer>
+			)}
+
 			<PositionedSpriteContainer
 				$frameHeight={spriteProps.height}
 				$offsetY={offsetY}
 			>
-				{unit && isTrapShown && (
-					<EnemyNameContainer>
-						<EnemyName>{unit.name}</EnemyName>
-						<HealthBar
-							currentHp={currentHp}
-							previewHp={previewHp}
-							maxHp={maxHp}
-							isEnemy={!isPlayer}
-							hpState={hpState}
-						/>
-					</EnemyNameContainer>
-				)}
-
 				<AnimatePresence>
 					{isTrapShown ? (
 						<TrapUnit

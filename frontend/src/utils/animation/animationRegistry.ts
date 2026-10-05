@@ -8,6 +8,7 @@ export type AnimationHandler = (
 
 class AnimationRegistry {
 	private handlers = new Map<string, AnimationHandler>();
+	private pending = new Set<Promise<void>>();
 
 	register(type: string, handler: AnimationHandler) {
 		this.handlers.set(type, handler);
@@ -27,13 +28,21 @@ class AnimationRegistry {
 				}
 			};
 
-			handler(event, skip)
+			const run = handler(event, skip)
 				.then(() => skip(1))
 				.catch((err) => {
 					console.error(`Error in handler for ${event.type}:`, err);
 					skip(1);
-				});
+				})
+				.finally(() => this.pending.delete(run));
+			this.pending.add(run);
 		});
+	}
+
+	async waitForAll(): Promise<void> {
+		while (this.pending.size > 0) {
+			await Promise.all(this.pending);
+		}
 	}
 }
 

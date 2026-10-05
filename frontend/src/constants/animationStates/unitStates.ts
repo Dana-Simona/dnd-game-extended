@@ -26,6 +26,11 @@ export interface TriggerUnitAPI {
 		attackerId: string,
 		durationMs?: number,
 	) => Promise<void>;
+	plantAttack: (
+		attackerId: string,
+		defenderId: string,
+		durationMs?: number,
+	) => Promise<void>;
 	face: (sourceId: string, targetId: string) => Promise<void>;
 	dash: (
 		sourceId: string,

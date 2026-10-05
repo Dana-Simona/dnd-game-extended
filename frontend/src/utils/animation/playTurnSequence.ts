@@ -24,4 +24,6 @@ export const playTurnSequence = async (events: GameEvent[]) => {
 		const stepsToSkip = Math.max(1, ...skipValues);
 		i += stepsToSkip;
 	}
+
+	await animationRegistry.waitForAll();
 };

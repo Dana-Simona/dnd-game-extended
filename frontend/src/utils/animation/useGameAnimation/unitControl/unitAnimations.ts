@@ -342,15 +342,8 @@ export const executeReveal = async (
 		[unitId]: { ...prev[unitId], revealed: true },
 	}));
 
-	// give the trap's pop-in spring time to play before combat continues
 	await new Promise((resolve) => setTimeout(resolve, durationMs));
 };
-
-/**
- * Knockback for rooted plants: instead of sliding away, the plant leans away
- * from the attacker and stretches like it's being yanked, then whips back
- * past upright and settles. Pivot is the plant's base (see TrapUnit).
- */
 export const executePlantRecoil = async (
 	defenderId: string,
 	attackerId: string,
@@ -358,39 +351,96 @@ export const executePlantRecoil = async (
 	positions: Record<string, Position>,
 	setTrapStates: SetTrapStates,
 ) => {
-	const defenderPos = positions[defenderId];
-	const attackerPos = positions[attackerId];
+	const dir = getLeanDirection(attackerId, defenderId, positions);
+	await executePlantSway(
+		defenderId,
+		dir,
+		durationMs,
+		setTrapStates,
+		'recoil',
+	);
+};
 
-	// lean direction: +1 = lean right, -1 = lean left (away from attacker)
-	let dir = 1;
-	if (defenderPos && attackerPos) {
-		const dx = defenderPos.x - attackerPos.x;
-		if (dx !== 0) dir = Math.sign(dx);
-	}
+export const executePlantAttack = async (
+	attackerId: string,
+	defenderId: string,
+	durationMs = 1000,
+	positions: Record<string, Position>,
+	setTrapStates: SetTrapStates,
+) => {
+	const dir = getLeanDirection(attackerId, defenderId, positions);
+	await executePlantSway(
+		attackerId,
+		dir,
+		durationMs,
+		setTrapStates,
+		'attack',
+	);
+};
 
-	const sway: TargetAndTransition = {
-		rotate: [0, 32 * dir, 38 * dir, -14 * dir, 6 * dir, -2 * dir, 0],
-		scaleY: [1, 1.35, 1.42, 0.85, 1.08, 0.98, 1],
-		scaleX: [1, 0.78, 0.74, 1.15, 0.95, 1.02, 1],
-		skewX: [0, -10 * dir, -12 * dir, 6 * dir, -2 * dir, 0, 0],
-		transition: {
-			duration: durationMs / 1000,
-			times: [0, 0.12, 0.3, 0.5, 0.68, 0.84, 1],
-			ease: 'easeOut',
-		},
-	};
+const getLeanDirection = (
+	fromId: string,
+	toId: string,
+	positions: Record<string, Position>,
+) => {
+	const fromPos = positions[fromId];
+	const toPos = positions[toId];
+	if (!fromPos || !toPos) return 1;
+	const dx = toPos.x - fromPos.x;
+	return dx !== 0 ? Math.sign(dx) : 1;
+};
+
+const executePlantSway = async (
+	unitId: string,
+	dir: number,
+	durationMs: number,
+	setTrapStates: SetTrapStates,
+	type: 'recoil' | 'attack' = 'recoil',
+) => {
+	const sway: TargetAndTransition =
+		type === 'attack'
+			? {
+					rotate: [0, -22 * dir, 45 * dir, 45 * dir, -5 * dir, 0],
+					scaleY: [1, 0.85, 1.4, 1.4, 0.95, 1],
+					scaleX: [1, 1.15, 0.75, 0.75, 1.05, 1],
+					skewX: [0, 8 * dir, -16 * dir, -16 * dir, 2 * dir, 0],
+					transition: {
+						duration: durationMs / 1000,
+						times: [0, 0.22, 0.50, 0.58, 0.82, 1],
+						ease: 'easeOut',
+					},
+				}
+			: {
+					rotate: [
+						0,
+						32 * dir,
+						38 * dir,
+						-14 * dir,
+						6 * dir,
+						-2 * dir,
+						0,
+					],
+					scaleY: [1, 1.35, 1.42, 0.85, 1.08, 0.98, 1],
+					scaleX: [1, 0.78, 0.74, 1.15, 0.95, 1.02, 1],
+					skewX: [0, -10 * dir, -12 * dir, 6 * dir, -2 * dir, 0, 0],
+					transition: {
+						duration: durationMs / 1000,
+						times: [0, 0.12, 0.3, 0.5, 0.68, 0.84, 1],
+						ease: 'easeOut',
+					},
+				};
 
 	setTrapStates((prev) => ({
 		...prev,
-		[defenderId]: { ...prev[defenderId], sway },
+		[unitId]: { ...prev[unitId], sway },
 	}));
 
 	await new Promise((resolve) => setTimeout(resolve, durationMs));
 
 	setTrapStates((prev) => ({
 		...prev,
-		[defenderId]: {
-			...prev[defenderId],
+		[unitId]: {
+			...prev[unitId],
 			sway: {
 				rotate: 0,
 				scaleY: 1,

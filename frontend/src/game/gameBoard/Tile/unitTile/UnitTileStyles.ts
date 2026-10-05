@@ -5,9 +5,11 @@ interface PositionedSpriteProps {
 	$offsetY?: number;
 }
 
+const HEALTH_BAR_TILE_GAP_PX = 10;
+
 export const EnemyNameContainer = styled.div`
 	position: absolute;
-	top: 0;
+	bottom: calc(100% + ${HEALTH_BAR_TILE_GAP_PX}px);
 	left: 50%;
 	transform: translateX(-50%);
 	width: max-content;

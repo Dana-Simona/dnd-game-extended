@@ -99,6 +99,26 @@ export const setupAnimations = (controllers: Controllers) => {
 				controllers.triggerUnit.face(defender, attacker),
 			]);
 
+			if (unit?.unitType === UnitType.TRAP) {
+				const strike = controllers.triggerUnit.plantAttack(
+					attacker,
+					defender,
+					1000,
+				);
+				await Promise.all([
+					delay(300),
+					controllers.triggerSound.play(SoundPreset.SWISH_SHORT),
+					controllers.triggerSpriteAnimation.takeDamage(
+						defender,
+						AnimationPhase.WINDUP,
+					),
+				]);
+				controllers.triggerSound.play(SoundPreset.ENEMY_MELEE);
+				skip();
+				await strike;
+				return;
+			}
+
 			await Promise.all([
 				controllers.triggerSpriteAnimation.melee(
 					attacker,

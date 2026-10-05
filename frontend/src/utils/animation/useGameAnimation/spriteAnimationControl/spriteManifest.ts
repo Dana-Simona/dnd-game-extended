@@ -321,12 +321,12 @@ export const SPRITE_MANIFEST: Record<
 			offsetY: 15,
 		},
 		[SpritePresets.TAKE_DAMAGE]: {
-			width: 170,
-			height: 96,
+			width: 45,
+			height: 37,
 			frameCount: 8,
 			fps: 6,
 			impactFrame: 3,
-			offsetY: 15,
+			offsetY: -5,
 		},
 	},
 	enemy_hellHound: {

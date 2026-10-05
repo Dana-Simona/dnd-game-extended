@@ -12,6 +12,7 @@ import {
 	executeShake,
 	executeReveal,
 	executePlantRecoil,
+	executePlantAttack,
 } from './unitAnimations';
 import type {
 	TriggerUnitAPI,
@@ -127,7 +128,6 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		[],
 	);
 
-	// tracks reveals synchronously so repeated calls in one turn don't wait again
 	const revealedRef = useRef<Set<string>>(new Set());
 
 	const reveal = useCallback(async (unitId: string, durationMs = 350) => {
@@ -149,8 +149,19 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		[],
 	);
 
-	// runs when the turn's sequence ends: also clears combat reveals, so
-	// traps that are still hidden server-side disappear again
+	const plantAttack = useCallback(
+		async (attackerId: string, defenderId: string, durationMs = 1000) => {
+			await executePlantAttack(
+				attackerId,
+				defenderId,
+				durationMs,
+				visualPositionsRef.current,
+				setTrapStates,
+			);
+		},
+		[],
+	);
+
 	const resetAllTransforms = useCallback(() => {
 		setUnitTransforms({});
 		setTrapStates({});
@@ -170,6 +181,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			shake,
 			reveal,
 			plantRecoil,
+			plantAttack,
 		}),
 		[
 			faceTarget,
@@ -183,6 +195,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			shake,
 			reveal,
 			plantRecoil,
+			plantAttack,
 		],
 	);
 
@@ -202,5 +215,6 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		shake,
 		reveal,
 		plantRecoil,
+		plantAttack,
 	};
 };

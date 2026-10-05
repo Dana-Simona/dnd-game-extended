@@ -80,8 +80,6 @@ export const useGame = () => {
 		if (typeof data.level === 'number' && data.level > 0) {
 			setLevel(data.level);
 		}
-
-		setActionCount((prev) => prev + 1);
 	}, []);
 
 	const applyUnitState = useCallback(
@@ -97,6 +95,7 @@ export const useGame = () => {
 	const executeTurn = useCallback(
 		(data: BoardData, enemyList: Unit[]) => {
 			const onDone = () => {
+				applyBoardState(data);
 				applyUnitState(data, enemyList);
 				isProcessingRef.current = false;
 			};
@@ -107,7 +106,7 @@ export const useGame = () => {
 				onDone();
 			}
 		},
-		[runTurn, applyUnitState],
+		[runTurn, applyBoardState, applyUnitState],
 	);
 
 	const handleKeyPress = useCallback(
@@ -118,14 +117,14 @@ export const useGame = () => {
 			isProcessingRef.current = true;
 			try {
 				const data = await postApi('action', key.toLowerCase());
-				applyBoardState(data);
+				setActionCount((prev) => prev + 1);
 				executeTurn(data, filterEnemies(data.units));
 			} catch (err) {
 				console.error('Failed move:', err);
 				isProcessingRef.current = false;
 			}
 		},
-		[isAnimating, applyBoardState, executeTurn],
+		[isAnimating, executeTurn],
 	);
 
 	const loadLevel = useCallback(
@@ -137,6 +136,7 @@ export const useGame = () => {
 				signal,
 			);
 			applyBoardState(data);
+			setActionCount((prev) => prev + 1);
 			applyUnitState(data, filterEnemies(data.units));
 		},
 		[applyBoardState, applyUnitState],
