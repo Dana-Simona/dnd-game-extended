@@ -360,8 +360,8 @@ export const tiles: ITile[] = [
 	{
 		//60
 		imageSrc: plantsTileset,
-		size: { horizontalTiles: 2, verticalTiles: 1 },
-		coordinates: { x: [2], y: [6] },
+		size: { horizontalTiles: 1, verticalTiles: 1 },
+		coordinates: { x: [3], y: [6] },
 	},
 	{
 		//61

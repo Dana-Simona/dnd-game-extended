@@ -54,6 +54,7 @@ export const BoardEffectLayer = styled(motion.div)`
 `;
 
 export const BoardCanvas = styled.div`
+	background-color: rgb(114, 117, 32);
 	position: relative;
 `;
 
