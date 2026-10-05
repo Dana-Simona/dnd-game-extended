@@ -8,6 +8,7 @@ import type { HpStateMap } from '../../../../constants/animationStates/hpStates'
 import {
 	UnitFacing,
 	type UnitTransform,
+	type TrapVisualStateMap,
 } from '../../../../constants/animationStates/unitStates';
 import type {
 	SpritePresets,
@@ -23,6 +24,7 @@ interface Props {
 	activeSpritePhases?: Record<string, AnimationPhase>;
 	visualPositions?: Record<string, { x: number; y: number }>;
 	unitTransforms?: Record<string, UnitTransform>;
+	trapStates?: TrapVisualStateMap;
 	hpStates?: HpStateMap;
 }
 
@@ -38,6 +40,7 @@ const ActiveLayer: React.FC<Props> = React.memo(
 		activeSpritePhases = {},
 		visualPositions = {},
 		unitTransforms = {},
+		trapStates = {},
 		hpStates = {},
 	}) => {
 		return (
@@ -147,15 +150,14 @@ const ActiveLayer: React.FC<Props> = React.memo(
 							transition={transitionConfig}
 						>
 							<Tile
-								char={unit.character}
 								x={currentX}
 								y={currentY}
-								grid={board}
 								unit={unit}
 								activeActionState={activeSpriteStates[unitId]}
 								facing={facing}
 								phase={activeSpritePhases[unitId]}
 								hpState={hpStates[unitId]}
+								trapState={trapStates[unitId]}
 							/>
 						</AnimatedUnitWrapper>
 					);

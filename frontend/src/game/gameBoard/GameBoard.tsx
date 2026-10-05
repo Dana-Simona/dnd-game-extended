@@ -15,7 +15,10 @@ import {
 	BoardCanvas,
 	StaticLayerWrapper,
 } from './GameBoardStyles';
-import type { UnitTransform } from '../../constants/animationStates/unitStates';
+import type {
+	UnitTransform,
+	TrapVisualStateMap,
+} from '../../constants/animationStates/unitStates';
 import type {
 	SpritePresets,
 	AnimationPhase,
@@ -31,6 +34,7 @@ export interface Props {
 	activeUnitPhases?: Record<string, AnimationPhase>;
 	visualPositions?: Record<string, { x: number; y: number }>;
 	unitTransforms?: Record<string, UnitTransform>;
+	trapStates?: TrapVisualStateMap;
 	panZoomMotion: MotionProps;
 	effectMotion: MotionProps;
 	activeVfxList?: VfxItem[];
@@ -47,6 +51,7 @@ export const GameBoard: React.FC<Props> = ({
 	activeUnitPhases = {},
 	visualPositions = {},
 	unitTransforms = {},
+	trapStates = {},
 	panZoomMotion,
 	effectMotion,
 	activeVfxList = [],
@@ -98,6 +103,7 @@ export const GameBoard: React.FC<Props> = ({
 							activeSpritePhases={activeUnitPhases}
 							visualPositions={visualPositions}
 							unitTransforms={unitTransforms}
+							trapStates={trapStates}
 							hpStates={hpStates}
 						/>
 

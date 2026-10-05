@@ -17,6 +17,7 @@ export const Game: React.FC = () => {
 				activeSpriteStates={game.activeSpriteStates}
 				visualPositions={game.visualPositions}
 				unitTransforms={game.unitTransforms}
+				trapStates={game.trapStates}
 				panZoomMotion={game.panZoomMotion}
 				effectMotion={game.effectMotion}
 				activeVfxList={game.activeVfxList}

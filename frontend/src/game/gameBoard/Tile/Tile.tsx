@@ -4,7 +4,10 @@ import { EmptyTile } from './TileStyles';
 import UnitTile from './unitTile/UnitTile';
 import BaseStaticTile from './baseStaticTile/BaseStaticTile';
 import type { Unit } from '../../../constants/interfaces/unit';
-import { UnitFacing } from '../../../constants/animationStates/unitStates';
+import {
+	UnitFacing,
+	type TrapVisualState,
+} from '../../../constants/animationStates/unitStates';
 import type { HpState } from '../../../constants/animationStates/hpStates';
 import { getUnitSpriteConfig } from '../../../utils/animation/spriteAnimations';
 import { getDecorativeTileConfig } from '../../../utils/tileMapping/tileMapping';
@@ -22,6 +25,7 @@ interface Props {
 	facing?: UnitFacing;
 	phase?: AnimationPhase;
 	hpState?: HpState;
+	trapState?: TrapVisualState;
 }
 
 const Tile: React.FC<Props> = ({
@@ -33,6 +37,7 @@ const Tile: React.FC<Props> = ({
 	facing = UnitFacing.RIGHT,
 	phase,
 	hpState,
+	trapState,
 }) => {
 	if (unit) {
 		const spriteProps = getUnitSpriteConfig(unit, activeActionState);
@@ -46,6 +51,7 @@ const Tile: React.FC<Props> = ({
 				facing={facing}
 				phase={phase}
 				hpState={hpState}
+				trapState={trapState}
 			/>
 		);
 	}

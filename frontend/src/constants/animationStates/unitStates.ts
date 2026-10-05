@@ -12,7 +12,20 @@ export type UnitTransform = Omit<TargetAndTransition, 'offset'> & {
 	offset?: { x: number; y: number };
 };
 
+export interface TrapVisualState {
+	revealed?: boolean;
+	sway?: TargetAndTransition;
+}
+
+export type TrapVisualStateMap = Record<string, TrapVisualState>;
+
 export interface TriggerUnitAPI {
+	reveal: (unitId: string, durationMs?: number) => Promise<void>;
+	plantRecoil: (
+		defenderId: string,
+		attackerId: string,
+		durationMs?: number,
+	) => Promise<void>;
 	face: (sourceId: string, targetId: string) => Promise<void>;
 	dash: (
 		sourceId: string,

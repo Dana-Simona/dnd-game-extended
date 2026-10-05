@@ -7,7 +7,10 @@ import { SpriteTileWrapper, SpriteFlipWrapper } from '../TileStyles';
 import type { Player } from '../../../../constants/interfaces/player';
 import Sprite, { type SpriteProps } from '../../../../utils/sprite/Sprite';
 import { UnitType, type Unit } from '../../../../constants/interfaces/unit';
-import { UnitFacing } from '../../../../constants/animationStates/unitStates';
+import {
+	UnitFacing,
+	type TrapVisualState,
+} from '../../../../constants/animationStates/unitStates';
 import type { HpState } from '../../../../constants/animationStates/hpStates';
 import type { Monster, Trap } from '../../../../constants/interfaces/monster';
 import type { AnimationPhase } from '../../../../constants/animationStates/spriteStates';
@@ -26,6 +29,7 @@ interface Props {
 	facing?: UnitFacing;
 	tileSize?: number;
 	hpState?: HpState;
+	trapState?: TrapVisualState;
 }
 
 const UnitTile: React.FC<Props> = ({
@@ -36,6 +40,7 @@ const UnitTile: React.FC<Props> = ({
 	facing,
 	tileSize = 32,
 	hpState,
+	trapState,
 }) => {
 	const [isHovered, setIsHovered] = useState(false);
 
@@ -62,9 +67,8 @@ const UnitTile: React.FC<Props> = ({
 	const maxHp = hpState?.maxHp ?? unit?.health ?? 1;
 	const previewHp = hpState?.previewHp;
 
-	if (isTrap) {
-		console.log((unit as Trap).isVisible);
-	}
+	const isTrapShown =
+		isTrap && ((unit as Trap).isVisible || !!trapState?.revealed);
 
 	return (
 		<SpriteTileWrapper
@@ -82,7 +86,7 @@ const UnitTile: React.FC<Props> = ({
 				$frameHeight={spriteProps.height}
 				$offsetY={offsetY}
 			>
-				{unit && !isPlayer && isTrap && (unit as Trap).isVisible && (
+				{unit && isTrapShown && (
 					<EnemyNameContainer>
 						<EnemyName>{unit.name}</EnemyName>
 						<HealthBar
@@ -96,10 +100,11 @@ const UnitTile: React.FC<Props> = ({
 				)}
 
 				<AnimatePresence>
-					{isTrap && (unit as Trap).isVisible ? (
+					{isTrapShown ? (
 						<TrapUnit
 							key='trap-unit'
 							trap={unit as Trap}
+							sway={trapState?.sway}
 						/>
 					) : (
 						<SpriteFlipWrapper

@@ -10,13 +10,20 @@ import {
 	executeJump,
 	executeLeap,
 	executeShake,
+	executeReveal,
+	executePlantRecoil,
 } from './unitAnimations';
-import type { TriggerUnitAPI, UnitTransform } from '../../../../constants/animationStates/unitStates';
+import type {
+	TriggerUnitAPI,
+	UnitTransform,
+	TrapVisualStateMap,
+} from '../../../../constants/animationStates/unitStates';
 
 export const useUnitControl = (visualPositions: Record<string, Position>) => {
 	const [unitTransforms, setUnitTransforms] = useState<
 		Record<string, UnitTransform>
 	>({});
+	const [trapStates, setTrapStates] = useState<TrapVisualStateMap>({});
 
 	const visualPositionsRef = useRef(visualPositions);
 	visualPositionsRef.current = visualPositions;
@@ -120,8 +127,34 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		[],
 	);
 
+	// tracks reveals synchronously so repeated calls in one turn don't wait again
+	const revealedRef = useRef<Set<string>>(new Set());
+
+	const reveal = useCallback(async (unitId: string, durationMs = 350) => {
+		if (revealedRef.current.has(unitId)) return;
+		revealedRef.current.add(unitId);
+		await executeReveal(unitId, durationMs, setTrapStates);
+	}, []);
+
+	const plantRecoil = useCallback(
+		async (defenderId: string, attackerId: string, durationMs = 1000) => {
+			await executePlantRecoil(
+				defenderId,
+				attackerId,
+				durationMs,
+				visualPositionsRef.current,
+				setTrapStates,
+			);
+		},
+		[],
+	);
+
+	// runs when the turn's sequence ends: also clears combat reveals, so
+	// traps that are still hidden server-side disappear again
 	const resetAllTransforms = useCallback(() => {
 		setUnitTransforms({});
+		setTrapStates({});
+		revealedRef.current.clear();
 	}, []);
 
 	const triggerUnit = useMemo<TriggerUnitAPI>(
@@ -135,6 +168,8 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			jump,
 			leap,
 			shake,
+			reveal,
+			plantRecoil,
 		}),
 		[
 			faceTarget,
@@ -146,12 +181,15 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			jump,
 			leap,
 			shake,
+			reveal,
+			plantRecoil,
 		],
 	);
 
 	return {
 		triggerUnit,
 		unitTransforms,
+		trapStates,
 		resetAllTransforms,
 		faceTarget,
 		dash,
@@ -162,5 +200,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		jump,
 		leap,
 		shake,
+		reveal,
+		plantRecoil,
 	};
 };

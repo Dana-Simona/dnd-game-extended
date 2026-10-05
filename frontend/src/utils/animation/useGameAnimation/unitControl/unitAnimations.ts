@@ -1,4 +1,8 @@
-import type { UnitTransform } from '../../../../constants/animationStates/unitStates';
+import type { TargetAndTransition } from 'framer-motion';
+import type {
+	TrapVisualState,
+	UnitTransform,
+} from '../../../../constants/animationStates/unitStates';
 import {
 	calculateFacing,
 	calculateVectorOffset,
@@ -322,4 +326,78 @@ export const executeShake = async (
 			},
 		};
 	});
+};
+
+type SetTrapStates = React.Dispatch<
+	React.SetStateAction<Record<string, TrapVisualState>>
+>;
+
+export const executeReveal = async (
+	unitId: string,
+	durationMs = 350,
+	setTrapStates: SetTrapStates,
+) => {
+	setTrapStates((prev) => ({
+		...prev,
+		[unitId]: { ...prev[unitId], revealed: true },
+	}));
+
+	// give the trap's pop-in spring time to play before combat continues
+	await new Promise((resolve) => setTimeout(resolve, durationMs));
+};
+
+/**
+ * Knockback for rooted plants: instead of sliding away, the plant leans away
+ * from the attacker and stretches like it's being yanked, then whips back
+ * past upright and settles. Pivot is the plant's base (see TrapUnit).
+ */
+export const executePlantRecoil = async (
+	defenderId: string,
+	attackerId: string,
+	durationMs = 1000,
+	positions: Record<string, Position>,
+	setTrapStates: SetTrapStates,
+) => {
+	const defenderPos = positions[defenderId];
+	const attackerPos = positions[attackerId];
+
+	// lean direction: +1 = lean right, -1 = lean left (away from attacker)
+	let dir = 1;
+	if (defenderPos && attackerPos) {
+		const dx = defenderPos.x - attackerPos.x;
+		if (dx !== 0) dir = Math.sign(dx);
+	}
+
+	const sway: TargetAndTransition = {
+		rotate: [0, 32 * dir, 38 * dir, -14 * dir, 6 * dir, -2 * dir, 0],
+		scaleY: [1, 1.35, 1.42, 0.85, 1.08, 0.98, 1],
+		scaleX: [1, 0.78, 0.74, 1.15, 0.95, 1.02, 1],
+		skewX: [0, -10 * dir, -12 * dir, 6 * dir, -2 * dir, 0, 0],
+		transition: {
+			duration: durationMs / 1000,
+			times: [0, 0.12, 0.3, 0.5, 0.68, 0.84, 1],
+			ease: 'easeOut',
+		},
+	};
+
+	setTrapStates((prev) => ({
+		...prev,
+		[defenderId]: { ...prev[defenderId], sway },
+	}));
+
+	await new Promise((resolve) => setTimeout(resolve, durationMs));
+
+	setTrapStates((prev) => ({
+		...prev,
+		[defenderId]: {
+			...prev[defenderId],
+			sway: {
+				rotate: 0,
+				scaleY: 1,
+				scaleX: 1,
+				skewX: 0,
+				transition: { duration: 0 },
+			},
+		},
+	}));
 };

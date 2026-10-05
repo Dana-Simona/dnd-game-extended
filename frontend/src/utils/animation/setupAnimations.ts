@@ -15,6 +15,7 @@ import {
 	type TriggerSpriteAnimationAPI,
 } from '../../constants/animationStates/spriteStates';
 import { UnitType, type Unit } from '../../constants/interfaces/unit';
+import type { Trap } from '../../constants/interfaces/monster';
 import type {
 	Hunter,
 	Mage,
@@ -34,6 +35,20 @@ interface Controllers {
 }
 
 export const setupAnimations = (controllers: Controllers) => {
+	const isTrap = (id?: string) =>
+		!!id && controllers.getUnitById(id)?.unitType === UnitType.TRAP;
+
+	const revealIfHiddenTrap = async (...ids: (string | undefined)[]) => {
+		await Promise.all(
+			ids.map(async (id) => {
+				if (!id || !isTrap(id)) return;
+				const trap = controllers.getUnitById(id) as Trap;
+				if (trap.isVisible) return;
+				await controllers.triggerUnit.reveal(id);
+			}),
+		);
+	};
+
 	animationRegistry.register(ActionType.MOVE, async (event: GameEvent) => {
 		if (!event.sourceId) return;
 		const unit = controllers.getUnitById(event.sourceId);
@@ -72,6 +87,8 @@ export const setupAnimations = (controllers: Controllers) => {
 			const defender = event.targetIds?.[0];
 			const attacker = event.sourceId;
 			if (!attacker || !defender) return;
+
+			await revealIfHiddenTrap(attacker, defender);
 
 			const unit = controllers.getUnitById(attacker);
 			const player =
@@ -119,7 +136,9 @@ export const setupAnimations = (controllers: Controllers) => {
 		const finalDamage = event.amount;
 
 		if (!defender || !attacker || !finalDamage) return;
+		await revealIfHiddenTrap(attacker, defender);
 		const unit = controllers.getUnitById(defender);
+		const defenderIsTrap = unit?.unitType === UnitType.TRAP;
 		const finalHealth = unit ? unit.currentHealth - finalDamage : null;
 		const isDead = finalHealth !== null && finalHealth <= 0;
 
@@ -139,7 +158,9 @@ export const setupAnimations = (controllers: Controllers) => {
 			),
 			controllers.triggerCamera.shake(),
 			controllers.triggerVfx.bleed(attacker, defender),
-			controllers.triggerUnit.dash(defender, attacker, -25, 1000),
+			defenderIsTrap
+				? controllers.triggerUnit.plantRecoil(defender, attacker, 1000)
+				: controllers.triggerUnit.dash(defender, attacker, -25, 1000),
 			controllers.triggerHpBar.showDamagePreview(defender, finalDamage),
 			controllers.triggerVfx.statDamage(defender, finalDamage),
 		]);
@@ -160,10 +181,10 @@ export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(ActionType.COMBAT, async (event: GameEvent) => {
 		const targetId = event.targetIds?.[0];
 		if (!event.sourceId || !targetId) return;
-		await controllers.triggerCamera.zoomTwoTargets(
-			event.sourceId,
-			targetId,
-		);
+		await Promise.all([
+			controllers.triggerCamera.zoomTwoTargets(event.sourceId, targetId),
+			revealIfHiddenTrap(event.sourceId, targetId),
+		]);
 		await Promise.all([
 			controllers.triggerUnit.face(event.sourceId, targetId),
 			controllers.triggerUnit.face(targetId, event.sourceId),
@@ -222,6 +243,8 @@ export const setupAnimations = (controllers: Controllers) => {
 				skip();
 				return;
 			}
+
+			await revealIfHiddenTrap(victimId);
 
 			const caster = controllers.getUnitById(casterId);
 

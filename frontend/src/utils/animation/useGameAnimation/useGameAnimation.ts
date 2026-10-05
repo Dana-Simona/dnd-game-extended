@@ -39,7 +39,7 @@ export const useGameAnimation = (
 		tileSize,
 	);
 
-	const { triggerUnit, unitTransforms, resetAllTransforms } =
+	const { triggerUnit, unitTransforms, trapStates, resetAllTransforms } =
 		useUnitControl(visualPositions);
 
 	const {
@@ -141,6 +141,7 @@ export const useGameAnimation = (
 		activeUnitPhases,
 		visualPositions,
 		unitTransforms,
+		trapStates,
 		panZoomMotion,
 		effectMotion,
 		runTurn,
