@@ -31,7 +31,7 @@ export const tiles: ITile[] = [
 	{
 		//3
 		imageSrc: wallTileset,
-		coordinates: { x: [3, 14], y: [1, 2] },
+		coordinates: { x: [3, 13], y: [1, 2] },
 	},
 	{
 		//4
@@ -77,7 +77,7 @@ export const tiles: ITile[] = [
 	{
 		//11
 		imageSrc: wallTileset,
-		coordinates: { x: [3, 12], y: [4, 4] },
+		coordinates: { x: [3, 13], y: [4, 4] },
 	},
 	{
 		//12
