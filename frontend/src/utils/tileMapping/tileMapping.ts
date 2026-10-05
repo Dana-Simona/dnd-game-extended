@@ -4,6 +4,10 @@ import { getUnitSpriteConfig } from '../animation/spriteAnimations';
 import { UnitType, type Unit } from '../../constants/interfaces/unit';
 import grassTileset from '../../assets/tiles/Texture/TX Tileset Grass.png';
 import { SpritePresets } from '../../constants/animationStates/spriteStates';
+import {
+	getGroundTileConfig,
+	isGroundTile,
+} from './proceduralNoise/groundTileMapper';
 
 export interface TileSize {
 	horizontalTiles: number;
@@ -37,6 +41,10 @@ export const getDecorativeTileConfig = (
 ): TileConfig | null => {
 	if (tileId === -1 || tileId === null || tileId === undefined) {
 		return null;
+	}
+
+	if (isGroundTile(tileId)) {
+		return getGroundTileConfig(x, y);
 	}
 
 	const safeTiles = tiles || [];
