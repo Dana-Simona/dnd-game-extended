@@ -4,20 +4,20 @@ import game.occupant.Occupant;
 
 public class StairCase extends Cell {
 
-    private boolean isVertical;
+    private StairDirection direction;
     public static int stairLength = 3;
 
-    public StairCase(boolean isVertical) {
+    public StairCase(StairDirection direction) {
         super('^');
-        this.isVertical = isVertical;
+        this.direction = direction;
     }
 
-    public void setIsVertical(boolean isVertical) {
-        this.isVertical = isVertical;
+    public void setDirection(StairDirection direction) {
+        this.direction = direction;
     }
 
-    public boolean getIsVertical() {
-        return isVertical;
+    public StairDirection getDirection() {
+        return direction;
     }
 
     @Override

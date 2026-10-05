@@ -79,25 +79,40 @@ public class MovementManager implements CellVisitor, OccupantVisitor {
         int deltaX = stairPos.getX() - unitPos.getX();
         int deltaY = stairPos.getY() - unitPos.getY();
 
-        if (stairCase.getIsVertical()) {
-            handleVerticalStaircase(unitPos, deltaX, deltaY);
-        } else {
-            handleHorizontalStaircase(unitPos, deltaX, deltaY);
+        switch (stairCase.getDirection()) {
+            case UP ->
+                handleUpStaircase(unitPos, deltaY);
+            case RIGHT ->
+                handleRightStaircase(unitPos, deltaX);
+            case LEFT ->
+                handleLeftStaircase(unitPos, deltaX);
         }
     }
 
-    private void handleVerticalStaircase(Position currentPos, int deltaX, int deltaY) {
-        if (deltaX == 0 && deltaY != 0) {
+    private void handleUpStaircase(Position currentPos, int deltaY) {
+        if (deltaY != 0) {
             int exitOffset = (deltaY > 0) ? (StairCase.stairLength + 1) : -(StairCase.stairLength + 1);
             Position targetPos = new Position(currentPos.getX(), currentPos.getY() + exitOffset);
             teleportToDestination(targetPos);
         }
     }
 
-    private void handleHorizontalStaircase(Position currentPos, int deltaX, int deltaY) {
-        if (deltaY == 0 && deltaX != 0) {
-            int exitOffset = (deltaX > 0) ? (StairCase.stairLength + 1) : -(StairCase.stairLength + 1);
-            Position targetPos = new Position(currentPos.getX() + exitOffset, currentPos.getY());
+    private void handleRightStaircase(Position currentPos, int deltaX) {
+        if (deltaX > 0) {
+            Position targetPos = new Position(currentPos.getX() + StairCase.stairLength + 1, currentPos.getY() - 1);
+            teleportToDestination(targetPos);
+        } else if (deltaX < 0) {
+            Position targetPos = new Position(currentPos.getX() - (StairCase.stairLength + 1), currentPos.getY() + 1);
+            teleportToDestination(targetPos);
+        }
+    }
+
+    private void handleLeftStaircase(Position currentPos, int deltaX) {
+        if (deltaX < 0) {
+            Position targetPos = new Position(currentPos.getX() - (StairCase.stairLength + 1), currentPos.getY() - 1);
+            teleportToDestination(targetPos);
+        } else if (deltaX > 0) {
+            Position targetPos = new Position(currentPos.getX() + StairCase.stairLength + 1, currentPos.getY() + 1);
             teleportToDestination(targetPos);
         }
     }

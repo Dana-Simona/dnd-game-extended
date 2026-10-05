@@ -4,6 +4,7 @@ import game.cell.Cell;
 import game.cell.Floor;
 import game.cell.Position;
 import game.cell.StairCase;
+import game.cell.StairDirection;
 import game.cell.Wall;
 import game.occupant.unit.Unit;
 import game.occupant.unit.enemy.Trap;
@@ -37,9 +38,9 @@ public class LevelParser {
         this.chosenPlayer = player;
         this.cellFactory = Map.ofEntries(
                 entry('#', p -> new Wall()),
-                entry('^', p -> new StairCase(true)),
-                entry('>', p -> new StairCase(false)),
-                entry('<', p -> new StairCase(false)),
+                entry('^', p -> new StairCase(StairDirection.UP)),
+                entry('>', p -> new StairCase(StairDirection.RIGHT)),
+                entry('<', p -> new StairCase(StairDirection.LEFT)),
                 entry('.', p -> new Floor()),
                 entry('@', p -> {
                     player.setPosition(p.getX(), p.getY());
