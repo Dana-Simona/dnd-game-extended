@@ -248,6 +248,8 @@ export const useVfxControl = (
 			},
 			bannerLevelUp: (amount) =>
 				spawnVFX(VfxTypes.BANNER_LEVEL_UP, [], amount),
+			bannerNextLevel: (amount) =>
+				spawnVFX(VfxTypes.BANNER_NEXT_LEVEL, [], amount),
 			bannerLose: (amount) => spawnVFX(VfxTypes.BANNER_LOSE, [], amount),
 			blackClouds: async (visible) => {
 				if (visible) {

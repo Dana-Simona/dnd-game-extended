@@ -399,7 +399,8 @@ export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(
 		ActionType.NEXT_LEVEL,
 		async (event: GameEvent) => {
-			if (!event.sourceId) return;
+			if (!event.amount) return;
+			await controllers.triggerVfx.bannerNextLevel(event.amount);
 		},
 	);
 
@@ -483,6 +484,14 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerSpriteAnimation.stopLoop(mageId),
 		]);
 		await controllers.triggerSound.stopAll();
+		await Promise.all([
+			...targets.map((target) =>
+				controllers.triggerSpriteAnimation.takeDamage(
+					target,
+					AnimationPhase.FOLLOW_THROUGH,
+				),
+			),
+		]);
 	};
 
 	const warriorCast = async (
@@ -804,10 +813,6 @@ export const setupAnimations = (controllers: Controllers) => {
 		const unit = controllers.getUnitById(victim);
 		if (!unit) return;
 
-		controllers.triggerSpriteAnimation.takeDamage(
-			victim,
-			AnimationPhase.FOLLOW_THROUGH,
-		);
 		controllers.triggerVfx.statDamage(victim, damageTaken);
 		await controllers.triggerHpBar.drainHp(victim);
 	};

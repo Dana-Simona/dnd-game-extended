@@ -138,6 +138,7 @@ export interface TriggerVfxAPI {
 	screenRestoreColor: (durationMs?: number) => Promise<void>;
 
 	bannerLevelUp: (amount: number) => Promise<void>;
+	bannerNextLevel: (amount: number) => Promise<void>;
 	bannerLose: (amount: number) => Promise<void>;
 	blackClouds: (visible: boolean) => Promise<void>;
 	ravensFlying: (durationMs?: number) => Promise<void>;
