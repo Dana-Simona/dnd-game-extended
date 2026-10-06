@@ -82,14 +82,11 @@ export const setupAnimations = (controllers: Controllers) => {
 			const isBoss =
 				controllers.getUnitById(unitId)?.unitType === UnitType.BOSS;
 
-			const deathPlayed = controllers.triggerSpriteAnimation.loop(
+			controllers.triggerSound.play(SoundPreset.ENEMY_DIE);
+			await controllers.triggerSpriteAnimation.loop(
 				unitId,
 				SpritePresets.DIE,
 			);
-			controllers.triggerSound.play(SoundPreset.ENEMY_DIE);
-			await deathPlayed;
-
-			skip();
 
 			await delay(DEATH_LOOP_HOLD_MS);
 			await Promise.all([
@@ -432,7 +429,6 @@ export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(ActionType.WIN, async (event: GameEvent) => {
 		if (!event.sourceId) return;
 	});
-
 
 	const mageCast = async (
 		mage: Mage,
@@ -791,30 +787,29 @@ export const setupAnimations = (controllers: Controllers) => {
 			(async () => {
 				await delay(200);
 				controllers.triggerUnit.shake(victim, 10);
+				controllers.triggerHpBar.showDamagePreview(
+					victim,
+					damageTaken,
+					'#cc98ff',
+				);
 			})(),
 		]);
 
 		await Promise.all([
-			controllers.triggerHpBar.showDamagePreview(
-				victim,
-				damageTaken,
-				'#cc98ff',
-			),
 			controllers.triggerVfx.toggleIceFeet(victim, false),
 		]);
 		if (skip) skip();
 		await delay(150);
 
-		await Promise.all([
-			controllers.triggerSpriteAnimation.takeDamage(
-				victim,
-				AnimationPhase.FOLLOW_THROUGH,
-			),
-			controllers.triggerVfx.statDamage(victim, damageTaken),
-		]);
-		await controllers.triggerHpBar.drainHp(victim);
+		const unit = controllers.getUnitById(victim);
+		if (!unit) return;
 
-		await delay(150);
+		controllers.triggerSpriteAnimation.takeDamage(
+			victim,
+			AnimationPhase.FOLLOW_THROUGH,
+		);
+		controllers.triggerVfx.statDamage(victim, damageTaken);
+		await controllers.triggerHpBar.drainHp(victim);
 	};
 
 	const takeDamageFromWarriorCast = async (

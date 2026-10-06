@@ -59,7 +59,8 @@ export const useHpBarControl = (
 				const current = prev[unitId];
 				if (!current) return prev;
 
-				const nextPreview = Math.max(0, current.currentHp - damage);
+				const baseHp = current.previewHp;
+				const nextPreview = Math.max(0, baseHp - damage);
 				return {
 					...prev,
 					[unitId]: {
