@@ -70,4 +70,5 @@ export interface TriggerUnitAPI {
 		intensityPx?: number,
 		durationMs?: number,
 	) => Promise<void>;
+	grow: (unitId: string, scale?: number, durationMs?: number) => Promise<void>;
 }

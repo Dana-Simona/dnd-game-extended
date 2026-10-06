@@ -25,6 +25,7 @@ import type {
 } from '../../constants/animationStates/spriteStates';
 
 import { useGameBoardLogic } from './useGameBoard';
+import BossHealthBar from '../bossHealthBar/BossHealthBar';
 
 export interface Props {
 	board: string[];
@@ -39,6 +40,7 @@ export interface Props {
 	effectMotion: MotionProps;
 	activeVfxList?: VfxItem[];
 	hpStates: HpStateMap;
+	activeBossId?: string | null;
 }
 
 const TILE_SIZE = 32;
@@ -56,6 +58,7 @@ export const GameBoard: React.FC<Props> = ({
 	effectMotion,
 	activeVfxList = [],
 	hpStates,
+	activeBossId = null,
 }) => {
 	const {
 		character,
@@ -67,6 +70,10 @@ export const GameBoard: React.FC<Props> = ({
 		allUnits,
 		activeScreenVfxTypes,
 	} = useGameBoardLogic(level, enemies, activeVfxList);
+
+	const boss = activeBossId
+		? enemies.find((e) => e.id === activeBossId)
+		: undefined;
 
 	if (!character) {
 		return (
@@ -98,7 +105,6 @@ export const GameBoard: React.FC<Props> = ({
 							units={allUnits}
 							characterId={character.id}
 							tileSize={TILE_SIZE}
-							board={board}
 							activeSpriteStates={activeSpriteStates}
 							activeSpritePhases={activeUnitPhases}
 							visualPositions={visualPositions}
@@ -111,6 +117,14 @@ export const GameBoard: React.FC<Props> = ({
 					</BoardCanvas>
 				</BoardEffectLayer>
 			</Board>
+
+			<BossHealthBar
+				visible={!!boss}
+				name={boss?.name}
+				hpState={boss ? hpStates[boss.id] : undefined}
+				fallbackCurrentHp={boss?.currentHealth}
+				fallbackMaxHp={boss?.health}
+			/>
 
 			<PortalVfxLayer vfxList={portalVfxs} />
 		</ViewportContainer>

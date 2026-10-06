@@ -68,6 +68,7 @@ public class MainServer {
                         int index = Integer.parseInt(indexStr);
                         game.selectPlayer(index);
                         gameLogs.clear();
+                        turnEvents.clear();
                         sendJsonResponse(exchange, "{\"status\": \"success\", \"selected\": " + index + "}");
                     } catch (NumberFormatException e) {
                         sendJsonResponse(exchange, "{\"status\": \"error\", \"message\": \"Invalid index\"}");
@@ -87,8 +88,11 @@ public class MainServer {
 
                     try {
                         int levelIndex = Integer.parseInt(indexStr);
-                        game.selectLevel(levelIndex);
+                        // only events produced by loading this level (e.g. BOSS_LEVEL)
+                        // should be sent back with the response
                         gameLogs.clear();
+                        turnEvents.clear();
+                        game.selectLevel(levelIndex);
                         sendJsonResponse(exchange, getGameStateJson());
                     } catch (NumberFormatException e) {
                         sendJsonResponse(exchange, "{\"status\": \"error\", \"message\": \"Invalid level index\"}");

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 import { ROUTES } from '../constants/routes';
-import type { GameEvent } from '../constants/gameEvent';
+import { ActionType, type GameEvent } from '../constants/gameEvent';
 import { usePreloader } from '../utils/animation/usePreloader';
 import { UnitType, type Unit } from '../constants/interfaces/unit';
 import type { AllPlayerData } from '../constants/interfaces/player';
@@ -20,6 +20,13 @@ interface BoardData {
 const VALID_KEYS = new Set(['w', 'a', 's', 'd', 'e', 'q']);
 
 const isValidKey = (key: string): boolean => VALID_KEYS.has(key.toLowerCase());
+
+const INTRO_EVENT_TYPES = new Set<string>([ActionType.BOSS_LEVEL]);
+
+export const splitIntroEvents = (events: GameEvent[] = []) => ({
+	turnEvents: events.filter((e) => !INTRO_EVENT_TYPES.has(e.type)),
+	introEvents: events.filter((e) => INTRO_EVENT_TYPES.has(e.type)),
+});
 
 export const filterEnemies = (units: AllPlayerData[] = []): Unit[] =>
 	units.filter((unit) => unit.unitType !== UnitType.PLAYER) as Unit[];
@@ -53,8 +60,17 @@ export const useGame = () => {
 	const [actionCount, setActionCount] = useState<number>(0);
 	const [enemies, setEnemies] = useState<Unit[]>([]);
 	const [isLevelLoaded, setIsLevelLoaded] = useState<boolean>(false);
+	const [pendingIntro, setPendingIntro] = useState<GameEvent[] | null>(null);
 
 	const isProcessingRef = useRef<boolean>(false);
+	const isMountedRef = useRef<boolean>(true);
+
+	useEffect(() => {
+		isMountedRef.current = true;
+		return () => {
+			isMountedRef.current = false;
+		};
+	}, []);
 
 	const {
 		isAnimating,
@@ -69,6 +85,7 @@ export const useGame = () => {
 		effectMotion,
 		activeVfxList,
 		hpStates,
+		activeBossId,
 	} = useGameAnimation(enemies, character);
 
 	usePreloader(enemies, character);
@@ -92,22 +109,44 @@ export const useGame = () => {
 		[updateCharacter, resetPositions],
 	);
 
+	const scheduleIntro = useCallback((introEvents: GameEvent[]) => {
+		if (!introEvents.length) return false;
+		isProcessingRef.current = true;
+		setPendingIntro(introEvents);
+		return true;
+	}, []);
+
 	const executeTurn = useCallback(
 		(data: BoardData, enemyList: Unit[]) => {
+			const { turnEvents, introEvents } = splitIntroEvents(data.events);
+
 			const onDone = () => {
+				if (!isMountedRef.current) return;
 				applyBoardState(data);
 				applyUnitState(data, enemyList);
-				isProcessingRef.current = false;
+				if (!scheduleIntro(introEvents)) {
+					isProcessingRef.current = false;
+				}
 			};
 
-			if (data.events?.length) {
-				runTurn(data.events, data.player || null, enemyList, onDone);
+			if (turnEvents.length) {
+				runTurn(turnEvents, data.player || null, enemyList, onDone);
 			} else {
 				onDone();
 			}
 		},
-		[runTurn, applyBoardState, applyUnitState],
+		[runTurn, applyBoardState, applyUnitState, scheduleIntro],
 	);
+
+	useEffect(() => {
+		if (!pendingIntro) return;
+		const events = pendingIntro;
+		setPendingIntro(null);
+
+		runTurn(events, character, enemies, () => {
+			isProcessingRef.current = false;
+		});
+	}, [pendingIntro, runTurn, character, enemies]);
 
 	const handleKeyPress = useCallback(
 		async (key: string) => {
@@ -138,8 +177,9 @@ export const useGame = () => {
 			applyBoardState(data);
 			setActionCount((prev) => prev + 1);
 			applyUnitState(data, filterEnemies(data.units));
+			scheduleIntro(splitIntroEvents(data.events).introEvents);
 		},
-		[applyBoardState, applyUnitState],
+		[applyBoardState, applyUnitState, scheduleIntro],
 	);
 
 	useEffect(() => {
@@ -188,5 +228,6 @@ export const useGame = () => {
 		effectMotion,
 		activeVfxList,
 		hpStates,
+		activeBossId,
 	};
 };

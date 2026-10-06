@@ -21,6 +21,7 @@ export const VfxTypes = {
 	TARGET_SWIRL: 'TargetSwirl',
 	KNIVES_PROJECTILE: 'KnifeProjectile',
 	ARROW_PROJECTILE: 'arrowProjectile',
+	BOSS_SMOKE: 'BossSmoke',
 
 	SCREEN_DARKEN: 'ScreenDarken',
 	SCREEN_RED_HUE: 'ScreenRedHue',
@@ -75,6 +76,7 @@ export const VfxTypeToCategoryMap: Record<VfxTypes, VfxCategory> = {
 	[VfxTypes.KNIVES_PROJECTILE]: VfxCategory.FRONT,
 	[VfxTypes.ARROW_PROJECTILE]: VfxCategory.FRONT,
 	[VfxTypes.EXP_ORBS]: VfxCategory.FRONT,
+	[VfxTypes.BOSS_SMOKE]: VfxCategory.FRONT,
 
 	[VfxTypes.BANNER_WIN]: VfxCategory.PORTAL,
 	[VfxTypes.BANNER_LEVEL_UP]: VfxCategory.PORTAL,
@@ -128,6 +130,7 @@ export interface TriggerVfxAPI {
 	toggleTargetSwirl: (targetId: string, visible: boolean) => Promise<void>;
 	knivesProjectile: (sourceId: string, targetId: string) => Promise<void>;
 	arrowProjectile: (sourceId: string, targetId: string) => Promise<void>;
+	bossSmoke: (targetId: string) => Promise<void>;
 
 	screenDarken: (durationMs?: number) => Promise<void>;
 	screenRedHue: (durationMs?: number) => Promise<void>;

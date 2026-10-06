@@ -13,6 +13,7 @@ import {
 	executeReveal,
 	executePlantRecoil,
 	executePlantAttack,
+	executeGrow,
 } from './unitAnimations';
 import type {
 	TriggerUnitAPI,
@@ -128,6 +129,13 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		[],
 	);
 
+	const grow = useCallback(
+		async (unitId: string, scale = 1.5, durationMs = 600) => {
+			await executeGrow(unitId, scale, durationMs, setUnitTransforms);
+		},
+		[],
+	);
+
 	const revealedRef = useRef<Set<string>>(new Set());
 
 	const reveal = useCallback(async (unitId: string, durationMs = 350) => {
@@ -182,6 +190,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			reveal,
 			plantRecoil,
 			plantAttack,
+			grow,
 		}),
 		[
 			faceTarget,
@@ -196,6 +205,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			reveal,
 			plantRecoil,
 			plantAttack,
+			grow,
 		],
 	);
 
@@ -216,5 +226,6 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		reveal,
 		plantRecoil,
 		plantAttack,
+		grow,
 	};
 };

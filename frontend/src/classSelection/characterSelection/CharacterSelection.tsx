@@ -18,7 +18,7 @@ export type Character = AllPlayerData & CharacterDisplayOptions;
 export const CharacterSelection: React.FC = () => {
 	const { classType } = useParams<{ classType?: string }>();
 	const navigate = useNavigate();
-	const { selectCharacter } = useCharacter();
+	const { selectCharacter, resetCharacter } = useCharacter();
 
 	const [characters, setCharacters] = useState<Character[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
@@ -41,6 +41,10 @@ export const CharacterSelection: React.FC = () => {
 			})
 			.catch((err) => console.error('Error selecting player:', err));
 	};
+
+	useEffect(() => {
+		resetCharacter();
+	}, [resetCharacter]);
 
 	useEffect(() => {
 		if (classType) {

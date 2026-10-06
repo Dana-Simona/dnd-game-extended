@@ -63,9 +63,9 @@ public final class Game {
         return availablePlayers;
     }
 
-    public void selectLevel(int levelIndex) {
-        if (levelIndex >= 0 && levelIndex < levels.size()) {
-            this.currentLevelIndex = levelIndex - 1;
+    public void selectLevel(int levelNumber) {
+        if (levelNumber >= 1 && levelNumber <= levels.size()) {
+            this.currentLevelIndex = levelNumber - 1;
             parseBoard();
         }
     }
@@ -77,6 +77,7 @@ public final class Game {
         } else {
             this.chosenPlayer = players.get(0);
         }
+        this.currentLevelIndex = 0;
         parseBoard();
     }
 

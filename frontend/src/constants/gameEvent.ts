@@ -14,6 +14,7 @@ export const ActionType = {
 	ABILITY_CAST: 'AbilityCast',
 	TAKE_DAMAGE: 'TakeDamage',
 	TAKE_DAMAGE_FROM_ABILITY: 'TakeDamageFromAbility',
+	BOSS_LEVEL: 'BossLevel',
 } as const;
 
 export type ActionType = (typeof ActionType)[keyof typeof ActionType];

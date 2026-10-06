@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Button from '../utils/button/Button';
@@ -10,6 +10,7 @@ import { SpritePresets } from '../constants/animationStates/spriteStates';
 import { getUnitSpriteConfig } from '../utils/animation/spriteAnimations';
 import { ClassAbilityDescription, ClassTypes } from '../constants/classTypes';
 import { ButtonContainer } from './characterSelection/CharacterSelectionStyles';
+import { useCharacter } from '../utils/characterContext/CharacterContext';
 import CharacterDisplay, {
 	type CharacterDisplayOptions,
 } from './characterSelection/characterDisplay/CharacterDisplay';
@@ -27,6 +28,11 @@ const getInitialClassIndex = (classes: CharacterDisplayOptions[]): number => {
 
 const ClassSelection: React.FC = () => {
 	const navigate = useNavigate();
+	const { resetCharacter } = useCharacter();
+
+	useEffect(() => {
+		resetCharacter();
+	}, [resetCharacter]);
 
 	const characterClasses: CharacterDisplayOptions[] = [
 		{

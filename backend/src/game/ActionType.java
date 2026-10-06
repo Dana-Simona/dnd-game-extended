@@ -15,7 +15,8 @@ public enum ActionType {
     HEAL("Heal"),
     ABILITY_CAST("AbilityCast"),
     TAKE_DAMAGE("TakeDamage"),
-    TAKE_DAMAGE_FROM_ABILITY("TakeDamageFromAbility");
+    TAKE_DAMAGE_FROM_ABILITY("TakeDamageFromAbility"),
+    BOSS_LEVEL("BossLevel");
 
     private final String label;
 

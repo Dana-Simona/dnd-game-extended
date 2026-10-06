@@ -31,6 +31,7 @@ public class LevelParser {
     private Player chosenPlayer;
     private final Map<Character, Function<Position, Cell>> cellFactory;
     private StepCounter stepCounter;
+    private Boss detectedBoss;
 
     public LevelParser(Player player, MessageCallback callback, StepCounter stepCounter) {
         this.callback = callback;
@@ -72,9 +73,10 @@ public class LevelParser {
     private Map.Entry<Character, Function<Position, Cell>> boss(char character, String name, int health, int attack, int defense,
             int vision, int xp, int freq) {
         return entry(character, (p) -> {
-            Unit activeUnit = new Boss(character, name, health, attack, defense, vision, xp, freq, p, this.callback, this.boardCallback, stepCounter);
+            Boss activeUnit = new Boss(character, name, health, attack, defense, vision, xp, freq, p, this.callback, this.boardCallback, stepCounter);
             MovementManager movementManager = new MovementManager(this.boardOutcome, activeUnit, callback);
             activeUnit.setMovementManager(movementManager);
+            this.detectedBoss = activeUnit;
             return new Floor(activeUnit);
         });
     }
@@ -124,6 +126,7 @@ public class LevelParser {
         int boardHeight = lines.size();
 
         boardOutcome = new GameBoard(boardWidth, boardHeight);
+        detectedBoss = null;
         this.boardCallback = new BoardManager(boardOutcome);
         chosenPlayer.setBoardCallback(this.boardCallback);
 
@@ -145,7 +148,23 @@ public class LevelParser {
             throw new IllegalStateException("Failed during staircase configuration: " + e.getMessage(), e);
         }
 
+        if (detectedBoss != null) {
+            announceBoss(detectedBoss);
+        }
+
         return boardOutcome;
+    }
+
+    private void announceBoss(Boss boss) {
+        boardOutcome.setBoss(boss);
+        callback.send(boss.getName() + " awakens!");
+        callback.sendEvent(new GameEvent(
+                stepCounter.nextStep(),
+                ActionType.BOSS_LEVEL,
+                boss.getId(),
+                chosenPlayer.getId(),
+                null
+        ));
     }
 
     private Cell parseCharacterToCell(char character, Position position, int lineIndex, int colIndex) {

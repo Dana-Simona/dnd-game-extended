@@ -59,6 +59,7 @@ const UnitTile: React.FC<Props> = ({
 
 	const isPlayer = unit?.unitType === UnitType.PLAYER;
 	const isTrap = unit?.unitType === UnitType.TRAP;
+	const isBoss = unit?.unitType === UnitType.BOSS;
 
 	const effectiveFacing =
 		facing ?? (isPlayer ? UnitFacing.RIGHT : UnitFacing.LEFT);
@@ -69,7 +70,7 @@ const UnitTile: React.FC<Props> = ({
 
 	const isTrapShown =
 		isTrap && ((unit as Trap).isVisible || !!trapState?.revealed);
-	const showEnemyInfo = !isPlayer && (!isTrap || isTrapShown);
+	const showEnemyInfo = !isPlayer && !isBoss && (!isTrap || isTrapShown);
 
 	return (
 		<SpriteTileWrapper

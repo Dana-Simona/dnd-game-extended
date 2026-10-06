@@ -6,6 +6,7 @@ import game.occupant.Corpse;
 import game.occupant.Occupant;
 import game.occupant.unit.OccupantFilterVisitor;
 import game.occupant.unit.enemy.Enemy;
+import game.occupant.unit.enemy.monster.Boss;
 import game.occupant.unit.player.Player;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ public class GameBoard {
 
     private final Cell[][] board;
     private final List<Enemy> enemies;
+    private Boss boss;
 
     public GameBoard(int boardWidth, int boardHeight) {
         this.board = new Cell[boardWidth][boardHeight];
@@ -129,7 +131,22 @@ public class GameBoard {
         clearCorpses();
     }
 
+    public void setBoss(Boss boss) {
+        this.boss = boss;
+    }
+
+    public Boss getBoss() {
+        return boss;
+    }
+
+    public boolean isBossLevel() {
+        return boss != null;
+    }
+
     public boolean isLevelComplete() {
+        if (isBossLevel()) {
+            return boss.isDead() || !enemies.contains(boss);
+        }
         return enemies.isEmpty();
     }
 

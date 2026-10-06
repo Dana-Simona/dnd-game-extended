@@ -328,6 +328,32 @@ export const executeShake = async (
 	});
 };
 
+export const executeGrow = async (
+	unitId: string,
+	scale = 1.5,
+	durationMs = 600,
+	setTransforms: SetTransforms,
+) => {
+	const growVariant: UnitTransform = {
+		scale,
+		transition: {
+			scale: {
+				type: 'spring',
+				stiffness: 180,
+				damping: 9,
+				mass: 0.9,
+			},
+		},
+	};
+
+	setTransforms((prev) => ({
+		...prev,
+		[unitId]: { ...prev[unitId], ...growVariant },
+	}));
+
+	await new Promise((resolve) => setTimeout(resolve, durationMs));
+};
+
 type SetTrapStates = React.Dispatch<
 	React.SetStateAction<Record<string, TrapVisualState>>
 >;

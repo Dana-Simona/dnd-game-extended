@@ -19,7 +19,6 @@ interface Props {
 	units: Unit[];
 	characterId: string;
 	tileSize: number;
-	board: string[];
 	activeSpriteStates?: Record<string, SpritePresets>;
 	activeSpritePhases?: Record<string, AnimationPhase>;
 	visualPositions?: Record<string, { x: number; y: number }>;
@@ -30,12 +29,13 @@ interface Props {
 
 const PLAYER_MOVEMENT_DELAY = 0.3;
 
+const UNIT_SCALE_ORIGIN = { originX: 0.5, originY: 1 } as const;
+
 const ActiveLayer: React.FC<Props> = React.memo(
 	({
 		units,
 		characterId,
 		tileSize,
-		board,
 		activeSpriteStates = {},
 		activeSpritePhases = {},
 		visualPositions = {},
@@ -100,6 +100,8 @@ const ActiveLayer: React.FC<Props> = React.memo(
 					}
 
 					const targetOpacity = transform.opacity ?? 1;
+					const targetScale =
+						typeof transform.scale === 'number' ? transform.scale : 1;
 
 					const moveDelay = isPlayer ? PLAYER_MOVEMENT_DELAY : 0;
 
@@ -115,6 +117,7 @@ const ActiveLayer: React.FC<Props> = React.memo(
 							x: defaultGridTransition,
 							y: defaultGridTransition,
 							opacity: { duration: 0.2, ease: 'easeInOut' },
+							scale: { duration: 0.3, ease: 'easeOut' },
 						};
 
 					const defaultFacing = isPlayer
@@ -133,6 +136,7 @@ const ActiveLayer: React.FC<Props> = React.memo(
 							key={unitId}
 							$tileSize={tileSize}
 							$zIndex={isPlayer ? 10 : 1}
+							style={UNIT_SCALE_ORIGIN}
 							initial={{
 								x: Array.isArray(targetX)
 									? targetX[0]
@@ -141,11 +145,13 @@ const ActiveLayer: React.FC<Props> = React.memo(
 									? targetY[0]
 									: targetY,
 								opacity: targetOpacity,
+								scale: targetScale,
 							}}
 							animate={{
 								x: targetX,
 								y: targetY,
 								opacity: targetOpacity,
+								scale: targetScale,
 							}}
 							transition={transitionConfig}
 						>

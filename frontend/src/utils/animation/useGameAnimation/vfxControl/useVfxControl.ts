@@ -7,6 +7,7 @@ import {
 	type VfxItem,
 	type TriggerVfxAPI,
 } from '../../../../constants/animationStates/vfxStates';
+import { BOSS_SMOKE_DURATION_MS } from '../../../../game/gameBoard/layers/vfxLayers/effectsLayer/effectVfxs/front/bossSmokeConfig';
 
 const CATEGORY_DURATIONS: Record<VfxCategory, number> = {
 	[VfxCategory.SCREEN_COLOR]: 500,
@@ -19,6 +20,7 @@ const TYPE_DURATIONS: Partial<Record<VfxTypes, number>> = {
 	[VfxTypes.EXP_ORBS]: 3200,
 	[VfxTypes.LIGHTNING_STRIKE]: 800,
 	[VfxTypes.BANNER_LEVEL_UP]: 3000,
+	[VfxTypes.BOSS_SMOKE]: BOSS_SMOKE_DURATION_MS,
 };
 
 export interface UseVfxControlReturn {
@@ -198,6 +200,7 @@ export const useVfxControl = (
 					undefined,
 					sourceId,
 				),
+			bossSmoke: (targetId) => spawnVFX(VfxTypes.BOSS_SMOKE, [targetId]),
 
 			screenDarken: (durationMs = 500) =>
 				spawnVFX(

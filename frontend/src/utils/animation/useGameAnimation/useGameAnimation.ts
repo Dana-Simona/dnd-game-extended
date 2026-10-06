@@ -1,10 +1,10 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 
 import { useVfxControl } from './vfxControl/useVfxControl';
 import { setupAnimations } from '../setupAnimations';
 import { playTurnSequence } from '../playTurnSequence';
 import { useUnitControl } from './unitControl/useUnitControl';
-import type { GameEvent } from '../../../constants/gameEvent';
+import { ActionType, type GameEvent } from '../../../constants/gameEvent';
 import type { Unit } from '../../../constants/interfaces/unit';
 import { useHpBarControl } from './hpBarControl/useHpBarControl';
 import { useCameraControl } from './cameraControl/useCameraControl';
@@ -12,6 +12,12 @@ import type { AllPlayerData } from '../../../constants/interfaces/player';
 import { buildTargetPositions } from './spriteAnimationControl/animationUtils';
 import { useSpriteAnimationControl } from './spriteAnimationControl/useSpriteAnimationControl';
 import { useSoundControl } from './soundControl/useSoundControl';
+import { useBossControl } from './bossControl/useBossControl';
+
+const LEVEL_TRANSITION_EVENTS = new Set<string>([
+	ActionType.NEXT_LEVEL,
+	ActionType.WIN,
+]);
 
 export const useGameAnimation = (
 	units: Unit[],
@@ -61,6 +67,10 @@ export const useGameAnimation = (
 	);
 
 	const { triggerSound } = useSoundControl();
+	const { activeBossId, triggerBoss } = useBossControl();
+
+	const playerRef = useRef(player);
+	playerRef.current = player;
 
 	useEffect(() => {
 		setupAnimations({
@@ -70,6 +80,7 @@ export const useGameAnimation = (
 			triggerUnit,
 			triggerHpBar,
 			triggerSound,
+			triggerBoss,
 			getUnitById,
 		});
 	}, [
@@ -79,6 +90,7 @@ export const useGameAnimation = (
 		triggerUnit,
 		triggerHpBar,
 		triggerSound,
+		triggerBoss,
 		getUnitById,
 	]);
 
@@ -113,9 +125,25 @@ export const useGameAnimation = (
 			setIsAnimating(true);
 			try {
 				const targets = buildTargetPositions(nextPlayer, nextEnemies);
-				targetPositionsRef.current = targets;
+
+				const endsLevel = events.some((e) =>
+					LEVEL_TRANSITION_EVENTS.has(e.type),
+				);
+				const turnTargets = { ...targets };
+				if (endsLevel && nextPlayer) {
+					const playerId = nextPlayer.id || 'player';
+					const current = playerRef.current;
+					if (current) {
+						turnTargets[playerId] = { x: current.x, y: current.y };
+					} else {
+						delete turnTargets[playerId];
+					}
+				}
+				targetPositionsRef.current = turnTargets;
 
 				await playTurnSequence(events);
+
+				targetPositionsRef.current = targets;
 
 				setVisualPositions(targets);
 			} finally {
@@ -153,5 +181,6 @@ export const useGameAnimation = (
 		drainHp,
 		triggerSpriteAnimation,
 		playSpriteAnimation,
+		activeBossId,
 	};
 };

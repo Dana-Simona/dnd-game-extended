@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useMemo,
+	useState,
+	type ReactNode,
+} from 'react';
 import type { AllPlayerData } from '../../constants/interfaces/player';
 
 interface CharacterContextType {
@@ -15,19 +22,23 @@ const CharacterContext = createContext<CharacterContextType | undefined>(
 export const CharacterProvider = ({ children }: { children: ReactNode }) => {
 	const [character, setCharacter] = useState<AllPlayerData | null>(null);
 
-	const selectCharacter = (char: AllPlayerData) => setCharacter(char);
-	const updateCharacter = (char: AllPlayerData) => setCharacter(char);
-	const resetCharacter = () => setCharacter(null);
+	const selectCharacter = useCallback(
+		(char: AllPlayerData) => setCharacter(char),
+		[],
+	);
+	const updateCharacter = useCallback(
+		(char: AllPlayerData) => setCharacter(char),
+		[],
+	);
+	const resetCharacter = useCallback(() => setCharacter(null), []);
+
+	const value = useMemo(
+		() => ({ character, selectCharacter, updateCharacter, resetCharacter }),
+		[character, selectCharacter, updateCharacter, resetCharacter],
+	);
 
 	return (
-		<CharacterContext.Provider
-			value={{
-				character,
-				selectCharacter,
-				updateCharacter,
-				resetCharacter,
-			}}
-		>
+		<CharacterContext.Provider value={value}>
 			{children}
 		</CharacterContext.Provider>
 	);

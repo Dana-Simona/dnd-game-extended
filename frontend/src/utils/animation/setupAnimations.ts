@@ -4,6 +4,7 @@ import { type TriggerVfxAPI } from '../../constants/animationStates/vfxStates';
 import type { TriggerHpBarAPI } from '../../constants/animationStates/hpStates';
 import type { TriggerUnitAPI } from '../../constants/animationStates/unitStates';
 import type { TriggerCameraAPI } from '../../constants/animationStates/cameraStates';
+import type { TriggerBossAPI } from '../../constants/animationStates/bossStates';
 import { animationRegistry } from './animationRegistry';
 import {
 	SoundPreset,
@@ -31,8 +32,14 @@ interface Controllers {
 	triggerHpBar: TriggerHpBarAPI;
 	triggerVfx: TriggerVfxAPI;
 	triggerSound: TriggerSoundAPI;
+	triggerBoss: TriggerBossAPI;
 	getUnitById: (id: string) => Unit | undefined;
 }
+
+const DEATH_LOOP_HOLD_MS = 250;
+const DEATH_FADE_MS = 400;
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const setupAnimations = (controllers: Controllers) => {
 	const isTrap = (id?: string) =>
@@ -67,19 +74,70 @@ export const setupAnimations = (controllers: Controllers) => {
 		]);
 	});
 
-	animationRegistry.register(ActionType.DIE, async (event: GameEvent) => {
-		if (!event.sourceId) return;
+	animationRegistry.register(
+		ActionType.DIE,
+		async (event: GameEvent, skip: (steps?: number) => void) => {
+			const unitId = event.sourceId;
+			if (!unitId) return;
+			const isBoss =
+				controllers.getUnitById(unitId)?.unitType === UnitType.BOSS;
 
-		controllers.triggerSpriteAnimation.die(event.sourceId);
-		controllers.triggerSpriteAnimation.loop(
-			event.sourceId,
-			SpritePresets.DIE,
-		);
-		controllers.triggerSound.play(SoundPreset.ENEMY_DIE);
+			const deathPlayed = controllers.triggerSpriteAnimation.loop(
+				unitId,
+				SpritePresets.DIE,
+			);
+			controllers.triggerSound.play(SoundPreset.ENEMY_DIE);
+			await deathPlayed;
 
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-		await controllers.triggerUnit.fadeOut(event.sourceId, 400, 200);
-	});
+			skip();
+
+			await delay(DEATH_LOOP_HOLD_MS);
+			await Promise.all([
+				controllers.triggerUnit.fadeOut(unitId, 0, DEATH_FADE_MS),
+				isBoss && controllers.triggerBoss.hideHealthBar(),
+			]);
+		},
+	);
+
+	animationRegistry.register(
+		ActionType.BOSS_LEVEL,
+		async (event: GameEvent) => {
+			const bossId = event.sourceId;
+			const playerId = event.targetIds?.[0];
+			if (!bossId) return;
+
+			if (playerId) {
+				await controllers.triggerCamera.focusTarget(playerId, 300);
+			}
+			await delay(400);
+			await controllers.triggerCamera.zoomIn(bossId, 3, 1200);
+
+			await Promise.all([
+				controllers.triggerVfx.bossSmoke(bossId),
+				(async () => {
+					await delay(250);
+					await Promise.all([
+						controllers.triggerUnit.grow(bossId, 1.6, 700),
+						(async () => {
+							await delay(150);
+							await Promise.all([
+								controllers.triggerUnit.shake(bossId, 4, 900),
+								controllers.triggerCamera.shake(8, 6),
+							]);
+						})(),
+					]);
+				})(),
+			]);
+
+			await controllers.triggerBoss.showHealthBar(bossId);
+			await delay(300);
+
+			await Promise.all([
+				controllers.triggerUnit.grow(bossId, 1, 500),
+				controllers.triggerCamera.reset(800),
+			]);
+		},
+	);
 
 	animationRegistry.register(
 		ActionType.MELEE,
@@ -375,8 +433,6 @@ export const setupAnimations = (controllers: Controllers) => {
 		if (!event.sourceId) return;
 	});
 
-	const delay = (ms: number) =>
-		new Promise((resolve) => setTimeout(resolve, ms));
 
 	const mageCast = async (
 		mage: Mage,
