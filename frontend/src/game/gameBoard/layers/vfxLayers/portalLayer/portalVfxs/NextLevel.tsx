@@ -1,9 +1,5 @@
 const NextLevel: React.FC = () => {
-	return (
-		<div>
-
-        </div>
-	);
+	return <div></div>;
 };
 
 export default NextLevel;

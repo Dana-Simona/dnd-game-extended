@@ -149,11 +149,10 @@ const ExpOrbs: React.FC<Props> = ({ item }) => {
 		return Math.max(1, Math.min(15, Math.ceil(expAmount / 10)));
 	}, [item.amount]);
 
-	// Play a single group pop sound when the component mounts
 	useEffect(() => {
 		if (typeof Audio !== 'undefined') {
 			const popAudio = new Audio('/sfx/expPop.mp3');
-			popAudio.volume = 0.5; // Adjust the pop volume as needed
+			popAudio.volume = 0.5; 
 			popAudio.play().catch((err) => {
 				console.warn(
 					'Failed to play group pop sound: /sfx/expPop.mp3',
@@ -161,7 +160,7 @@ const ExpOrbs: React.FC<Props> = ({ item }) => {
 				);
 			});
 		}
-	}, []); // Empty dependency array ensures it only plays once for the entire batch
+	}, []); 
 
 	return (
 		<>

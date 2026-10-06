@@ -18,6 +18,7 @@ const CATEGORY_DURATIONS: Record<VfxCategory, number> = {
 const TYPE_DURATIONS: Partial<Record<VfxTypes, number>> = {
 	[VfxTypes.EXP_ORBS]: 3200,
 	[VfxTypes.LIGHTNING_STRIKE]: 800,
+	[VfxTypes.BANNER_LEVEL_UP]: 3000,
 };
 
 export interface UseVfxControlReturn {

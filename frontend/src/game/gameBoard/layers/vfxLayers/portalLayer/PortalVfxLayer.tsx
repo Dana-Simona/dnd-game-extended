@@ -7,7 +7,7 @@ import {
 	type VfxItem,
 } from '../../../../../constants/animationStates/vfxStates';
 import Win from './portalVfxs/Win';
-import LevelUp from './portalVfxs/LevelUp';
+import LevelUp from './portalVfxs/levelup/LevelUp';
 import NextLevel from './portalVfxs/NextLevel';
 import Lose from './portalVfxs/Lose';
 import BlizzardClouds from './portalVfxs/BlizzardClouds';

@@ -12,7 +12,7 @@ export const Game: React.FC = () => {
 		<Container>
 			<GameBoard
 				board={game.board}
-				level={game.level} 
+				level={game.level}
 				enemies={game.enemies}
 				activeSpriteStates={game.activeSpriteStates}
 				visualPositions={game.visualPositions}
