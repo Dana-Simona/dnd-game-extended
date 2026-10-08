@@ -399,8 +399,8 @@ export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(
 		ActionType.NEXT_LEVEL,
 		async (event: GameEvent) => {
-			if (!event.amount) return;
-			await controllers.triggerVfx.bannerNextLevel(event.amount);
+			console.log('eventAmount:', event.amount)
+			await controllers.triggerVfx.bannerNextLevel(event.amount || 1);
 		},
 	);
 

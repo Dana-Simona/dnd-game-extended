@@ -20,6 +20,7 @@ const TYPE_DURATIONS: Partial<Record<VfxTypes, number>> = {
 	[VfxTypes.EXP_ORBS]: 3200,
 	[VfxTypes.LIGHTNING_STRIKE]: 800,
 	[VfxTypes.BANNER_LEVEL_UP]: 3000,
+	[VfxTypes.BANNER_NEXT_LEVEL]: 6000,
 	[VfxTypes.BOSS_SMOKE]: BOSS_SMOKE_DURATION_MS,
 };
 

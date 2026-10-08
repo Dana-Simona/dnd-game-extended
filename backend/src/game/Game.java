@@ -154,7 +154,7 @@ public final class Game {
             if (currentGameBoard.isLevelComplete()) {
                 currentLevelIndex++;
                 messageCallback.send("NEXT LEVEL!");
-                messageCallback.sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.NEXT_LEVEL, null, null));
+                messageCallback.sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.NEXT_LEVEL, null, getCurrentLevel()));
                 if (currentLevelIndex < levels.size()) {
                     parseBoard();
                 } else {

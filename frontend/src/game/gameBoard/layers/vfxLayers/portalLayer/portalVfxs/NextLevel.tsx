@@ -1,161 +1,216 @@
-import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useEffect } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 import styled from 'styled-components';
 import type { VfxItem } from '../../../../../../constants/animationStates/vfxStates';
 
 interface Props {
-	item: VfxItem;
+    item: VfxItem;
 }
 
+const TEAL = '#00ffcc';
+const DARK_GRAY = '#16191bba';
+const LIGHT_GRAY = '#575f66c5';
+
+const PANEL_HEIGHT = 220;
+const SHINE_WIDTH = 60;
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const NextLevel: React.FC<Props> = ({ item }) => {
+    const titleControls = useAnimation();
+    const panelControls = useAnimation();
+    const glowControls = useAnimation();
+    const leftShineControls = useAnimation();
+    const rightShineControls = useAnimation();
+    const nextTextControls = useAnimation();
 
-	console.log('spawned')
-	const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        let cancelled = false;
 
-	const textControls = useAnimation();
-	const boxControls = useAnimation();
-	const shineControls = useAnimation();
+        const run = async () => {
+            const travel = window.innerWidth * 0.7;
 
-	useEffect(() => {
-		setMounted(true);
-	}, []);
+            await titleControls.start({
+                opacity: 1,
+                transition: { duration: 0.5, ease: 'easeOut' },
+            });
+            if (cancelled) return;
 
-	useEffect(() => {
-		if (!mounted) return;
+            await panelControls.start({
+                opacity: 1,
+                transition: { duration: 0.25 },
+            });
+            if (cancelled) return;
 
-		const runAnimationSequence = async () => {
-			await textControls.start({
-				scale: [0, 1.3],
-				y: [-150, -100],
-				opacity: [0, 1],
-				transition: { duration: 0.5, type: 'spring', bounce: 0.6 },
-			});
+            await panelControls.start({
+                width: '100vw',
+                transition: { duration: 0.5, ease: [0.76, 0, 0.24, 1] },
+            });
+            if (cancelled) return;
 
-			await new Promise((resolve) => setTimeout(resolve, 250));
+            await Promise.all([
+                panelControls.start({
+                    height: PANEL_HEIGHT,
+                    transition: { duration: 0.5, ease: [0.76, 0, 0.24, 1] },
+                }),
+                leftShineControls.start({
+                    opacity: 1,
+                    transition: { duration: 0.4 },
+                }),
+                rightShineControls.start({
+                    opacity: 1,
+                    transition: { duration: 0.4 },
+                }),
+            ]);
+            if (cancelled) return;
 
-			await Promise.all([
-				textControls.start({
-					scale: 1,
-					y: 0,
-					transition: {
-						type: 'spring',
-						stiffness: 400,
-						damping: 12,
-						mass: 2.5,
-					},
-				}),
-				boxControls.start({
-					width: '600px',
-					transition: {
-						type: 'spring',
-						stiffness: 300,
-						damping: 20,
-					},
-				}),
-			]);
+            await wait(150);
+            if (cancelled) return;
 
-			await shineControls.start({
-				left: ['-100%', '200%'],
-				transition: {
-					duration: 1.2,
-					ease: [0.8, 0, 0.2, 1],
-				},
-			});
-		};
+            const slide = { duration: 0.55, ease: [0.7, 0, 1, 0.5] as const };
+            await Promise.all([
+                leftShineControls.start({ x: -travel, transition: slide }),
+                rightShineControls.start({ x: travel, transition: slide }),
+                glowControls.start({
+                    opacity: 1,
+                    transition: { duration: 0.35, ease: 'easeOut' },
+                }),
+            ]);
+            if (cancelled) return;
 
-		runAnimationSequence();
-	}, [mounted, textControls, boxControls, shineControls]);
+            await Promise.all([
+                leftShineControls.start({ opacity: 0, transition: { duration: 0.1 } }),
+                rightShineControls.start({ opacity: 0, transition: { duration: 0.1 } }),
+                glowControls.start({
+                    opacity: 0,
+                    transition: { duration: 0.4, ease: 'easeInOut' },
+                }),
+            ]);
+            if (cancelled) return;
 
-	if (!mounted) return null;
+            await nextTextControls.start({
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.4, ease: 'easeOut' },
+            });
+        };
 
-	return createPortal(
-		<PortalOverlay>
-			<AnimationContainer>
-				<SilverRectangle
-					initial={{ width: 100 }}
-					animate={boxControls}
-				>
-					<ShineDiv animate={shineControls} />
-				</SilverRectangle>
+        run();
 
-				<Title
-					initial={{ opacity: 0, scale: 0 }}
-					animate={textControls}
-				>
-					Level {item.amount}
-				</Title>
-			</AnimationContainer>
-		</PortalOverlay>,
-		document.body,
-	);
+        return () => {
+            cancelled = true;
+        };
+    }, [
+        titleControls,
+        panelControls,
+        glowControls,
+        leftShineControls,
+        rightShineControls,
+        nextTextControls,
+    ]);
+
+    return (
+        <Container>
+            <Title initial={{ opacity: 0 }} animate={titleControls}>
+                Level Complete
+            </Title>
+
+            <Panel
+                initial={{ width: 80, height: 0, opacity: 0 }}
+                animate={panelControls}
+            >
+                <Glow initial={{ opacity: 0 }} animate={glowControls} />
+
+                <Shine
+                    $side="left"
+                    initial={{ x: 0, opacity: 0 }}
+                    animate={leftShineControls}
+                />
+                <Shine
+                    $side="right"
+                    initial={{ x: 0, opacity: 0 }}
+                    animate={rightShineControls}
+                />
+
+                <NextText initial={{ opacity: 0, y: 10 }} animate={nextTextControls}>
+                    Next level: Level {item.amount}
+                </NextText>
+            </Panel>
+        </Container>
+    );
 };
 
 export default NextLevel;
 
-const PortalOverlay = styled.div`
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	pointer-events: none; 
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 9999;
-`;
-
-const AnimationContainer = styled.div`
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-`;
-
-const SilverRectangle = styled(motion.div)`
-	position: absolute;
-	height: 100px;
-	width: 100px;
-	background: linear-gradient(135deg, #e6e6e6 0%, #ffffff 40%, #a6a6a6 100%);
-	border: 2px solid #ffffff;
-	box-shadow:
-		0 25px 50px -12px rgba(0, 0, 0, 0.5),
-		inset 0 4px 15px rgba(255, 255, 255, 0.9),
-		inset 0 -4px 15px rgba(0, 0, 0, 0.2);
-	border-radius: 12px;
-	overflow: hidden;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-`;
-
-const ShineDiv = styled(motion.div)`
-	position: absolute;
-	top: 0;
-	left: -100%;
-	width: 50%;
+const Container = styled.div`
+    display: flex;
+    flex-direction: column;
 	height: 100%;
-	background: linear-gradient(
-		to right,
-		rgba(255, 255, 255, 0) 0%,
-		rgba(255, 255, 255, 0.9) 50%,
-		rgba(255, 255, 255, 0) 100%
-	);
-	filter: blur(8px);
-	transform: skewX(-25deg);
+    align-items: center;
+    justify-content: start;
+	padding-top: 30%;
 `;
 
 const Title = styled(motion.h1)`
-	position: relative;
-	font-family: 'Arial Black', Impact, sans-serif;
-	font-size: 3.5rem;
-	font-weight: 900;
-	color: #222;
-	margin: 0;
-	text-transform: uppercase;
-	letter-spacing: 2px;
-	-webkit-text-stroke: 1.5px #fff;
-	text-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4);
-	z-index: 10;
+    margin: 0 0 12px 0;
+    font-family: monospace;
+    font-size: 3.5rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: ${TEAL};
+    text-shadow: 0 0 24px rgba(20, 184, 166, 0.45);
+    white-space: nowrap;
+`;
+
+const Panel = styled(motion.div)`
+    position: relative;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: ${DARK_GRAY};
+    border-top: 4px solid ${TEAL};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+const Glow = styled(motion.div)`
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse at center,
+        ${LIGHT_GRAY} 0%,
+        ${DARK_GRAY} 70%
+    );
+    pointer-events: none;
+`;
+
+const Shine = styled(motion.div)<{ $side: 'left' | 'right' }>`
+    position: absolute;
+    top: -20%;
+    left: calc(50% - ${SHINE_WIDTH / 2}px);
+    width: ${SHINE_WIDTH}px;
+    height: 140%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.75) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    filter: blur(4px);
+    transform: skewX(${({ $side }) => ($side === 'left' ? '-25deg' : '25deg')});
+    pointer-events: none;
+`;
+
+const NextText = styled(motion.div)`
+    position: relative;
+    z-index: 2;
+    font-family: monospace;
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #f2f5f7;
+    white-space: nowrap;
 `;

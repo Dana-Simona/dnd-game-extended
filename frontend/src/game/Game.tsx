@@ -4,7 +4,6 @@ import { GameLog } from './gameLog/GameLog';
 import { Container, Stats } from './GameStyles';
 import { GameBoard } from './gameBoard/GameBoard';
 import { PlayerStats } from './playerStats/PlayerStats';
-import NextLevel from './gameBoard/layers/vfxLayers/portalLayer/portalVfxs/NextLevel';
 
 export const Game: React.FC = () => {
 	const game = useGame();
