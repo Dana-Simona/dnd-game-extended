@@ -9,7 +9,6 @@ import {
 	type VfxItem,
 	type TriggerVfxAPI,
 } from '../../../../constants/animationStates/vfxStates';
-import { BOSS_SMOKE_DURATION_MS } from '../../../../game/gameBoard/layers/vfxLayers/effectsLayer/effectVfxs/front/bossSmokeConfig';
 
 const CATEGORY_DURATIONS: Record<VfxCategory, number> = {
 	[VfxCategory.SCREEN_COLOR]: 500,
@@ -23,7 +22,7 @@ const TYPE_DURATIONS: Partial<Record<VfxTypes, number>> = {
 	[VfxTypes.LIGHTNING_STRIKE]: 800,
 	[VfxTypes.BANNER_LEVEL_UP]: 3000,
 	[VfxTypes.BANNER_NEXT_LEVEL]: NEXT_LEVEL_BANNER_MS,
-	[VfxTypes.BOSS_SMOKE]: BOSS_SMOKE_DURATION_MS,
+	[VfxTypes.BOSS_SPELL]: 3000,
 };
 
 export interface UseVfxControlReturn {
@@ -173,6 +172,7 @@ export const useVfxControl = (
 			dustLeap: (unitId) => spawnVFX(VfxTypes.DUST_LEAP, [unitId]),
 			landingDust: (unitId) => spawnVFX(VfxTypes.DUST_LAND, [unitId]),
 			slash: (targetId) => spawnVFX(VfxTypes.SLASH, [targetId]),
+			bossSpell: (targetId) => spawnVFX(VfxTypes.BOSS_SPELL, [targetId]),
 
 			toggleTargetSwirl: async (targetId: string, visible: boolean) => {
 				if (visible) {
@@ -203,8 +203,6 @@ export const useVfxControl = (
 					undefined,
 					sourceId,
 				),
-			bossSmoke: (targetId) => spawnVFX(VfxTypes.BOSS_SMOKE, [targetId]),
-
 			screenDarken: (durationMs = 500) =>
 				spawnVFX(
 					VfxTypes.SCREEN_DARKEN,

@@ -208,7 +208,7 @@ const Shine = styled(motion.div)<{ $side: 'left' | 'right' }>`
 		rgba(255, 255, 255, 0.75) 50%,
 		rgba(255, 255, 255, 0) 100%
 	);
-	filter: blur(4px);
+	filter: blur(1px);
 	transform: skewX(${({ $side }) => ($side === 'left' ? '-25deg' : '25deg')});
 	pointer-events: none;
 `;

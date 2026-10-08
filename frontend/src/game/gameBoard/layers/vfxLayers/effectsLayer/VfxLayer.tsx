@@ -22,7 +22,7 @@ import {
 import Slash from './effectVfxs/front/Slash';
 import { RollVfx } from './effectVfxs/front/rollVfx/RollVfx';
 import { StatVfx } from './effectVfxs/front/statVfx/StatVfx';
-import BossSmoke from './effectVfxs/front/BossSmoke';
+import BossSpell from './effectVfxs/front/BossSpell';
 
 interface Props {
 	vfxList: VfxItem[];
@@ -52,7 +52,7 @@ const VFX_COMPONENTS: Partial<
 	[VfxTypes.KNIVES_PROJECTILE]: KnivesProjectile,
 	[VfxTypes.ARROW_PROJECTILE]: ArrowProjectile,
 	[VfxTypes.EXP_ORBS]: ExpOrbs,
-	[VfxTypes.BOSS_SMOKE]: BossSmoke,
+	[VfxTypes.BOSS_SPELL]: BossSpell,
 };
 
 export const VfxLayer: React.FC<Props> = ({ vfxList }) => {

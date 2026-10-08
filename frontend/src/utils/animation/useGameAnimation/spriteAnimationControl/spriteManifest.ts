@@ -497,6 +497,13 @@ export const SPRITE_MANIFEST: Record<
 		[SpritePresets.SPAWN]: {
 			width: 200,
 			height: 93,
+			frameCount: 9,
+			fps: 6,
+			offsetY: -5,
+		},
+		[SpritePresets.ABILITY_CAST]: {
+			width: 200,
+			height: 93,
 			frameCount: 10,
 			fps: 8,
 			offsetY: -5,

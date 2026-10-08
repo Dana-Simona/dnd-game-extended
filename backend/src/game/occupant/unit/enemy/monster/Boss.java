@@ -76,6 +76,5 @@ public class Boss extends Monster implements HeroicUnit {
     @Override
     public void onGameTick() {
         super.onGameTick();
-        this.move();
     }
 }

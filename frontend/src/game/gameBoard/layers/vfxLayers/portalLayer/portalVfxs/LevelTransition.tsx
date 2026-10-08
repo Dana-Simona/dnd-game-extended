@@ -45,7 +45,6 @@ const LevelTransition: React.FC<Props> = ({ item }) => {
 					ease: 'easeOut',
 				}}
 			>
-				<Entering>Entering</Entering>
 				<LevelName>Level {item.amount}</LevelName>
 			</Label>
 		</Curtain>
@@ -85,12 +84,6 @@ const Label = styled(motion.div)`
 	font-family: monospace;
 	text-transform: uppercase;
 	text-align: center;
-`;
-
-const Entering = styled.span`
-	color: #8a949a;
-	font-size: 1rem;
-	letter-spacing: 6px;
 `;
 
 const LevelName = styled.span`

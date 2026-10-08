@@ -21,7 +21,7 @@ import {
 	type TriggerSpriteAnimationAPI,
 } from '../../constants/animationStates/spriteStates';
 import { UnitType, type Unit } from '../../constants/interfaces/unit';
-import type { Trap } from '../../constants/interfaces/monster';
+import type { Boss, Trap } from '../../constants/interfaces/monster';
 import type {
 	Hunter,
 	Mage,
@@ -122,7 +122,6 @@ export const setupAnimations = (controllers: Controllers) => {
 				!!boss && hasAnimation(boss, SpritePresets.SPAWN);
 
 			await Promise.all([
-				controllers.triggerVfx.bossSmoke(bossId),
 				(async () => {
 					await delay(250);
 					await Promise.all([
@@ -142,11 +141,12 @@ export const setupAnimations = (controllers: Controllers) => {
 									0,
 									BOSS_SPAWN_FADE_MS,
 								),
+						controllers.triggerCamera.shake(16, 6, 3000),
+
 						(async () => {
 							await delay(BOSS_SPAWN_SHAKE_DELAY_MS);
 							await Promise.all([
 								controllers.triggerUnit.shake(bossId, 4, 900),
-								controllers.triggerCamera.shake(8, 6),
 							]);
 						})(),
 					]);
@@ -325,6 +325,8 @@ export const setupAnimations = (controllers: Controllers) => {
 						skip();
 						break;
 				}
+			} else if (caster?.unitType === UnitType.BOSS) {
+				await bossCast(caster as Boss, victimsIds[0], skip);
 			} else {
 				skip();
 			}
@@ -816,6 +818,15 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerCamera.reset(400),
 			controllers.triggerVfx.letterbox(false),
 		]);
+	};
+
+	const bossCast = async (
+		boss: Boss,
+		target: string,
+		skip: (steps?: number) => void,
+	) => {
+		controllers.triggerSpriteAnimation.abilityCast(boss.id);
+		controllers.triggerVfx.bossSpell(target);
 	};
 
 	const takeDamageFromMageCast = async (

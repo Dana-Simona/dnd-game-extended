@@ -14,6 +14,7 @@ export interface SpriteProps {
 	loopStartFrame?: number;
 	impactFrame?: number;
 	phase?: AnimationPhase;
+	style?: React.CSSProperties;
 }
 
 const Sprite: React.FC<SpriteProps> = ({
@@ -27,6 +28,7 @@ const Sprite: React.FC<SpriteProps> = ({
 	loopStartFrame = 0,
 	impactFrame,
 	phase = AnimationPhase.FULL,
+	style,
 }) => {
 	const [isLoopingPhase, setIsLoopingPhase] = useState(false);
 
@@ -82,6 +84,7 @@ const Sprite: React.FC<SpriteProps> = ({
 			$loop={isInfinite}
 			$offsetY={offsetY}
 			onAnimationEnd={handleAnimationEnd}
+			style={style}
 		/>
 	);
 };
