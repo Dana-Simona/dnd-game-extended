@@ -214,18 +214,11 @@ export const setupAnimations = (controllers: Controllers) => {
 				controllers.triggerSound.play(SoundPreset.ENEMY_MELEE);
 			}
 
-			skip();
-
 			if (player) {
 				if (player.class === ClassTypes.MAGE) {
 					controllers.triggerSound.play(SoundPreset.MAGE_MELEE);
 				}
 			}
-
-			await controllers.triggerSpriteAnimation.melee(
-				attacker,
-				AnimationPhase.FOLLOW_THROUGH,
-			);
 		},
 	);
 
@@ -262,6 +255,10 @@ export const setupAnimations = (controllers: Controllers) => {
 				: controllers.triggerUnit.dash(defender, attacker, -25, 1000),
 			controllers.triggerHpBar.showDamagePreview(defender, finalDamage),
 			controllers.triggerVfx.statDamage(defender, finalDamage),
+			await controllers.triggerSpriteAnimation.melee(
+				attacker,
+				AnimationPhase.FOLLOW_THROUGH,
+			)
 		]);
 
 		await Promise.all([
@@ -296,6 +293,7 @@ export const setupAnimations = (controllers: Controllers) => {
 			const casterId = event.sourceId;
 			const victimsIds = event.targetIds;
 
+			console.log(event)
 			if (!casterId || !victimsIds || victimsIds.length === 0) {
 				skip();
 				return;
@@ -425,14 +423,11 @@ export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(
 		ActionType.NEXT_LEVEL,
 		async (event: GameEvent) => {
-			console.log('eventAmount:', event.amount);
 			const nextLevel = event.amount || 1;
 
 			await Promise.all([
 				controllers.triggerVfx.bannerNextLevel(nextLevel),
 				(async () => {
-					// close the screen as the banner ends; it stays closed until
-					// the new level is in place (see useGameAnimation)
 					await delay(NEXT_LEVEL_BANNER_MS - LEVEL_TRANSITION_MS);
 					await controllers.triggerVfx.levelTransition(
 						true,

@@ -26,7 +26,7 @@ public class Hunter extends Player {
         Enemy closestEnemy = getBoardCallback().getClosestEnemy(getPosition(), this.range);
         if (closestEnemy != null && arrowCount != 0) {
             sendMessage(getName() + " fired an arrow at " + closestEnemy.getName());
-            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, closestEnemy.getId(), null));
+            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId() ,closestEnemy.getId(), null));
             closestEnemy.takeDamageFromAbility(getAttackPoints(), this.getName(), this.getId());
             handleEnemyIfDead(closestEnemy);
             arrowCount--;
