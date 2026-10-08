@@ -81,6 +81,7 @@ export const useGame = () => {
 		trapStates,
 		runTurn,
 		resetPositions,
+		triggerUnit,
 		panZoomMotion,
 		effectMotion,
 		activeVfxList,
@@ -109,12 +110,22 @@ export const useGame = () => {
 		[updateCharacter, resetPositions],
 	);
 
-	const scheduleIntro = useCallback((introEvents: GameEvent[]) => {
-		if (!introEvents.length) return false;
-		isProcessingRef.current = true;
-		setPendingIntro(introEvents);
-		return true;
-	}, []);
+	const scheduleIntro = useCallback(
+		(introEvents: GameEvent[]) => {
+			if (!introEvents.length) return false;
+
+			introEvents
+				.filter((e) => e.type === ActionType.BOSS_LEVEL && e.sourceId)
+				.forEach((e) => {
+					void triggerUnit.fadeOut(e.sourceId, 0, 0);
+				});
+
+			isProcessingRef.current = true;
+			setPendingIntro(introEvents);
+			return true;
+		},
+		[triggerUnit],
+	);
 
 	const executeTurn = useCallback(
 		(data: BoardData, enemyList: Unit[]) => {

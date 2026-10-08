@@ -9,8 +9,10 @@ import game.cell.Position;
 import game.occupant.unit.enemy.Enemy;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Mage extends Player {
@@ -64,13 +66,18 @@ public class Mage extends Player {
             }
         }
 
+        Set<Enemy> hitEnemies = new LinkedHashSet<>();
         for (Enemy enemy : targetsToHit) {
             if (!enemy.isDead() && preRolledDefenses.containsKey(enemy)) {
                 int defenseRoll = preRolledDefenses.get(enemy);
 
                 this.takeDamageFromAbility(enemy, this.spellPower, defenseRoll);
-                handleEnemyIfDead(enemy);
+                hitEnemies.add(enemy);
             }
+        }
+
+        for (Enemy enemy : hitEnemies) {
+            handleEnemyIfDead(enemy);
         }
     }
 

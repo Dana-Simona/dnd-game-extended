@@ -70,6 +70,14 @@ export const resolveAnimationMeta = (
 	);
 };
 
+export const hasAnimation = (
+	unit: Unit | AllPlayerData | undefined,
+	action: SpritePresets,
+): boolean => {
+	const { manifestKey } = resolveSpriteIdentity(unit, action);
+	return !!SPRITE_MANIFEST[manifestKey]?.[action];
+};
+
 export const getUnitSpriteConfig = (
 	unit: Unit | AllPlayerData | undefined,
 	action: SpritePresets,

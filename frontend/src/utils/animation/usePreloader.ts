@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { getUnitSpriteConfig } from './spriteAnimations';
+import { getUnitSpriteConfig, hasAnimation } from './spriteAnimations';
 import type { Unit } from '../../constants/interfaces/unit';
 import type { AllPlayerData } from '../../constants/interfaces/player';
 import { SpritePresets } from '../../constants/animationStates/spriteStates';
@@ -14,10 +14,14 @@ export const usePreloader = (units: Unit[], player: AllPlayerData | null) => {
 			SpritePresets.MELEE,
 			SpritePresets.DIE,
 			SpritePresets.ABILITY_CAST,
+			SpritePresets.SPAWN,
 		];
 
 		allUnits.forEach((unit) => {
 			actionsToPreload.forEach((action) => {
+				if (action === SpritePresets.SPAWN && !hasAnimation(unit, action))
+					return;
+
 				const config = getUnitSpriteConfig(unit, action);
 
 				const img = new Image();

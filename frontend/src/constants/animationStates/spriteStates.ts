@@ -5,6 +5,7 @@ export const SpritePresets = {
 	MELEE: 'melee',
 	TAKE_DAMAGE: 'takedamage',
 	ABILITY_CAST: 'abilitycast',
+	SPAWN: 'spawn',
 } as const;
 
 export type SpritePresets = (typeof SpritePresets)[keyof typeof SpritePresets];
@@ -19,7 +20,7 @@ export const AnimationPhase = {
 	FULL: 'full',
 	WINDUP: 'windup',
 	FOLLOW_THROUGH: 'followThrough',
-	LOOP: 'loop', 
+	LOOP: 'loop',
 } as const;
 
 export type AnimationPhase =
@@ -37,6 +38,7 @@ export interface TriggerSpriteAnimationAPI {
 	idle: (unitId: string) => Promise<void>;
 	abilityCast: (unitId: string, phase?: AnimationPhase) => Promise<void>;
 	die: (unitId: string, phase?: AnimationPhase) => Promise<void>;
+	spawn: (unitId: string, phase?: AnimationPhase) => Promise<void>;
 	loop: (unitId: string, action: SpritePresets) => Promise<void>;
 	stopLoop: (unitId: string) => void;
 }

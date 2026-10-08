@@ -95,7 +95,8 @@ export const useSpriteAnimationControl = (
 			phase: AnimationPhase = AnimationPhase.FULL,
 		): Promise<void> => {
 			const targetPos = targetPositionsRef.current[unitId];
-			if (!isUnitInViewport(unitId)) {
+			const skipViewportCheck = action === SpritePresets.SPAWN;
+			if (!skipViewportCheck && !isUnitInViewport(unitId)) {
 				if (targetPos) {
 					setVisualPositions((p) =>
 						updateSinglePosition(p, unitId, targetPos),
@@ -151,6 +152,8 @@ export const useSpriteAnimationControl = (
 				playSpriteAnimation(unitId, SpritePresets.ABILITY_CAST, phase),
 			die: (unitId, phase) =>
 				playSpriteAnimation(unitId, SpritePresets.DIE, phase),
+			spawn: (unitId, phase) =>
+				playSpriteAnimation(unitId, SpritePresets.SPAWN, phase),
 			loop: (unitId, action) =>
 				playSpriteAnimation(unitId, action, AnimationPhase.LOOP),
 			stopLoop: (unitId) =>

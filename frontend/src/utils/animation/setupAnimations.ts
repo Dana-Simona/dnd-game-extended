@@ -1,11 +1,16 @@
 import { ClassTypes } from '../../constants/classTypes';
 import { ActionType, type GameEvent } from '../../constants/gameEvent';
-import { type TriggerVfxAPI } from '../../constants/animationStates/vfxStates';
+import {
+	LEVEL_TRANSITION_MS,
+	NEXT_LEVEL_BANNER_MS,
+	type TriggerVfxAPI,
+} from '../../constants/animationStates/vfxStates';
 import type { TriggerHpBarAPI } from '../../constants/animationStates/hpStates';
 import type { TriggerUnitAPI } from '../../constants/animationStates/unitStates';
 import type { TriggerCameraAPI } from '../../constants/animationStates/cameraStates';
 import type { TriggerBossAPI } from '../../constants/animationStates/bossStates';
 import { animationRegistry } from './animationRegistry';
+import { hasAnimation } from './spriteAnimations';
 import {
 	SoundPreset,
 	type TriggerSoundAPI,
@@ -38,6 +43,9 @@ interface Controllers {
 
 const DEATH_LOOP_HOLD_MS = 250;
 const DEATH_FADE_MS = 400;
+
+const BOSS_SPAWN_FADE_MS = 600;
+const BOSS_SPAWN_SHAKE_DELAY_MS = 450;
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -109,14 +117,33 @@ export const setupAnimations = (controllers: Controllers) => {
 			await delay(400);
 			await controllers.triggerCamera.zoomIn(bossId, 3, 1200);
 
+			const boss = controllers.getUnitById(bossId);
+			const hasSpawnSprite =
+				!!boss && hasAnimation(boss, SpritePresets.SPAWN);
+
 			await Promise.all([
 				controllers.triggerVfx.bossSmoke(bossId),
 				(async () => {
 					await delay(250);
 					await Promise.all([
-						controllers.triggerUnit.grow(bossId, 1.6, 700),
+						hasSpawnSprite
+							? (async () => {
+									await controllers.triggerUnit.fadeIn(
+										bossId,
+										0,
+										1,
+									);
+									await controllers.triggerSpriteAnimation.spawn(
+										bossId,
+									);
+								})()
+							: controllers.triggerUnit.fadeIn(
+									bossId,
+									0,
+									BOSS_SPAWN_FADE_MS,
+								),
 						(async () => {
-							await delay(150);
+							await delay(BOSS_SPAWN_SHAKE_DELAY_MS);
 							await Promise.all([
 								controllers.triggerUnit.shake(bossId, 4, 900),
 								controllers.triggerCamera.shake(8, 6),
@@ -129,10 +156,7 @@ export const setupAnimations = (controllers: Controllers) => {
 			await controllers.triggerBoss.showHealthBar(bossId);
 			await delay(300);
 
-			await Promise.all([
-				controllers.triggerUnit.grow(bossId, 1, 500),
-				controllers.triggerCamera.reset(800),
-			]);
+			await controllers.triggerCamera.reset(800);
 		},
 	);
 
@@ -399,8 +423,21 @@ export const setupAnimations = (controllers: Controllers) => {
 	animationRegistry.register(
 		ActionType.NEXT_LEVEL,
 		async (event: GameEvent) => {
-			console.log('eventAmount:', event.amount)
-			await controllers.triggerVfx.bannerNextLevel(event.amount || 1);
+			console.log('eventAmount:', event.amount);
+			const nextLevel = event.amount || 1;
+
+			await Promise.all([
+				controllers.triggerVfx.bannerNextLevel(nextLevel),
+				(async () => {
+					// close the screen as the banner ends; it stays closed until
+					// the new level is in place (see useGameAnimation)
+					await delay(NEXT_LEVEL_BANNER_MS - LEVEL_TRANSITION_MS);
+					await controllers.triggerVfx.levelTransition(
+						true,
+						nextLevel,
+					);
+				})(),
+			]);
 		},
 	);
 

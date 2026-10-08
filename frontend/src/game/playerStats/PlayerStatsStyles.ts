@@ -32,9 +32,9 @@ export const PlayerLevel = styled.span`
 	font-size: 0.9rem;
 `;
 
-export const PrimaryStatsGrid = styled.div`
+export const PrimaryStatsGrid = styled.div<{ $columns: number }>`
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+	grid-template-columns: repeat(${(props) => props.$columns}, 1fr);
 	gap: 8px;
 	margin-bottom: 12px;
 `;

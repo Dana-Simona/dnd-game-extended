@@ -9,12 +9,39 @@ import {
 
 import { StatBar } from './statBar/StatBar';
 import { StatItem } from './statItem/StatItem';
+import type { TooltipAlign } from './statItem/StatItemStyles';
 import { Cooldown } from './cooldown/Cooldown';
 import { Arrows } from './arrows/Arrows';
 import { ExpBar } from './expBar/ExpBar';
 
 import { useCharacter } from '../../utils/characterContext/CharacterContext';
 import type { AllPlayerData } from '../../constants/interfaces/player';
+
+interface PrimaryStat {
+	label: string;
+	value: number;
+	color: string;
+	description: string;
+}
+
+const STAT_DESCRIPTIONS = {
+	attack: 'Each melee attack rolls a random number from 0 up to this value. That roll is your damage before the target defends.',
+	defense:
+		'Each incoming hit rolls a random number from 0 up to this value, and the roll is subtracted from the damage you take.',
+	hitCount:
+		'How many times Blizzard strikes per cast. Every strike lands on a random enemy in range, so one enemy can be hit more than once.',
+	spellPower:
+		'The base damage of each Blizzard strike. The target rolls defense against every strike, and the roll is subtracted from this value.',
+} as const;
+
+const MAX_STAT_COLUMNS = 3;
+
+const getTooltipAlign = (index: number, columns: number): TooltipAlign => {
+	const column = index % columns;
+	if (column === 0) return 'left';
+	if (column === columns - 1) return 'right';
+	return 'center';
+};
 
 export const PlayerStats: React.FC = () => {
 	const { character } = useCharacter();
@@ -37,6 +64,45 @@ export const PlayerStats: React.FC = () => {
 
 	const hasArrows = player.arrowCount !== undefined;
 
+	const primaryStats: PrimaryStat[] = [];
+	if (player.attack !== undefined) {
+		primaryStats.push({
+			label: 'Attack',
+			value: player.attack,
+			color: '#ff4d4d',
+			description: STAT_DESCRIPTIONS.attack,
+		});
+	}
+	if (player.defense !== undefined) {
+		primaryStats.push({
+			label: 'Defense',
+			value: player.defense,
+			color: '#00bfff',
+			description: STAT_DESCRIPTIONS.defense,
+		});
+	}
+	if (player.hitCount !== undefined) {
+		primaryStats.push({
+			label: 'Hit Count',
+			value: player.hitCount,
+			color: '#f59e0b',
+			description: STAT_DESCRIPTIONS.hitCount,
+		});
+	}
+	if (player.spellPower !== undefined) {
+		primaryStats.push({
+			label: 'Spell Power',
+			value: player.spellPower,
+			color: '#a855f7',
+			description: STAT_DESCRIPTIONS.spellPower,
+		});
+	}
+
+	const statColumns = Math.max(
+		1,
+		primaryStats.length > MAX_STAT_COLUMNS ? 2 : primaryStats.length,
+	);
+
 	return (
 		<StatsContainer>
 			<HeaderInfo>
@@ -56,28 +122,17 @@ export const PlayerStats: React.FC = () => {
 				color='#2ecc71'
 			/>
 
-			<PrimaryStatsGrid>
-				{player.attack !== undefined && (
+			<PrimaryStatsGrid $columns={statColumns}>
+				{primaryStats.map((stat, index) => (
 					<StatItem
-						label='Attack'
-						value={player.attack}
-						color='#ff4d4d'
+						key={stat.label}
+						label={stat.label}
+						value={stat.value}
+						color={stat.color}
+						description={stat.description}
+						tooltipAlign={getTooltipAlign(index, statColumns)}
 					/>
-				)}
-				{player.defense !== undefined && (
-					<StatItem
-						label='Defense'
-						value={player.defense}
-						color='#00bfff'
-					/>
-				)}
-				{player.hitCount !== undefined && (
-					<StatItem
-						label='Hit Count'
-						value={player.hitCount}
-						color='#a855f7'
-					/>
-				)}
+				))}
 			</PrimaryStatsGrid>
 
 			{hasMana && (

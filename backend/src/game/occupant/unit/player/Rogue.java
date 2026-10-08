@@ -34,10 +34,18 @@ public class Rogue extends Player {
         List<Enemy> enemiesWithinRange = getEnemiesInRange(this.getPosition(), attackRange);
         List<String> targetIds = enemiesWithinRange.stream().map(Enemy::getId).toList();
 
+        if (enemiesWithinRange.isEmpty()) {
+            return;
+        }
+
+        sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), targetIds, null));
+
         int damageAmount = getAttackPoints();
         for (Enemy enemy : enemiesWithinRange) {
-            sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.ABILITY_CAST, getId(), targetIds, null));
             enemy.takeDamageFromAbility(damageAmount, this.getName(), this.getId());
+        }
+
+        for (Enemy enemy : enemiesWithinRange) {
             handleEnemyIfDead(enemy);
         }
     }

@@ -1,6 +1,8 @@
 import { useState, useCallback, useRef, useMemo } from 'react';
 import type { Position } from '../unitControl/unitCalculations';
 import {
+	LEVEL_TRANSITION_MS,
+	NEXT_LEVEL_BANNER_MS,
 	VfxCategory,
 	VfxTypes,
 	VfxTypeToCategoryMap,
@@ -20,7 +22,7 @@ const TYPE_DURATIONS: Partial<Record<VfxTypes, number>> = {
 	[VfxTypes.EXP_ORBS]: 3200,
 	[VfxTypes.LIGHTNING_STRIKE]: 800,
 	[VfxTypes.BANNER_LEVEL_UP]: 3000,
-	[VfxTypes.BANNER_NEXT_LEVEL]: 6000,
+	[VfxTypes.BANNER_NEXT_LEVEL]: NEXT_LEVEL_BANNER_MS,
 	[VfxTypes.BOSS_SMOKE]: BOSS_SMOKE_DURATION_MS,
 };
 
@@ -252,6 +254,31 @@ export const useVfxControl = (
 			bannerNextLevel: (amount) =>
 				spawnVFX(VfxTypes.BANNER_NEXT_LEVEL, [], amount),
 			bannerLose: (amount) => spawnVFX(VfxTypes.BANNER_LOSE, [], amount),
+			levelTransition: async (covered, amount) => {
+				if (covered) {
+					await spawnVFX(
+						VfxTypes.LEVEL_TRANSITION,
+						[],
+						amount,
+						undefined,
+						{ durationMs: LEVEL_TRANSITION_MS },
+						LEVEL_TRANSITION_MS,
+						true,
+					);
+				} else {
+					setActiveVfxList((prev) =>
+						prev.map((item) =>
+							item.type === VfxTypes.LEVEL_TRANSITION
+								? { ...item, visible: false }
+								: item,
+						),
+					);
+					await new Promise((resolve) =>
+						setTimeout(resolve, LEVEL_TRANSITION_MS),
+					);
+					removeVfxType(VfxTypes.LEVEL_TRANSITION);
+				}
+			},
 			blackClouds: async (visible) => {
 				if (visible) {
 					await spawnVFX(

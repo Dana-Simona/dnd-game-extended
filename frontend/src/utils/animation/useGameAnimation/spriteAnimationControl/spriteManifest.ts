@@ -494,6 +494,13 @@ export const SPRITE_MANIFEST: Record<
 		},
 	},
 	enemy_malakorTheUnbroken: {
+		[SpritePresets.SPAWN]: {
+			width: 200,
+			height: 93,
+			frameCount: 10,
+			fps: 8,
+			offsetY: -5,
+		},
 		[SpritePresets.IDLE]: {
 			width: 200,
 			height: 93,

@@ -1,3 +1,7 @@
+export const NEXT_LEVEL_BANNER_MS = 6000;
+export const LEVEL_TRANSITION_MS = 900;
+export const LEVEL_TRANSITION_HOLD_MS = 450;
+
 export const VfxTypes = {
 	STAT_DAMAGE: 'Damage',
 	STAT_HEAL: 'Heal',
@@ -32,6 +36,7 @@ export const VfxTypes = {
 	BANNER_LEVEL_UP: 'LevelUp',
 	BANNER_NEXT_LEVEL: 'NextLevel',
 	BANNER_LOSE: 'Lose',
+	LEVEL_TRANSITION: 'LevelTransition',
 	BLIZZARD_CLOUDS: 'BlizzardClouds',
 	RAVENS_FLYING: 'RavensFlying',
 	LETTERBOX: 'Letterbox',
@@ -82,6 +87,7 @@ export const VfxTypeToCategoryMap: Record<VfxTypes, VfxCategory> = {
 	[VfxTypes.BANNER_LEVEL_UP]: VfxCategory.PORTAL,
 	[VfxTypes.BANNER_NEXT_LEVEL]: VfxCategory.PORTAL,
 	[VfxTypes.BANNER_LOSE]: VfxCategory.PORTAL,
+	[VfxTypes.LEVEL_TRANSITION]: VfxCategory.PORTAL,
 	[VfxTypes.BLIZZARD_CLOUDS]: VfxCategory.PORTAL,
 	[VfxTypes.RAVENS_FLYING]: VfxCategory.PORTAL,
 	[VfxTypes.LETTERBOX]: VfxCategory.PORTAL,
@@ -140,6 +146,7 @@ export interface TriggerVfxAPI {
 	bannerLevelUp: (amount: number) => Promise<void>;
 	bannerNextLevel: (amount: number) => Promise<void>;
 	bannerLose: (amount: number) => Promise<void>;
+	levelTransition: (covered: boolean, amount?: number) => Promise<void>;
 	blackClouds: (visible: boolean) => Promise<void>;
 	ravensFlying: (durationMs?: number) => Promise<void>;
 	letterbox: (visible: boolean) => Promise<void>;
