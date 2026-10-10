@@ -11,6 +11,7 @@ import LevelUp from './portalVfxs/levelup/LevelUp';
 import NextLevel from './portalVfxs/NextLevel';
 import LevelTransition from './portalVfxs/LevelTransition';
 import Lose from './portalVfxs/Lose';
+import LevelGoal from './portalVfxs/LevelGoal';
 import BlizzardClouds from './portalVfxs/BlizzardClouds';
 import Ravens from './portalVfxs/Ravens';
 import LetterBox from './portalVfxs/LetterBox';
@@ -27,6 +28,7 @@ const PORTAL_COMPONENTS: Partial<
 	[VfxTypes.BANNER_LEVEL_UP]: LevelUp,
 	[VfxTypes.BANNER_NEXT_LEVEL]: NextLevel,
 	[VfxTypes.BANNER_LOSE]: Lose,
+	[VfxTypes.BANNER_GOAL]: LevelGoal,
 	[VfxTypes.LEVEL_TRANSITION]: LevelTransition,
 	[VfxTypes.BLIZZARD_CLOUDS]: BlizzardClouds,
 	[VfxTypes.RAVENS_FLYING]: Ravens,

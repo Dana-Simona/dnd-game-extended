@@ -41,4 +41,9 @@ export interface TriggerSpriteAnimationAPI {
 	spawn: (unitId: string, phase?: AnimationPhase) => Promise<void>;
 	loop: (unitId: string, action: SpritePresets) => Promise<void>;
 	stopLoop: (unitId: string) => void;
+	getDuration: (
+		unitId: string,
+		action: SpritePresets,
+		phase?: AnimationPhase,
+	) => number;
 }

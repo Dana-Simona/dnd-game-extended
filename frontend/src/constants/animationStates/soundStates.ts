@@ -1,7 +1,9 @@
 export interface TriggerSoundAPI {
 	play: (preset: SoundPreset, volumeOverride?: number) => Promise<void>;
 	stop: (preset: SoundPreset) => Promise<void>;
-	stopAll: () => Promise<void>;
+	stopAll: (fadeDuration?: number, includeMusic?: boolean) => Promise<void>;
+	playMusic: (preset: SoundPreset) => Promise<void>;
+	stopMusic: (fadeDuration?: number) => Promise<void>;
 }
 
 export const SoundPreset = {
@@ -26,6 +28,8 @@ export const SoundPreset = {
 	HUNTER_BOW: Symbol(),
 	HUNTER_LAND: Symbol(),
 	HUNTER_MELEE: Symbol(),
+	BG_MUSIC_REGULAR: Symbol(),
+	BG_MUSIC_BOSS: Symbol(),
 } as const;
 
 export type SoundPreset = (typeof SoundPreset)[keyof typeof SoundPreset];

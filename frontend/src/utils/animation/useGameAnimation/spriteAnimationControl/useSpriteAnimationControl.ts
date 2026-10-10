@@ -138,8 +138,21 @@ export const useSpriteAnimationControl = (
 		[isUnitInViewport],
 	);
 
+	const getDuration = useCallback(
+		(
+			unitId: string,
+			action: SpritePresets,
+			phase: AnimationPhase = AnimationPhase.FULL,
+		): number => {
+			const unit = allUnitsRef.current.find((u) => u.id === unitId);
+			return calculateAnimDuration(unit, action, phase);
+		},
+		[],
+	);
+
 	const triggerSpriteAnimation = useMemo<TriggerSpriteAnimationAPI>(
 		() => ({
+			getDuration,
 			play: playSpriteAnimation,
 			melee: (unitId, phase) =>
 				playSpriteAnimation(unitId, SpritePresets.MELEE, phase),
@@ -164,7 +177,7 @@ export const useSpriteAnimationControl = (
 					setActiveUnitPhases,
 				),
 		}),
-		[playSpriteAnimation],
+		[playSpriteAnimation, getDuration],
 	);
 
 	return {

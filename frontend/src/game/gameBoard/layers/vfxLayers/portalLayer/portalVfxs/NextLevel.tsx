@@ -3,8 +3,11 @@ import { motion, useAnimation } from 'framer-motion';
 import styled from 'styled-components';
 
 const TEAL = '#00ffcc';
-const DARK_GRAY = '#16191bba';
-const LIGHT_GRAY = '#575f66c5';
+const SLATE = '#0b0e10';
+const SLATE_LIGHT = '#141a1d';
+const DARK_GRAY = `linear-gradient(180deg, ${SLATE} 0%, ${SLATE_LIGHT} 100%)`;
+const TEAL_GLOW = 'rgba(0, 255, 204, 0.22)';
+const TEXT = '#e0e0e0';
 
 const PANEL_HEIGHT = 220;
 const SHINE_WIDTH = 60;
@@ -169,7 +172,7 @@ const Title = styled(motion.h1)`
 	letter-spacing: 4px;
 	text-transform: uppercase;
 	color: ${TEAL};
-	text-shadow: 0 0 24px rgba(20, 184, 166, 0.45);
+	text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
 	white-space: nowrap;
 `;
 
@@ -179,10 +182,29 @@ const Panel = styled(motion.div)`
 	flex-shrink: 0;
 	overflow: hidden;
 	background: ${DARK_GRAY};
-	border-top: 4px solid ${TEAL};
+	border-top: 2px solid ${TEAL};
+	border-bottom: 2px solid ${TEAL};
+	box-shadow:
+		0 0 15px rgba(0, 255, 204, 0.3),
+		inset 0 0 24px rgba(0, 0, 0, 0.8);
 	display: flex;
 	align-items: center;
 	justify-content: center;
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+		background: repeating-linear-gradient(
+			to bottom,
+			rgba(0, 0, 0, 0) 0px,
+			rgba(0, 0, 0, 0) 2px,
+			rgba(0, 0, 0, 0.18) 3px,
+			rgba(0, 0, 0, 0.18) 4px
+		);
+	}
 `;
 
 const Glow = styled(motion.div)`
@@ -190,8 +212,8 @@ const Glow = styled(motion.div)`
 	inset: 0;
 	background: radial-gradient(
 		ellipse at center,
-		${LIGHT_GRAY} 0%,
-		${DARK_GRAY} 70%
+		${TEAL_GLOW} 0%,
+		rgba(11, 14, 16, 0) 70%
 	);
 	pointer-events: none;
 `;
@@ -205,7 +227,7 @@ const Shine = styled(motion.div)<{ $side: 'left' | 'right' }>`
 	background: linear-gradient(
 		to right,
 		rgba(255, 255, 255, 0) 0%,
-		rgba(255, 255, 255, 0.75) 50%,
+		rgba(180, 255, 240, 0.7) 50%,
 		rgba(255, 255, 255, 0) 100%
 	);
 	filter: blur(1px);
@@ -221,6 +243,19 @@ const NextText = styled(motion.div)`
 	font-weight: 900;
 	letter-spacing: 3px;
 	text-transform: uppercase;
-	color: #f2f5f7;
+	color: ${TEXT};
+	text-shadow:
+		0 0 10px rgba(0, 255, 204, 0.5),
+		0 2px 0 #000;
 	white-space: nowrap;
+
+	&::before,
+	&::after {
+		content: '◆';
+		display: inline-block;
+		margin: 0 18px;
+		font-size: 0.9rem;
+		vertical-align: middle;
+		color: ${TEAL};
+	}
 `;

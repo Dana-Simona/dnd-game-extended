@@ -185,6 +185,19 @@ export const setupAnimations = (controllers: Controllers) => {
 				controllers.triggerUnit.face(defender, attacker),
 			]);
 
+			const attackerAnimationDuration =
+				controllers.triggerSpriteAnimation.getDuration(
+					attacker,
+					SpritePresets.MELEE,
+					AnimationPhase.WINDUP,
+				);
+			const defenderAnimationDuration =
+				controllers.triggerSpriteAnimation.getDuration(
+					defender,
+					SpritePresets.TAKE_DAMAGE,
+					AnimationPhase.WINDUP,
+				);
+
 			if (unit?.unitType === UnitType.TRAP) {
 				const strike = controllers.triggerUnit.plantAttack(
 					attacker,
@@ -210,11 +223,16 @@ export const setupAnimations = (controllers: Controllers) => {
 					attacker,
 					AnimationPhase.WINDUP,
 				),
-				controllers.triggerSound.play(SoundPreset.SWISH_SHORT),
-				controllers.triggerSpriteAnimation.takeDamage(
-					defender,
-					AnimationPhase.WINDUP,
-				),
+				async () => {
+					await delay(
+						attackerAnimationDuration - defenderAnimationDuration - 300,
+					);
+					controllers.triggerSound.play(SoundPreset.SWISH_SHORT);
+					controllers.triggerSpriteAnimation.takeDamage(
+						defender,
+						AnimationPhase.WINDUP,
+					);
+				},
 			]);
 
 			if (!player) {
@@ -811,8 +829,6 @@ export const setupAnimations = (controllers: Controllers) => {
 		await controllers.triggerCamera.shake(40, 1, ARROW_HOLD_MS + 200);
 
 		skip();
-
-		await delay(ARROW_HOLD_MS + ARROW_FLIGHT_MS);
 
 		const panToEnemy = controllers.triggerCamera.focusTarget(
 			target,

@@ -3,6 +3,10 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 import { ROUTES } from '../constants/routes';
 import { ActionType, type GameEvent } from '../constants/gameEvent';
+import {
+	LEVEL_TRANSITION_HOLD_MS,
+	LEVEL_TRANSITION_MS,
+} from '../constants/animationStates/vfxStates';
 import { usePreloader } from '../utils/animation/usePreloader';
 import { UnitType, type Unit } from '../constants/interfaces/unit';
 import type { AllPlayerData } from '../constants/interfaces/player';
@@ -22,6 +26,11 @@ const VALID_KEYS = new Set(['w', 'a', 's', 'd', 'e', 'q']);
 const isValidKey = (key: string): boolean => VALID_KEYS.has(key.toLowerCase());
 
 const INTRO_EVENT_TYPES = new Set<string>([ActionType.BOSS_LEVEL]);
+
+// After NEXT_LEVEL the screen is re-opened (hold + door animation); wait for
+// that to finish before showing the new level's goal.
+const LEVEL_REVEAL_MS = LEVEL_TRANSITION_HOLD_MS + LEVEL_TRANSITION_MS + 200;
+const BOSS_INTRO_GOAL_DELAY_MS = 300;
 
 export const splitIntroEvents = (events: GameEvent[] = []) => ({
 	turnEvents: events.filter((e) => !INTRO_EVENT_TYPES.has(e.type)),
@@ -87,6 +96,8 @@ export const useGame = () => {
 		activeVfxList,
 		hpStates,
 		activeBossId,
+		startLevelMusic,
+		announceLevelGoal,
 	} = useGameAnimation(enemies, character);
 
 	usePreloader(enemies, character);
@@ -135,8 +146,18 @@ export const useGame = () => {
 				if (!isMountedRef.current) return;
 				applyBoardState(data);
 				applyUnitState(data, enemyList);
+
+				// a new level was just swapped in: pick its music
+				const enteredNewLevel = turnEvents.some(
+					(e) => e.type === ActionType.NEXT_LEVEL,
+				);
+				if (enteredNewLevel) startLevelMusic(enemyList);
+
 				if (!scheduleIntro(introEvents)) {
 					isProcessingRef.current = false;
+					if (enteredNewLevel) {
+						void announceLevelGoal(enemyList, LEVEL_REVEAL_MS);
+					}
 				}
 			};
 
@@ -146,7 +167,14 @@ export const useGame = () => {
 				onDone();
 			}
 		},
-		[runTurn, applyBoardState, applyUnitState, scheduleIntro],
+		[
+			runTurn,
+			applyBoardState,
+			applyUnitState,
+			scheduleIntro,
+			startLevelMusic,
+			announceLevelGoal,
+		],
 	);
 
 	useEffect(() => {
@@ -156,8 +184,10 @@ export const useGame = () => {
 
 		runTurn(events, character, enemies, () => {
 			isProcessingRef.current = false;
+			// boss level: the goal is shown once the boss intro has played
+			void announceLevelGoal(enemies, BOSS_INTRO_GOAL_DELAY_MS);
 		});
-	}, [pendingIntro, runTurn, character, enemies]);
+	}, [pendingIntro, runTurn, character, enemies, announceLevelGoal]);
 
 	const handleKeyPress = useCallback(
 		async (key: string) => {
@@ -187,10 +217,21 @@ export const useGame = () => {
 			);
 			applyBoardState(data);
 			setActionCount((prev) => prev + 1);
-			applyUnitState(data, filterEnemies(data.units));
-			scheduleIntro(splitIntroEvents(data.events).introEvents);
+			const enemyList = filterEnemies(data.units);
+			applyUnitState(data, enemyList);
+			startLevelMusic(enemyList);
+			const hasIntro = scheduleIntro(
+				splitIntroEvents(data.events).introEvents,
+			);
+			if (!hasIntro) void announceLevelGoal(enemyList);
 		},
-		[applyBoardState, applyUnitState, scheduleIntro],
+		[
+			applyBoardState,
+			applyUnitState,
+			scheduleIntro,
+			startLevelMusic,
+			announceLevelGoal,
+		],
 	);
 
 	useEffect(() => {

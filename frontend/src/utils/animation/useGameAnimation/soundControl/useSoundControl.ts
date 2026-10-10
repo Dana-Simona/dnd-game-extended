@@ -1,12 +1,18 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect, useMemo } from 'react';
 import { soundRegistry } from './soundRegistry';
-import type {
+import {
 	SoundPreset,
-	TriggerSoundAPI,
+	type TriggerSoundAPI,
 } from '../../../../constants/animationStates/soundStates';
 
-const FADE_OUT_DURATION = 600; 
-const FADE_INTERVAL = 50; 
+const FADE_OUT_DURATION = 600;
+const FADE_INTERVAL = 50;
+
+const MUSIC_PRESETS: SoundPreset[] = [
+	SoundPreset.BG_MUSIC_REGULAR,
+	SoundPreset.BG_MUSIC_BOSS,
+];
+const isMusic = (preset: SoundPreset) => MUSIC_PRESETS.includes(preset);
 
 export const useSoundControl = (
 	globalVolume: number = 1,
@@ -102,10 +108,15 @@ export const useSoundControl = (
 	);
 
 	const stopAll = useCallback(
-		async (fadeDuration: number = FADE_OUT_DURATION): Promise<void> => {
+		async (
+			fadeDuration: number = FADE_OUT_DURATION,
+			includeMusic: boolean = false,
+		): Promise<void> => {
 			const allAudios: HTMLAudioElement[] = [];
 
-			activeAudios.current.forEach((audios) => {
+			activeAudios.current.forEach((audios, preset) => {
+				// background music keeps playing through fights
+				if (!includeMusic && isMusic(preset)) return;
 				audios.forEach((audio) => allAudios.push(audio));
 				audios.clear();
 			});
@@ -115,6 +126,34 @@ export const useSoundControl = (
 			);
 		},
 		[fadeAndStopAudio],
+	);
+
+	const playMusic = useCallback(
+		async (preset: SoundPreset): Promise<void> => {
+			if (!enabled) return;
+
+			// already playing this track -> keep it going
+			if ((activeAudios.current.get(preset)?.size ?? 0) > 0) return;
+
+			// fade out the other background track, then start this one
+			MUSIC_PRESETS.filter((p) => p !== preset).forEach((other) => {
+				void stop(other);
+			});
+			await play(preset);
+		},
+		[enabled, play, stop],
+	);
+
+	const stopMusic = useCallback(
+		async (fadeDuration: number = FADE_OUT_DURATION): Promise<void> => {
+			await Promise.all(MUSIC_PRESETS.map((p) => stop(p, fadeDuration)));
+		},
+		[stop],
+	);
+
+	const triggerSound = useMemo<TriggerSoundAPI>(
+		() => ({ play, stop, stopAll, playMusic, stopMusic }),
+		[play, stop, stopAll, playMusic, stopMusic],
 	);
 
 	useEffect(() => {
@@ -129,11 +168,5 @@ export const useSoundControl = (
 		};
 	}, []);
 
-	return {
-		triggerSound: {
-			play,
-			stop,
-			stopAll,
-		} as TriggerSoundAPI,
-	};
+	return { triggerSound };
 };

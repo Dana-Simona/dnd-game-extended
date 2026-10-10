@@ -112,4 +112,14 @@ export const soundRegistry: Record<SoundPreset, SoundConfig> = {
 		volume: 0.8,
 		loop: false,
 	},
+	[SoundPreset.BG_MUSIC_REGULAR]: {
+		files: ['/sfx/backgroundMusic/regular_bg.mp3'],
+		volume: 0.1,
+		loop: true,
+	},
+	[SoundPreset.BG_MUSIC_BOSS]: {
+		files: ['/sfx/backgroundMusic/boss_bg.mp3'],
+		volume: 0.1,
+		loop: true,
+	},
 };

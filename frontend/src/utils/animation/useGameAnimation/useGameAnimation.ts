@@ -6,7 +6,8 @@ import { playTurnSequence } from '../playTurnSequence';
 import { useUnitControl } from './unitControl/useUnitControl';
 import { ActionType, type GameEvent } from '../../../constants/gameEvent';
 import { LEVEL_TRANSITION_HOLD_MS } from '../../../constants/animationStates/vfxStates';
-import type { Unit } from '../../../constants/interfaces/unit';
+import { UnitType, type Unit } from '../../../constants/interfaces/unit';
+import { SoundPreset } from '../../../constants/animationStates/soundStates';
 import { useHpBarControl } from './hpBarControl/useHpBarControl';
 import { useCameraControl } from './cameraControl/useCameraControl';
 import type { AllPlayerData } from '../../../constants/interfaces/player';
@@ -78,6 +79,32 @@ export const useGameAnimation = (
 
 	const triggerVfxRef = useRef(triggerVfx);
 	triggerVfxRef.current = triggerVfx;
+
+	const triggerSoundRef = useRef(triggerSound);
+	triggerSoundRef.current = triggerSound;
+
+	// Boss levels get the boss track, every other level the regular one.
+	// playMusic is a no-op when that track is already playing, so a regular
+	// level simply keeps the music going.
+	const startLevelMusic = useCallback((levelEnemies: Unit[]) => {
+		const hasBoss = levelEnemies.some((e) => e.unitType === UnitType.BOSS);
+		void triggerSoundRef.current.playMusic(
+			hasBoss ? SoundPreset.BG_MUSIC_BOSS : SoundPreset.BG_MUSIC_REGULAR,
+		);
+	}, []);
+
+	// "Goal: kill all enemies" / "Goal: destroy <boss>" for a few seconds.
+	const announceLevelGoal = useCallback(
+		async (levelEnemies: Unit[], delayMs: number = 0) => {
+			if (delayMs > 0) await delay(delayMs);
+			const boss = levelEnemies.find((e) => e.unitType === UnitType.BOSS);
+			await triggerVfxRef.current.bannerGoal(
+				boss ? `Destroy ${boss.name}` : 'Kill all enemies',
+				!!boss,
+			);
+		},
+		[],
+	);
 
 	useEffect(() => {
 		setupAnimations({
@@ -210,5 +237,7 @@ export const useGameAnimation = (
 		triggerSpriteAnimation,
 		playSpriteAnimation,
 		activeBossId,
+		startLevelMusic,
+		announceLevelGoal,
 	};
 };

@@ -112,6 +112,8 @@ export interface VfxItem {
 	sourceOffsetY?: number;
 	holdMs?: number;
 	flightMs?: number;
+	isBoss?: boolean;
+	text?: string;
 }
 
 export interface ArrowProjectileOptions {
@@ -120,7 +122,7 @@ export interface ArrowProjectileOptions {
 	flightMs?: number;
 }
 
-export const ARROW_HOLD_MS = 2500;
+export const ARROW_HOLD_MS = 2000;
 export const ARROW_FLIGHT_MS = 350;
 export const ARROW_FADE_MS = 200;
 
