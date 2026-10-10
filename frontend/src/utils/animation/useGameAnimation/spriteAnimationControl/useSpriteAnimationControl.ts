@@ -7,7 +7,7 @@ import {
 	type Dispatch,
 	type SetStateAction,
 } from 'react';
-
+import type { Position } from '../unitControl/unitCalculations';
 import type { Unit } from '../../../../constants/interfaces/unit';
 import type { AllPlayerData } from '../../../../constants/interfaces/player';
 import {
@@ -26,7 +26,6 @@ import {
 	SpritePresets,
 	type TriggerSpriteAnimationAPI,
 } from '../../../../constants/animationStates/spriteStates';
-import type { Position } from '../unitControl/unitCalculations';
 
 export interface UseSpriteAnimationControlReturn {
 	activeSpriteStates: Record<string, SpritePresets>;

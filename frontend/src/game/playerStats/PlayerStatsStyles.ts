@@ -5,8 +5,8 @@ export const StatsContainer = styled.div`
 	border: 2px solid #383838;
 	border-radius: 8px;
 	padding: 16px;
-	width: 100%;
-	margin: 10px;
+	flex: 0 0 350px;
+	margin: 1rem 0;
 	max-width: 350px;
 	color: #e0e0e0;
 	font-family: monospace;

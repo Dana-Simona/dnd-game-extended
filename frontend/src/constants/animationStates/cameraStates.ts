@@ -1,5 +1,9 @@
 export interface TriggerCameraAPI {
-	focusTarget: (targetId: string, duration?: number) => Promise<void>;
+	focusTarget: (
+		targetId: string,
+		duration?: number,
+		offsetPx?: Position,
+	) => Promise<void>;
 	zoomIn: (
 		targetId?: string,
 		zoomLevel?: number,

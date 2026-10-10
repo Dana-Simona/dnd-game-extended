@@ -1,6 +1,8 @@
 import { ClassTypes } from '../../constants/classTypes';
 import { ActionType, type GameEvent } from '../../constants/gameEvent';
 import {
+	ARROW_FLIGHT_MS,
+	ARROW_HOLD_MS,
 	LEVEL_TRANSITION_MS,
 	NEXT_LEVEL_BANNER_MS,
 	type TriggerVfxAPI,
@@ -46,6 +48,13 @@ const DEATH_FADE_MS = 400;
 
 const BOSS_SPAWN_FADE_MS = 600;
 const BOSS_SPAWN_SHAKE_DELAY_MS = 450;
+
+const HUNTER_LEAP_MS = 500;
+const HUNTER_LEAP_HEIGHT_PX = 50;
+const HUNTER_LEAP_HORIZONTAL_OFFSET = 20;
+const HUNTER_CAMERA_PAN_TO_ENEMY_MS = 450;
+const HUNTER_THUMP_DELAY_MS = 200;
+const HUNTER_THUMP_MS = 450;
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -258,7 +267,7 @@ export const setupAnimations = (controllers: Controllers) => {
 			await controllers.triggerSpriteAnimation.melee(
 				attacker,
 				AnimationPhase.FOLLOW_THROUGH,
-			)
+			),
 		]);
 
 		await Promise.all([
@@ -293,7 +302,6 @@ export const setupAnimations = (controllers: Controllers) => {
 			const casterId = event.sourceId;
 			const victimsIds = event.targetIds;
 
-			console.log(event)
 			if (!casterId || !victimsIds || victimsIds.length === 0) {
 				skip();
 				return;
@@ -338,7 +346,12 @@ export const setupAnimations = (controllers: Controllers) => {
 			const casterId = event.targetIds[0];
 			const damageTaken = event.amount;
 
-			if (!casterId || !victimId || !damageTaken) {
+			if (
+				!casterId ||
+				!victimId ||
+				damageTaken === null ||
+				damageTaken === undefined
+			) {
 				skip();
 				return;
 			}
@@ -653,7 +666,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		]);
 
 		// dash the rogue to the air
-		await controllers.triggerUnit.leap(rogueId, 150, 300);
+		// await controllers.triggerUnit.leap(rogueId, 150);
 
 		// rogue - play animation (follow through) (the rogue reappears and throws arms out)
 		// zoom out to the rogue's range
@@ -744,75 +757,68 @@ export const setupAnimations = (controllers: Controllers) => {
 	) => {
 		const hunterId = hunter.id;
 
-		// black letterbox bars at the top and bottom of the screen appear
+		await controllers.triggerCamera.zoomIn(hunterId);
 		await controllers.triggerVfx.letterbox(true);
+
+		// where the hunter will be while airborne (offset from her tile, px)
+		const airborne = controllers.triggerUnit.leapOffset(
+			hunterId,
+			target,
+			HUNTER_LEAP_HEIGHT_PX,
+			HUNTER_LEAP_HORIZONTAL_OFFSET,
+		) ?? { x: 0, y: 0 };
 
 		// play attack animation (windup) - the hunter jumps and charges their bow
 		// ground smoke from the impact of jumping
 		// white swirl effect of the target enemy
-		// camera pans up to match the jump
+		// the camera follows the hunter up into the air
 		await Promise.all([
 			controllers.triggerSpriteAnimation.abilityCast(
 				hunterId,
 				AnimationPhase.WINDUP,
 			),
-			controllers.triggerUnit.leap(hunterId, 80, 300),
+			controllers.triggerUnit.leap(
+				hunterId,
+				target,
+				HUNTER_LEAP_HEIGHT_PX,
+				HUNTER_LEAP_HORIZONTAL_OFFSET,
+				HUNTER_LEAP_MS,
+			),
+			controllers.triggerCamera.focusTarget(
+				hunterId,
+				HUNTER_LEAP_MS,
+				airborne,
+			),
 			controllers.triggerVfx.dustLeap(hunterId),
 			controllers.triggerVfx.toggleTargetSwirl(target, true),
-			controllers.triggerCamera.focusTarget(hunterId, 300),
 		]);
 
-		await delay(200);
+		// the arrow appears in the hunter's hand (on top of her), is held for
+		// ARROW_HOLD_MS while she trembles, then shoots in a straight line at
+		// the enemy and fades out
+		const arrowDone = controllers.triggerVfx.arrowProjectile(
+			hunterId,
+			target,
+			{
+				sourceOffset: airborne,
+				holdMs: ARROW_HOLD_MS,
+				flightMs: ARROW_FLIGHT_MS,
+			},
+		);
+		controllers.triggerUnit.shake(hunterId, 5, 1, ARROW_HOLD_MS);
 
-		// the white arrow shoots as a projectile to the enemy
-		// the camera pans + zooms to the enemy
-		await Promise.all([
-			controllers.triggerVfx.arrowProjectile(hunterId, target),
-			controllers.triggerCamera.zoomIn(target, 1.5, 200),
-		]);
+		// wait until the arrow lands
+		await delay(ARROW_HOLD_MS + ARROW_FLIGHT_MS);
 
-		// enemy recoils
-		// plays follow through animation
-		// splatters (white) blood
-		// white hp preview
-		await Promise.all([
-			controllers.triggerSpriteAnimation.takeDamage(
-				target,
-				AnimationPhase.WINDUP,
-			),
-			controllers.triggerSpriteAnimation.takeDamage(
-				target,
-				AnimationPhase.FOLLOW_THROUGH,
-			),
-			controllers.triggerVfx.bloodDrip(target),
-			controllers.triggerHpBar.showDamagePreview(
-				target,
-				0, //todo: damage amount
-				'white',
-			),
-			controllers.triggerVfx.toggleTargetSwirl(target, true),
-		]);
-
-		await delay(200);
-
-		// enemy recovers & HP drains
-		// hunter returns to idle & returns to ground
-		// landing smoke vfx
-		// remove letterbox
-		await Promise.all([
-			controllers.triggerHpBar.drainHp(target),
-			controllers.triggerVfx.statDamage(
-				target,
-				0, //todo: damage amount
-			),
-			controllers.triggerSpriteAnimation.idle(target),
-
-			controllers.triggerUnit.reset(hunterId),
-			controllers.triggerSpriteAnimation.idle(hunterId),
-			controllers.triggerVfx.landingDust(hunterId),
-			controllers.triggerCamera.reset(400),
-			controllers.triggerVfx.letterbox(false),
-		]);
+		// impact: the camera leaves the airborne hunter, pans to the enemy
+		// and thumps
+		const panToEnemy = controllers.triggerCamera.focusTarget(
+			target,
+			HUNTER_CAMERA_PAN_TO_ENEMY_MS,
+		);
+		await delay(HUNTER_THUMP_DELAY_MS);
+		await controllers.triggerCamera.thump(12, HUNTER_THUMP_MS);
+		await Promise.all([panToEnemy, arrowDone]);
 	};
 
 	const bossCast = async (
@@ -876,5 +882,37 @@ export const setupAnimations = (controllers: Controllers) => {
 		hunter: string,
 		victim: string,
 		damageTaken: number,
-	) => {};
+	) => {
+		await Promise.all([
+			controllers.triggerSpriteAnimation.takeDamage(
+				victim,
+				AnimationPhase.WINDUP,
+			),
+			controllers.triggerSpriteAnimation.takeDamage(
+				victim,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			controllers.triggerVfx.bloodDrip(victim),
+			controllers.triggerHpBar.showDamagePreview(
+				victim,
+				damageTaken,
+				'white',
+			),
+			controllers.triggerVfx.toggleTargetSwirl(victim, false),
+		]);
+
+		await delay(200);
+
+		await Promise.all([
+			controllers.triggerHpBar.drainHp(victim),
+			controllers.triggerVfx.statDamage(victim, damageTaken),
+			controllers.triggerSpriteAnimation.idle(victim),
+
+			controllers.triggerUnit.reset(hunter),
+			controllers.triggerSpriteAnimation.idle(hunter),
+			controllers.triggerVfx.landingDust(hunter),
+			controllers.triggerCamera.reset(400),
+			controllers.triggerVfx.letterbox(false),
+		]);
+	};
 };

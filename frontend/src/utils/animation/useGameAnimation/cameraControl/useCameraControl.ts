@@ -21,10 +21,7 @@ import {
 	combinePlayerAndUnits,
 	findUnitPosition,
 } from '../spriteAnimationControl/animationUtils';
-import {
-	VIEWPORT_WIDTH_VW,
-	VIEWPORT_HEIGHT_VH,
-} from '../../../../game/gameBoard/GameBoardStyles';
+import { getBoardViewportSize } from '../../../../game/gameBoard/GameBoardStyles';
 
 export interface UseCameraControlReturn {
 	triggerCamera: TriggerCameraAPI;
@@ -42,8 +39,8 @@ interface CameraFocusState {
 	effectNonce: number;
 }
 
-const halfWidth = VIEWPORT_WIDTH_VW / 2;
-const halfHeight = VIEWPORT_HEIGHT_VH / 2;
+const halfWidth = 50;
+const halfHeight = 50;
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -78,14 +75,24 @@ export const useCameraControl = (
 	);
 
 	const focusTarget = useCallback(
-		async (targetId: string, duration = 450): Promise<void> => {
+		async (
+			targetId: string,
+			duration = 450,
+			offsetPx?: Position,
+		): Promise<void> => {
 			const targetPos = getUnitPos(targetId);
 			if (targetPos) {
-				setCameraState((prev) => ({ ...prev, focusPos: targetPos }));
+				const focusPos = offsetPx
+					? {
+							x: targetPos.x + offsetPx.x / tileSize,
+							y: targetPos.y + offsetPx.y / tileSize,
+						}
+					: targetPos;
+				setCameraState((prev) => ({ ...prev, focusPos }));
 			}
 			await delay(duration);
 		},
-		[getUnitPos],
+		[getUnitPos, tileSize],
 	);
 
 	const zoomIn = useCallback(
@@ -142,7 +149,14 @@ export const useCameraControl = (
 			marginTiles = 1.5,
 		): Promise<void> => {
 			const targetPos = getUnitPos(targetId);
-			const calculatedZoom = calcRangeZoom(range, tileSize, marginTiles);
+			const { width, height } = getBoardViewportSize();
+			const calculatedZoom = calcRangeZoom(
+				range,
+				tileSize,
+				marginTiles,
+				width,
+				height,
+			);
 
 			setCameraState((prev) => ({
 				...prev,
@@ -246,8 +260,8 @@ export const useCameraControl = (
 		if (isFirstRender.current) {
 			panZoomControls.set({
 				transformOrigin: `${pixelX}px ${pixelY}px`,
-				x: `calc(${halfWidth}vw - ${pixelX}px)`,
-				y: `calc(${halfHeight}vh - ${pixelY}px)`,
+				x: `calc(${halfWidth}cqw - ${pixelX}px)`,
+				y: `calc(${halfHeight}cqh - ${pixelY}px)`,
 				scale: zoom,
 			});
 			isFirstRender.current = false;
@@ -301,9 +315,11 @@ export const useCameraControl = (
 				intensity: cameraState.effectIntensity,
 				baseWidth: cameraState.effectBaseWidth,
 			},
-			style: { transformOrigin: 'center center' },
+			// Thump/shake pivot on the point the camera is looking at (which
+			// is the screen centre), not on the middle of the whole map.
+			style: { transformOrigin: `${pixelX}px ${pixelY}px` },
 		}),
-		[effectControls, cameraState.effectIntensity],
+		[effectControls, cameraState.effectIntensity, pixelX, pixelY],
 	);
 
 	return {

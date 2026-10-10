@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
 export const LogContainer = styled(motion.div)`
-	width: 100%;
-	max-width: 600px;
+	flex: 1 1 0;
+	min-width: 0;
 	max-height: 30vh;
 	background-color: #1a1a1a;
 	border: 1px solid #333;

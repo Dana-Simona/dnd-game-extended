@@ -9,6 +9,7 @@ import {
 	executeRotate,
 	executeJump,
 	executeLeap,
+	calculateLeapOffset,
 	executeShake,
 	executeReveal,
 	executePlantRecoil,
@@ -111,17 +112,54 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 	);
 
 	const leap = useCallback(
-		async (unitId: string, heightPx = 30, durationMs = 300) => {
-			await executeLeap(unitId, heightPx, durationMs, setUnitTransforms);
+		async (
+			sourceId: string,
+			targetId: string,
+			heightAbove = 80,
+			horizontalOffset = 40,
+			durationMs = 300,
+		) => {
+			await executeLeap(
+				sourceId,
+				targetId,
+				heightAbove,
+				horizontalOffset,
+				durationMs,
+				visualPositionsRef.current,
+				setUnitTransforms,
+			);
 		},
 		[],
 	);
 
+	const leapOffset = useCallback(
+		(
+			sourceId: string,
+			targetId: string,
+			heightAbove = 80,
+			horizontalOffset = 40,
+		) =>
+			calculateLeapOffset(
+				sourceId,
+				targetId,
+				heightAbove,
+				horizontalOffset,
+				visualPositionsRef.current,
+			),
+		[],
+	);
+
 	const shake = useCallback(
-		async (unitId: string, intensityPx = 6, durationMs = 300) => {
+		async (
+			unitId: string,
+			shakeAmount = 6,
+			shakeWidth = 10,
+			durationMs = 300,
+		) => {
 			await executeShake(
 				unitId,
-				intensityPx,
+				shakeAmount,
+				shakeWidth,
 				durationMs,
 				setUnitTransforms,
 			);
@@ -186,6 +224,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			rotate,
 			jump,
 			leap,
+			leapOffset,
 			shake,
 			reveal,
 			plantRecoil,
@@ -201,6 +240,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 			rotate,
 			jump,
 			leap,
+			leapOffset,
 			shake,
 			reveal,
 			plantRecoil,

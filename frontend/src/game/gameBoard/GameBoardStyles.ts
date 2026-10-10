@@ -2,8 +2,24 @@ import { motion } from 'framer-motion';
 import styled, { css } from 'styled-components';
 import { VfxTypes } from '../../constants/animationStates/vfxStates';
 
-export const VIEWPORT_WIDTH_VW = 95;
-export const VIEWPORT_HEIGHT_VH = 60;
+export const BOARD_ASPECT_RATIO = 16 / 9;
+export const GAME_MAX_WIDTH_PX = 980;
+export const GAME_PADDING_PX = 16;
+export const GAME_MAX_BOARD_HEIGHT_VH = 60;
+
+export const GAME_COLUMN_WIDTH = `min(100%, ${GAME_MAX_WIDTH_PX}px, calc(${GAME_MAX_BOARD_HEIGHT_VH}vh * ${BOARD_ASPECT_RATIO}))`;
+
+const ROOT_MAX_WIDTH_PX = 1126;
+export const getBoardViewportSize = (): { width: number; height: number } => {
+	const winW = typeof window !== 'undefined' ? window.innerWidth : 1920;
+	const winH = typeof window !== 'undefined' ? window.innerHeight : 1080;
+	const width = Math.min(
+		Math.min(winW, ROOT_MAX_WIDTH_PX) - GAME_PADDING_PX * 2,
+		GAME_MAX_WIDTH_PX,
+		((winH * GAME_MAX_BOARD_HEIGHT_VH) / 100) * BOARD_ASPECT_RATIO,
+	);
+	return { width, height: width / BOARD_ASPECT_RATIO };
+};
 
 const SCREEN_VFX_STYLES: Partial<
 	Record<VfxTypes | string, ReturnType<typeof css>>
@@ -31,8 +47,9 @@ interface StaticLayerWrapperProps {
 }
 
 export const ViewportContainer = styled.div`
-	width: ${VIEWPORT_WIDTH_VW}vw;
-	height: ${VIEWPORT_HEIGHT_VH}vh;
+	width: 100%;
+	aspect-ratio: ${BOARD_ASPECT_RATIO};
+	box-sizing: border-box;
 	overflow: hidden;
 	position: relative;
 	border: 2px solid #383838;

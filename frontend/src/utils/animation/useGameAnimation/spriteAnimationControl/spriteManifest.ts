@@ -271,7 +271,7 @@ export const SPRITE_MANIFEST: Record<
 			width: 130,
 			height: 100,
 			frameCount: 12,
-			fps: 4,
+			fps: 6,
 			impactFrame: 9,
 			loopStartFrame: 8,
 			loop: true
@@ -476,7 +476,7 @@ export const SPRITE_MANIFEST: Record<
 			width: 128,
 			height: 128,
 			frameCount: 37,
-			fps: 6,
+			fps: 8,
 			offsetY: 48,
 			loopStartFrame: 36,
 		},

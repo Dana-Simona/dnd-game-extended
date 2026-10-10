@@ -1,6 +1,9 @@
 import { useState, useCallback, useRef, useMemo } from 'react';
 import type { Position } from '../unitControl/unitCalculations';
 import {
+	ARROW_FADE_MS,
+	ARROW_FLIGHT_MS,
+	ARROW_HOLD_MS,
 	LEVEL_TRANSITION_MS,
 	NEXT_LEVEL_BANNER_MS,
 	VfxCategory,
@@ -12,7 +15,7 @@ import {
 
 const CATEGORY_DURATIONS: Record<VfxCategory, number> = {
 	[VfxCategory.SCREEN_COLOR]: 500,
-	[VfxCategory.BACK]: 600,
+	[VfxCategory.BACK]: 1000,
 	[VfxCategory.FRONT]: 800,
 	[VfxCategory.PORTAL]: 1200,
 };
@@ -196,13 +199,23 @@ export const useVfxControl = (
 					undefined,
 					sourceId,
 				),
-			arrowProjectile: (sourceId, targetId) =>
-				spawnVFX(
+			arrowProjectile: (sourceId, targetId, options = {}) => {
+				const holdMs = options.holdMs ?? ARROW_HOLD_MS;
+				const flightMs = options.flightMs ?? ARROW_FLIGHT_MS;
+				return spawnVFX(
 					VfxTypes.ARROW_PROJECTILE,
 					[targetId],
 					undefined,
 					sourceId,
-				),
+					{
+						sourceOffsetX: options.sourceOffset?.x ?? 0,
+						sourceOffsetY: options.sourceOffset?.y ?? 0,
+						holdMs,
+						flightMs,
+					},
+					holdMs + flightMs + ARROW_FADE_MS,
+				);
+			},
 			screenDarken: (durationMs = 500) =>
 				spawnVFX(
 					VfxTypes.SCREEN_DARKEN,

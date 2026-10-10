@@ -235,47 +235,78 @@ export const executeJump = async (
 
 	await new Promise((resolve) => setTimeout(resolve, durationMs / 2));
 };
+export const calculateLeapOffset = (
+	sourceId: string,
+	targetId: string,
+	heightAbove = 80,
+	horizontalOffset = 40,
+	positions: Record<string, Position>,
+): Position | null => {
+	const sourcePos = positions[sourceId];
+	const targetPos = positions[targetId];
+	if (!sourcePos || !targetPos) return null;
 
-export const executeLeap = async (
-	unitId: string,
-	heightPx = 30,
-	durationMs = 300,
-	setTransforms: SetTransforms,
-) => {
-	const leapUpVariant: UnitTransform = {
-		y: -heightPx,
-		transition: {
-			duration: durationMs / 2000,
-			ease: 'easeOut',
-		},
-	};
+	const destY = targetPos.y - heightAbove;
 
-	setTransforms((prev) => ({
-		...prev,
-		[unitId]: { ...prev[unitId], ...leapUpVariant },
-	}));
+	const isTargetRight = targetPos.x >= sourcePos.x;
+	const destX = isTargetRight
+		? targetPos.x - horizontalOffset
+		: targetPos.x + horizontalOffset;
 
-	await new Promise((resolve) => setTimeout(resolve, durationMs / 2));
-
-	const leapDownVariant: UnitTransform = {
-		y: 0,
-		transition: {
-			duration: durationMs / 2000,
-			ease: 'easeIn',
-		},
-	};
-
-	setTransforms((prev) => ({
-		...prev,
-		[unitId]: { ...prev[unitId], ...leapDownVariant },
-	}));
-
-	await new Promise((resolve) => setTimeout(resolve, durationMs / 2));
+	return { x: destX - sourcePos.x, y: destY - sourcePos.y };
 };
 
+export const executeLeap = async (
+	sourceId: string,
+	targetId: string,
+	heightAbove = 80,
+	horizontalOffset = 40,
+	durationMs = 300,
+	positions: Record<string, Position>,
+	setTransforms: SetTransforms,
+) => {
+	const sourcePos = positions[sourceId];
+	const targetPos = positions[targetId];
+	const offset = calculateLeapOffset(
+		sourceId,
+		targetId,
+		heightAbove,
+		horizontalOffset,
+		positions,
+	);
+
+	if (!sourcePos || !targetPos || !offset) {
+		console.warn(
+			`Leap failed: Missing position for ${sourceId} or ${targetId}`,
+		);
+		return;
+	}
+
+	const { x: offsetX, y: offsetY } = offset;
+
+	const facing = calculateFacing(sourcePos, targetPos);
+
+	const leapVariant: UnitTransform = {
+		x: offsetX,
+		y: offsetY,
+		scaleX: facing === 'left' ? -1 : 1,
+		transition: {
+			duration: durationMs / 1000,
+			ease: [0, 0.85, 0.15, 1.0],
+		},
+	};
+
+	setTransforms((prev) => ({
+		...prev,
+		[sourceId]: leapVariant,
+	}));
+
+	await new Promise((resolve) => setTimeout(resolve, durationMs));
+};
 export const executeShake = async (
 	unitId: string,
-	intensityPx = 6,
+	shakeAmount = 3,
+	shakeWidth = 6,
 	durationMs = 300,
 	setTransforms: SetTransforms,
 ) => {
@@ -290,14 +321,12 @@ export const executeShake = async (
 
 		basePositionX = currentX;
 
-		const keyframeX = [
-			currentX,
-			currentX - intensityPx,
-			currentX + intensityPx,
-			currentX - intensityPx * 0.6,
-			currentX + intensityPx * 0.6,
-			currentX,
-		];
+		const keyframeX = [currentX];
+		for (let i = 0; i < shakeAmount; i++) {
+			keyframeX.push(currentX - shakeWidth);
+			keyframeX.push(currentX + shakeWidth);
+		}
+		keyframeX.push(currentX); 
 
 		return {
 			...prev,
@@ -432,7 +461,7 @@ const executePlantSway = async (
 					skewX: [0, 8 * dir, -16 * dir, -16 * dir, 2 * dir, 0],
 					transition: {
 						duration: durationMs / 1000,
-						times: [0, 0.22, 0.50, 0.58, 0.82, 1],
+						times: [0, 0.22, 0.5, 0.58, 0.82, 1],
 						ease: 'easeOut',
 					},
 				}

@@ -108,7 +108,21 @@ export interface VfxItem {
 	durationMs?: number;
 	visible?: boolean;
 	enabled?: boolean;
+	sourceOffsetX?: number;
+	sourceOffsetY?: number;
+	holdMs?: number;
+	flightMs?: number;
 }
+
+export interface ArrowProjectileOptions {
+	sourceOffset?: { x: number; y: number };
+	holdMs?: number;
+	flightMs?: number;
+}
+
+export const ARROW_HOLD_MS = 2000;
+export const ARROW_FLIGHT_MS = 350;
+export const ARROW_FADE_MS = 200;
 
 export interface TriggerVfxAPI {
 	statDamage: (targetId: string, amount: number) => Promise<void>;
@@ -135,7 +149,12 @@ export interface TriggerVfxAPI {
 	slash: (targetId: string) => Promise<void>;
 	toggleTargetSwirl: (targetId: string, visible: boolean) => Promise<void>;
 	knivesProjectile: (sourceId: string, targetId: string) => Promise<void>;
-	arrowProjectile: (sourceId: string, targetId: string) => Promise<void>;
+	/** Resolves once the arrow has been shot, landed and faded out */
+	arrowProjectile: (
+		sourceId: string,
+		targetId: string,
+		options?: ArrowProjectileOptions,
+	) => Promise<void>;
 	bossSpell: (targetId: string) => Promise<void>;
 
 	screenDarken: (durationMs?: number) => Promise<void>;

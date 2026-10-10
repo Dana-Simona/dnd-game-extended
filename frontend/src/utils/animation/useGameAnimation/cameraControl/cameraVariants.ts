@@ -23,8 +23,8 @@ export const panTo = ({
 	halfHeight = 50,
 }: PanCustomParams): TargetAndTransition => ({
 	transformOrigin: `${pixelX}px ${pixelY}px`,
-	x: `calc(${halfWidth}vw - ${pixelX}px)`,
-	y: `calc(${halfHeight}vh - ${pixelY}px)`,
+	x: `calc(${halfWidth}cqw - ${pixelX}px)`,
+	y: `calc(${halfHeight}cqh - ${pixelY}px)`,
 	scale: [null, zoom * 0.99, zoom * 1.01, zoom],
 	transition: {
 		x: {

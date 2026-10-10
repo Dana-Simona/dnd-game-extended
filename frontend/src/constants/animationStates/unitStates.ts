@@ -61,14 +61,27 @@ export interface TriggerUnitAPI {
 		durationMs?: number,
 	) => Promise<void>;
 	leap: (
-		unitId: string,
-		heightPx?: number,
+		sourceId: string,
+		targetId: string,
+		heightAbove?: number,
+		horizontalOffset?: number,
 		durationMs?: number,
 	) => Promise<void>;
+	leapOffset: (
+		sourceId: string,
+		targetId: string,
+		heightAbove?: number,
+		horizontalOffset?: number,
+	) => { x: number; y: number } | null;
 	shake: (
 		unitId: string,
-		intensityPx?: number,
+		shakeAmount?: number,
+		shakeWidth?: number,
 		durationMs?: number,
 	) => Promise<void>;
-	grow: (unitId: string, scale?: number, durationMs?: number) => Promise<void>;
+	grow: (
+		unitId: string,
+		scale?: number,
+		durationMs?: number,
+	) => Promise<void>;
 }
