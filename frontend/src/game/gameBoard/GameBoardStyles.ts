@@ -49,6 +49,7 @@ interface StaticLayerWrapperProps {
 export const ViewportContainer = styled.div`
 	width: 100%;
 	aspect-ratio: ${BOARD_ASPECT_RATIO};
+	container-type: size;
 	box-sizing: border-box;
 	overflow: hidden;
 	position: relative;

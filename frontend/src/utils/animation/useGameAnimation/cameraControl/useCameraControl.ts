@@ -226,12 +226,31 @@ export const useCameraControl = (
 			thump,
 			reset,
 		}),
-		[focusTarget, zoomIn, zoomOut, zoomTwoTargets, shake, thump, reset],
+		[
+			focusTarget,
+			zoomIn,
+			zoomOut,
+			zoomTwoTargets,
+			zoomToRange,
+			shake,
+			thump,
+			reset,
+		],
 	);
 
+	// Get current player position dynamically from visualPositions / player data
+	const playerPos = useMemo(() => {
+		if (!player) return { x: 0, y: 0 };
+		const playerId = 'id' in player ? player.id : undefined;
+		return getUnitPos(playerId) ?? { x: 0, y: 0 };
+	}, [player, getUnitPos]);
+
 	const activeTarget = useMemo(() => {
+		if (cameraState.focusPos) {
+			return cameraState.focusPos;
+		}
+
 		return (
-			cameraState.focusPos ??
 			getTargetCoords(
 				{
 					focusX: undefined,
@@ -244,9 +263,15 @@ export const useCameraControl = (
 				},
 				player,
 				visualPositions,
-			)
+			) ?? playerPos
 		);
-	}, [cameraState.focusPos, cameraState.zoom, player, visualPositions]);
+	}, [
+		cameraState.focusPos,
+		cameraState.zoom,
+		player,
+		visualPositions,
+		playerPos,
+	]);
 
 	const pixelX = activeTarget.x * tileSize + tileSize / 2;
 	const pixelY = activeTarget.y * tileSize + tileSize / 2;
@@ -315,11 +340,15 @@ export const useCameraControl = (
 				intensity: cameraState.effectIntensity,
 				baseWidth: cameraState.effectBaseWidth,
 			},
-			// Thump/shake pivot on the point the camera is looking at (which
-			// is the screen centre), not on the middle of the whole map.
 			style: { transformOrigin: `${pixelX}px ${pixelY}px` },
 		}),
-		[effectControls, cameraState.effectIntensity, pixelX, pixelY],
+		[
+			effectControls,
+			cameraState.effectIntensity,
+			cameraState.effectBaseWidth,
+			pixelX,
+			pixelY,
+		],
 	);
 
 	return {
