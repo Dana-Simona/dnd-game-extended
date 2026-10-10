@@ -26,6 +26,7 @@ const TYPE_DURATIONS: Partial<Record<VfxTypes, number>> = {
 	[VfxTypes.BANNER_LEVEL_UP]: 3000,
 	[VfxTypes.BANNER_NEXT_LEVEL]: NEXT_LEVEL_BANNER_MS,
 	[VfxTypes.BOSS_SPELL]: 3000,
+	[VfxTypes.ARROW_PROJECTILE]: 7000,
 };
 
 export interface UseVfxControlReturn {

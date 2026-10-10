@@ -92,4 +92,24 @@ export const soundRegistry: Record<SoundPreset, SoundConfig> = {
 		volume: 0.8,
 		loop: false,
 	},
+	[SoundPreset.HUNTER_GRUNT]: {
+		files: ['/sfx/hunter/grunt.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.HUNTER_BOW]: {
+		files: ['/sfx/hunter/bow.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.HUNTER_LAND]: {
+		files: ['/sfx/hunter/land.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.HUNTER_MELEE]: {
+		files: ['/sfx/hunter/melee.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
 };

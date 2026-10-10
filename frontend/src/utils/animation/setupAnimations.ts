@@ -82,9 +82,7 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerSpriteAnimation.move(event.sourceId),
 			(async () => {
 				if (!!player) {
-					if (player.class === ClassTypes.MAGE) {
-						await delay(350);
-					}
+					await delay(350);
 					controllers.triggerSound.play(SoundPreset.MOVE);
 				}
 			})(),
@@ -224,8 +222,15 @@ export const setupAnimations = (controllers: Controllers) => {
 			}
 
 			if (player) {
-				if (player.class === ClassTypes.MAGE) {
-					controllers.triggerSound.play(SoundPreset.MAGE_MELEE);
+				switch (player.class) {
+					case ClassTypes.MAGE:
+						controllers.triggerSound.play(SoundPreset.MAGE_MELEE);
+						break;
+					case ClassTypes.HUNTER:
+						controllers.triggerSound.play(SoundPreset.HUNTER_MELEE);
+						break;
+					default:
+						break;
 				}
 			}
 		},
@@ -248,6 +253,9 @@ export const setupAnimations = (controllers: Controllers) => {
 			switch ((unit as Player).class) {
 				case ClassTypes.MAGE:
 					controllers.triggerSound.play(SoundPreset.MAGE_GRUNT);
+					break;
+				case ClassTypes.HUNTER:
+					controllers.triggerSound.play(SoundPreset.HUNTER_GRUNT);
 					break;
 			}
 		}
@@ -759,6 +767,7 @@ export const setupAnimations = (controllers: Controllers) => {
 
 		await controllers.triggerCamera.zoomIn(hunterId);
 		await controllers.triggerVfx.letterbox(true);
+		controllers.triggerSound.play(SoundPreset.HUNTER_BOW);
 
 		const airborne = controllers.triggerUnit.leapOffset(
 			hunterId,
@@ -770,8 +779,9 @@ export const setupAnimations = (controllers: Controllers) => {
 		await Promise.all([
 			controllers.triggerSpriteAnimation.abilityCast(
 				hunterId,
-				AnimationPhase.WINDUP,
+				AnimationPhase.LOOP,
 			),
+			controllers.triggerSound.play(SoundPreset.SWISH_BIG),
 			controllers.triggerUnit.leap(
 				hunterId,
 				target,
@@ -798,6 +808,9 @@ export const setupAnimations = (controllers: Controllers) => {
 			},
 		);
 		controllers.triggerUnit.shake(hunterId, 5, 1, ARROW_HOLD_MS);
+		await controllers.triggerCamera.shake(40, 1, ARROW_HOLD_MS + 200);
+
+		skip();
 
 		await delay(ARROW_HOLD_MS + ARROW_FLIGHT_MS);
 
@@ -877,7 +890,8 @@ export const setupAnimations = (controllers: Controllers) => {
 				victim,
 				AnimationPhase.WINDUP,
 			),
-			controllers.triggerVfx.bloodDrip(victim),
+			controllers.triggerVfx.bleed(hunter, victim),
+			controllers.triggerUnit.dash(victim, hunter, -20),
 			controllers.triggerHpBar.showDamagePreview(
 				victim,
 				damageTaken,
@@ -885,8 +899,6 @@ export const setupAnimations = (controllers: Controllers) => {
 			),
 			controllers.triggerVfx.toggleTargetSwirl(victim, false),
 		]);
-
-		await delay(200);
 
 		await Promise.all([
 			controllers.triggerSpriteAnimation.takeDamage(
@@ -898,7 +910,10 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerSpriteAnimation.idle(victim),
 
 			controllers.triggerUnit.reset(hunter),
+			controllers.triggerUnit.reset(victim),
+			controllers.triggerSound.play(SoundPreset.SWISH_SHORT),
 			controllers.triggerSpriteAnimation.idle(hunter),
+			controllers.triggerSound.play(SoundPreset.HUNTER_LAND),
 			controllers.triggerVfx.landingDust(hunter),
 			controllers.triggerCamera.reset(400),
 			controllers.triggerVfx.letterbox(false),

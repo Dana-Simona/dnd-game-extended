@@ -22,6 +22,10 @@ export const SoundPreset = {
 	ROLL: Symbol(),
 	EXP: Symbol(),
 	ENEMY_DIE: Symbol(),
+	HUNTER_GRUNT: Symbol(),
+	HUNTER_BOW: Symbol(),
+	HUNTER_LAND: Symbol(),
+	HUNTER_MELEE: Symbol(),
 } as const;
 
 export type SoundPreset = (typeof SoundPreset)[keyof typeof SoundPreset];

@@ -120,7 +120,7 @@ export interface ArrowProjectileOptions {
 	flightMs?: number;
 }
 
-export const ARROW_HOLD_MS = 2000;
+export const ARROW_HOLD_MS = 2500;
 export const ARROW_FLIGHT_MS = 350;
 export const ARROW_FADE_MS = 200;
 
@@ -149,7 +149,6 @@ export interface TriggerVfxAPI {
 	slash: (targetId: string) => Promise<void>;
 	toggleTargetSwirl: (targetId: string, visible: boolean) => Promise<void>;
 	knivesProjectile: (sourceId: string, targetId: string) => Promise<void>;
-	/** Resolves once the arrow has been shot, landed and faded out */
 	arrowProjectile: (
 		sourceId: string,
 		targetId: string,

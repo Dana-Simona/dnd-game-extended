@@ -2,6 +2,29 @@ import React from 'react';
 import styled from 'styled-components';
 import { motion, type Transition, type Variants } from 'framer-motion';
 
+const LetterBox: React.FC = () => {
+	return (
+		<Container>
+			<Bar
+				variants={topBarVariants}
+				initial='initial'
+				animate='animate'
+				exit='exit'
+				transition={transition}
+			/>
+			<Bar
+				variants={bottomBarVariants}
+				initial='initial'
+				animate='animate'
+				exit='exit'
+				transition={transition}
+			/>
+		</Container>
+	);
+};
+
+export default LetterBox;
+
 const topBarVariants: Variants = {
 	initial: { y: '-100%' },
 	animate: { y: '0%' },
@@ -31,6 +54,7 @@ const Container = styled(motion.div)`
 	pointer-events: none;
 	z-index: 9999;
 	overflow: hidden;
+	background-color: #3d3d3d1f;
 `;
 
 const Bar = styled(motion.div)`
@@ -40,26 +64,3 @@ const Bar = styled(motion.div)`
 	pointer-events: auto;
 	will-change: transform;
 `;
-
-const LetterBox: React.FC = () => {
-	return (
-		<Container>
-			<Bar
-				variants={topBarVariants}
-				initial='initial'
-				animate='animate'
-				exit='exit'
-				transition={transition}
-			/>
-			<Bar
-				variants={bottomBarVariants}
-				initial='initial'
-				animate='animate'
-				exit='exit'
-				transition={transition}
-			/>
-		</Container>
-	);
-};
-
-export default LetterBox;
