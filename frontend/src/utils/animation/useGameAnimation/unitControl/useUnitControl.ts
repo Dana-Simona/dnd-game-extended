@@ -86,7 +86,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 	}, []);
 
 	const rotate = useCallback(
-		async (unitId: string, degrees = 360, durationMs = 300) => {
+		async (unitId: string, degrees = 90, durationMs = 300) => {
 			await executeRotate(unitId, degrees, durationMs, setUnitTransforms);
 		},
 		[],

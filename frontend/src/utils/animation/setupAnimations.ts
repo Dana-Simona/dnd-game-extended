@@ -83,6 +83,7 @@ export const setupAnimations = (controllers: Controllers) => {
 			(async () => {
 				if (!!player) {
 					await delay(350);
+					if (player.class === ClassTypes.WARRIOR) await delay(500);
 					controllers.triggerSound.play(SoundPreset.MOVE);
 				}
 			})(),
@@ -198,6 +199,9 @@ export const setupAnimations = (controllers: Controllers) => {
 					AnimationPhase.WINDUP,
 				);
 
+			const delayDuration =
+				attackerAnimationDuration - defenderAnimationDuration - 300;
+
 			if (unit?.unitType === UnitType.TRAP) {
 				const strike = controllers.triggerUnit.plantAttack(
 					attacker,
@@ -218,16 +222,21 @@ export const setupAnimations = (controllers: Controllers) => {
 				return;
 			}
 
+			if (!!player && player.class === ClassTypes.WARRIOR) {
+				controllers.triggerSound.play(SoundPreset.WARRIOR_MELEE_START);
+			} else {
+				controllers.triggerSound.play(SoundPreset.SWISH_SHORT);
+			}
+
 			await Promise.all([
 				controllers.triggerSpriteAnimation.melee(
 					attacker,
 					AnimationPhase.WINDUP,
 				),
 				async () => {
-					await delay(
-						attackerAnimationDuration - defenderAnimationDuration - 300,
-					);
-					controllers.triggerSound.play(SoundPreset.SWISH_SHORT);
+					if (delayDuration > 0) {
+						await delay(delayDuration);
+					}
 					controllers.triggerSpriteAnimation.takeDamage(
 						defender,
 						AnimationPhase.WINDUP,
@@ -246,6 +255,11 @@ export const setupAnimations = (controllers: Controllers) => {
 						break;
 					case ClassTypes.HUNTER:
 						controllers.triggerSound.play(SoundPreset.HUNTER_MELEE);
+						break;
+					case ClassTypes.WARRIOR:
+						controllers.triggerSound.play(
+							SoundPreset.WARRIOR_MELEE_END,
+						);
 						break;
 					default:
 						break;
@@ -274,6 +288,9 @@ export const setupAnimations = (controllers: Controllers) => {
 					break;
 				case ClassTypes.HUNTER:
 					controllers.triggerSound.play(SoundPreset.HUNTER_GRUNT);
+					break;
+				case ClassTypes.WARRIOR:
+					controllers.triggerSound.play(SoundPreset.WARRIOR_GRUNT);
 					break;
 			}
 		}
@@ -400,6 +417,7 @@ export const setupAnimations = (controllers: Controllers) => {
 							casterId,
 							victimId,
 							damageTaken,
+							skip,
 						);
 						break;
 					case ClassTypes.ROGUE:
@@ -439,9 +457,17 @@ export const setupAnimations = (controllers: Controllers) => {
 	});
 
 	animationRegistry.register(ActionType.HEAL, async (event: GameEvent) => {
-		if (!event.sourceId || !event.amount) return;
+		if (
+			!event.sourceId ||
+			event.amount === null ||
+			event.amount === undefined
+		)
+			return;
 		controllers.triggerHpBar.drainHp(event.sourceId);
 		await controllers.triggerVfx.statHeal(event.sourceId, event.amount);
+		await Promise.all([
+			controllers.triggerVfx.statHeal(event.sourceId, event.amount),
+		]);
 	});
 
 	animationRegistry.register(
@@ -574,38 +600,26 @@ export const setupAnimations = (controllers: Controllers) => {
 	) => {
 		const warriorId = warrior.id;
 
-		// zoom in on the warrior
-		// change screen to red hue
-		// add ash and smoke particles flying
 		await Promise.all([
 			controllers.triggerCamera.zoomIn(warriorId),
 			controllers.triggerVfx.screenRedHue(500),
 			controllers.triggerVfx.ashSmokeAmbient(true),
 		]);
 
-		// play cast animation (windup)
-		// dust fvx from the leap
-		// warrior leaps in an arc to his target
 		await Promise.all([
 			controllers.triggerSpriteAnimation.abilityCast(
 				warriorId,
 				AnimationPhase.WINDUP,
 			),
 			controllers.triggerVfx.dustLeap(warriorId),
-			controllers.triggerUnit.jump(warriorId, target, 100, 400),
+			controllers.triggerUnit.jump(warriorId, target, 50, 1000),
 		]);
 
-		// (wait for a few ms) then pan camera to enemy
 		await delay(300);
 		await controllers.triggerCamera.focusTarget(target, 200);
 
-		// camera shakes
-		// target rotates right (so they lay on their back)
-		// target dash down a little bit (simulating knock-down)
-		// cast play animation (follow through)
-		// ground breaking beneath them vfx
 		await Promise.all([
-			controllers.triggerCamera.shake(5, 300),
+			controllers.triggerCamera.shake(5, 3),
 			controllers.triggerUnit.rotate(target, 90, 150),
 			controllers.triggerUnit.dash(target, target, 10, 100),
 			controllers.triggerSpriteAnimation.abilityCast(
@@ -615,44 +629,7 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerVfx.groundBreak(target),
 		]);
 
-		// target plays hit animation
-		// target hp preview damage (in gold)
-		await Promise.all([
-			controllers.triggerSpriteAnimation.takeDamage(
-				target,
-				AnimationPhase.FOLLOW_THROUGH,
-			),
-			controllers.triggerHpBar.showDamagePreview(
-				target,
-				0, //todo: damage amount
-				'gold',
-			),
-		]);
-
-		await delay(400);
-
-		// warrior dashes back to his place
-		// blood particles drip for the target
-		// target hp drains
-		await Promise.all([
-			controllers.triggerUnit.reset(warriorId),
-			controllers.triggerVfx.bloodDrip(target),
-			controllers.triggerHpBar.drainHp(target),
-			controllers.triggerVfx.statDamage(
-				target,
-				0, //todo: damage amount
-			),
-		]);
-
-		// heal vfx over the warrior
-		// heal stat vfx
-		await Promise.all([
-			controllers.triggerVfx.statHeal(
-				warriorId,
-				0, //todo: heal amount
-			),
-			// Additional generic heal VFX if applicable could go here
-		]);
+		skip();
 
 		// target recovers and rotates back
 		// cleanup camera & environment
@@ -888,7 +865,32 @@ export const setupAnimations = (controllers: Controllers) => {
 		warrior: string,
 		victim: string,
 		damageTaken: number,
-	) => {};
+		skip: (steps?: number) => void,
+	) => {
+		await Promise.all([
+			controllers.triggerSpriteAnimation.takeDamage(
+				victim,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			controllers.triggerHpBar.showDamagePreview(
+				victim,
+				damageTaken,
+				'gold',
+			),
+		]);
+
+		await delay(400);
+
+		// blood particles drip for the target
+		await Promise.all([
+			controllers.triggerUnit.reset(warrior),
+			controllers.triggerVfx.bloodDrip(victim),
+			controllers.triggerHpBar.drainHp(victim),
+			controllers.triggerVfx.statDamage(victim, damageTaken),
+		]);
+
+		skip();
+	};
 
 	const takeDamageFromRogueCast = async (
 		rogue: string,

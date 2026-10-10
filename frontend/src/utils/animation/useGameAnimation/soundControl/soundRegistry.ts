@@ -122,4 +122,24 @@ export const soundRegistry: Record<SoundPreset, SoundConfig> = {
 		volume: 0.1,
 		loop: true,
 	},
+	[SoundPreset.WARRIOR_GRUNT]: {
+		files: ['/sfx/warrior/grunt.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.WARRIOR_MELEE_END]: {
+		files: ['/sfx/warrior/meleeFollowThrough.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.WARRIOR_MELEE_START]: {
+		files: ['/sfx/warrior/meleeWindup.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.WARRIOR_TAKE_DAMAGE]: {
+		files: ['/sfx/warrior/takeDamage.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
 };

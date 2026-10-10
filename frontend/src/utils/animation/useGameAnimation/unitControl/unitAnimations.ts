@@ -156,22 +156,29 @@ export const executeResetTransform = (
 
 export const executeRotate = async (
 	unitId: string,
-	degrees = 360,
+	degrees = 90,
 	durationMs = 300,
 	setTransforms: SetTransforms,
 ) => {
-	const rotateVariant: UnitTransform = {
-		rotate: degrees,
-		transition: {
-			duration: durationMs / 1000,
-			ease: 'easeInOut',
-		},
-	};
+	let currentDegrees = 0;
 
-	setTransforms((prev) => ({
-		...prev,
-		[unitId]: { ...prev[unitId], ...rotateVariant },
-	}));
+	setTransforms((prev) => {
+		const prevTransform = prev[unitId] as any;
+		currentDegrees = (prevTransform?.rotate || 0) + degrees;
+
+		const rotateVariant = {
+			rotate: currentDegrees,
+			transition: {
+				duration: durationMs / 1000,
+				ease: 'easeInOut',
+			},
+		};
+
+		return {
+			...prev,
+			[unitId]: { ...prevTransform, ...rotateVariant },
+		};
+	});
 
 	await new Promise((resolve) => setTimeout(resolve, durationMs));
 };
@@ -201,12 +208,15 @@ export const executeJump = async (
 	);
 	const facing = calculateFacing(sourcePos, targetPos);
 
+	const riseDurationMs = durationMs * 0.6;
+	const fallDurationMs = durationMs * 0.4;
+
 	const jumpUpVariant: UnitTransform = {
 		x: offsetX * 0.5,
-		y: offsetY - heightPx,
+		y: offsetY * 0.5 - heightPx,
 		scaleX: facing === 'left' ? -1 : 1,
 		transition: {
-			duration: durationMs / 2000,
+			duration: riseDurationMs / 1000,
 			ease: 'easeOut',
 		},
 	};
@@ -216,14 +226,14 @@ export const executeJump = async (
 		[sourceId]: { ...prev[sourceId], ...jumpUpVariant },
 	}));
 
-	await new Promise((resolve) => setTimeout(resolve, durationMs / 2));
+	await new Promise((resolve) => setTimeout(resolve, riseDurationMs));
 
 	const jumpDownVariant: UnitTransform = {
 		x: offsetX,
 		y: offsetY,
 		scaleX: facing === 'left' ? -1 : 1,
 		transition: {
-			duration: durationMs / 2000,
+			duration: fallDurationMs / 1000,
 			ease: 'easeIn',
 		},
 	};
@@ -233,8 +243,9 @@ export const executeJump = async (
 		[sourceId]: { ...prev[sourceId], ...jumpDownVariant },
 	}));
 
-	await new Promise((resolve) => setTimeout(resolve, durationMs / 2));
+	await new Promise((resolve) => setTimeout(resolve, fallDurationMs));
 };
+
 export const calculateLeapOffset = (
 	sourceId: string,
 	targetId: string,
@@ -326,7 +337,7 @@ export const executeShake = async (
 			keyframeX.push(currentX - shakeWidth);
 			keyframeX.push(currentX + shakeWidth);
 		}
-		keyframeX.push(currentX); 
+		keyframeX.push(currentX);
 
 		return {
 			...prev,

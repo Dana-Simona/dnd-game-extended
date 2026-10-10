@@ -30,6 +30,10 @@ export const SoundPreset = {
 	HUNTER_MELEE: Symbol(),
 	BG_MUSIC_REGULAR: Symbol(),
 	BG_MUSIC_BOSS: Symbol(),
+	WARRIOR_GRUNT: Symbol(),
+	WARRIOR_MELEE_START: Symbol(),
+	WARRIOR_MELEE_END: Symbol(),
+	WARRIOR_TAKE_DAMAGE: Symbol(),
 } as const;
 
 export type SoundPreset = (typeof SoundPreset)[keyof typeof SoundPreset];

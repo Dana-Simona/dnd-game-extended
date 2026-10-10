@@ -25,20 +25,20 @@ const SCREEN_VFX_STYLES: Partial<
 	Record<VfxTypes | string, ReturnType<typeof css>>
 > = {
 	[VfxTypes.SCREEN_DARKEN]: css`
-		filter: brightness(0.5) saturate(170%) sepia(0.5) grayscale(0%)
-			hue-rotate(0deg);
+		filter: sepia(0.5) hue-rotate(0deg) saturate(170%) brightness(0.5)
+			grayscale(0%);
 	`,
 	[VfxTypes.SCREEN_RED_HUE]: css`
-		filter: brightness(1) saturate(400%) sepia(1) grayscale(0%)
-			hue-rotate(310deg);
+		filter: sepia(0.5) hue-rotate(-50deg) saturate(150%) brightness(0.5)
+			grayscale(0%);
 	`,
 	[VfxTypes.SCREEN_DESATURATE]: css`
-		filter: brightness(1) saturate(100%) sepia(0) grayscale(100%)
-			hue-rotate(0deg);
+		filter: sepia(0) hue-rotate(0deg) saturate(100%) brightness(1)
+			grayscale(100%);
 	`,
 	[VfxTypes.SCREEN_RESTORE_COLOR]: css`
-		filter: brightness(1) saturate(100%) sepia(0) grayscale(0%)
-			hue-rotate(0deg);
+		filter: sepia(0) hue-rotate(0deg) saturate(100%) brightness(1)
+			grayscale(0%);
 	`,
 };
 

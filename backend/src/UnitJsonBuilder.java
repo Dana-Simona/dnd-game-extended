@@ -105,6 +105,7 @@ public class UnitJsonBuilder {
     private static void buildPlayerBaseJson(StringBuilder json, Player player) {
         json.append(",\"class\":\"").append(escapeJson(player.getClass().getSimpleName().toLowerCase())).append("\",")
                 .append("\"currentExp\":").append(player.getExperience()).append(",")
+                .append("\"range\":").append(player.getRange()).append(",")
                 .append("\"expRequiredForNextLevel\":").append(player.experienceRequiredForNextLevel()).append(",")
                 .append("\"level\":").append(player.getLevel());
     }
@@ -135,8 +136,7 @@ public class UnitJsonBuilder {
                 .append(",\"currentMana\":").append(mage.getCurrentMana())
                 .append(",\"manaCost\":").append(mage.getManaCost())
                 .append(",\"spellPower\":").append(mage.getSpellPower())
-                .append(",\"hitCount\":").append(mage.getHitCount())
-                .append(",\"range\":").append(mage.getAbilityRange());
+                .append(",\"hitCount\":").append(mage.getHitCount());
     }
 
     private static void buildRogueJson(StringBuilder json, Rogue rogue) {
@@ -148,8 +148,7 @@ public class UnitJsonBuilder {
 
     private static void buildHunterJson(StringBuilder json, Hunter hunter) {
         buildPlayerBaseJson(json, hunter);
-        json.append(",\"arrowCount\":").append(hunter.getArrowCount())
-                .append(",\"range\":").append(hunter.getRange());
+        json.append(",\"arrowCount\":").append(hunter.getArrowCount());
     }
 
     private static void buildMonsterJson(StringBuilder json, Monster monster) {
