@@ -21,11 +21,14 @@ export const GameColumn = styled.div`
 	width: ${GAME_COLUMN_WIDTH};
 	display: flex;
 	flex-direction: column;
+	gap: 10px;
 `;
 
 export const Stats = styled.div`
-	display: flex;
-	width: 100%;
-	gap: 16px;
-	align-items: flex-start;
+    display: flex;
+    width: 100%;
+    gap: 16px;
+    align-items: flex-start;
+    height: 200px;
+    overflow: hidden;
 `;

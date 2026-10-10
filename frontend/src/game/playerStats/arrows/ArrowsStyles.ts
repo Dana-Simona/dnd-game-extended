@@ -32,8 +32,8 @@ export const ArrowDot = styled.div`
 	width: 12px;
 	height: 12px;
 	border-radius: 50%;
-	background-color: '#f1c40f';
-	border: 1px solid '#f39c12';
-	box-shadow: '0 0 6px rgba(241, 196, 15, 0.5)';
+	background-color: #f1c40f;
+	border: 1px solid #f39c12;
+	box-shadow: 0 0 6px rgba(241, 196, 15, 0.5);
 	transition: all 0.2s ease;
 `;

@@ -10,7 +10,6 @@ export const LogContainer = styled(motion.div)`
 	border-radius: 8px;
 	display: flex;
 	flex-direction: column;
-	margin: 1rem 0;
 	font-family: monospace;
 	overflow: auto;
 `;
