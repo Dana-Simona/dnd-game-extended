@@ -760,7 +760,6 @@ export const setupAnimations = (controllers: Controllers) => {
 		await controllers.triggerCamera.zoomIn(hunterId);
 		await controllers.triggerVfx.letterbox(true);
 
-		// where the hunter will be while airborne (offset from her tile, px)
 		const airborne = controllers.triggerUnit.leapOffset(
 			hunterId,
 			target,
@@ -768,10 +767,6 @@ export const setupAnimations = (controllers: Controllers) => {
 			HUNTER_LEAP_HORIZONTAL_OFFSET,
 		) ?? { x: 0, y: 0 };
 
-		// play attack animation (windup) - the hunter jumps and charges their bow
-		// ground smoke from the impact of jumping
-		// white swirl effect of the target enemy
-		// the camera follows the hunter up into the air
 		await Promise.all([
 			controllers.triggerSpriteAnimation.abilityCast(
 				hunterId,
@@ -793,9 +788,6 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerVfx.toggleTargetSwirl(target, true),
 		]);
 
-		// the arrow appears in the hunter's hand (on top of her), is held for
-		// ARROW_HOLD_MS while she trembles, then shoots in a straight line at
-		// the enemy and fades out
 		const arrowDone = controllers.triggerVfx.arrowProjectile(
 			hunterId,
 			target,
@@ -807,11 +799,8 @@ export const setupAnimations = (controllers: Controllers) => {
 		);
 		controllers.triggerUnit.shake(hunterId, 5, 1, ARROW_HOLD_MS);
 
-		// wait until the arrow lands
 		await delay(ARROW_HOLD_MS + ARROW_FLIGHT_MS);
 
-		// impact: the camera leaves the airborne hunter, pans to the enemy
-		// and thumps
 		const panToEnemy = controllers.triggerCamera.focusTarget(
 			target,
 			HUNTER_CAMERA_PAN_TO_ENEMY_MS,
@@ -888,10 +877,6 @@ export const setupAnimations = (controllers: Controllers) => {
 				victim,
 				AnimationPhase.WINDUP,
 			),
-			controllers.triggerSpriteAnimation.takeDamage(
-				victim,
-				AnimationPhase.FOLLOW_THROUGH,
-			),
 			controllers.triggerVfx.bloodDrip(victim),
 			controllers.triggerHpBar.showDamagePreview(
 				victim,
@@ -904,6 +889,10 @@ export const setupAnimations = (controllers: Controllers) => {
 		await delay(200);
 
 		await Promise.all([
+			controllers.triggerSpriteAnimation.takeDamage(
+				victim,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
 			controllers.triggerHpBar.drainHp(victim),
 			controllers.triggerVfx.statDamage(victim, damageTaken),
 			controllers.triggerSpriteAnimation.idle(victim),

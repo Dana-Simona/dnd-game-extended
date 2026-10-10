@@ -241,8 +241,8 @@ public abstract class Unit extends Occupant {
             throw new IllegalArgumentException("unit can't be null");
         }
         int actualDamage = this.defend(damageAmount);
+
         if (actualDamage > 0) {
-            this.takeDamage(actualDamage);
             sendMessage(attackerName + " hit " + this.getName() + " for " + actualDamage + " ability damage");
             sendEvent(new GameEvent(stepCounter.nextStep(), ActionType.TAKE_DAMAGE_FROM_ABILITY, this.getId(), attackerId, actualDamage));
         }

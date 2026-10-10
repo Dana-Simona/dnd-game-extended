@@ -36,7 +36,7 @@ public class Hunter extends Player {
     @Override
     public void levelUp() {
         super.levelUp();
-        arrowCount += this.getLevel() * 10;
+        arrowCount += this.getLevel() * 3;
     }
 
     @Override
