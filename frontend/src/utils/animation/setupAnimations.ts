@@ -466,7 +466,6 @@ export const setupAnimations = (controllers: Controllers) => {
 
 		await Promise.all([
 			controllers.triggerVfx.effectHeal(event.sourceId),
-			controllers.triggerHpBar.drainHp(event.sourceId),
 			controllers.triggerVfx.statHeal(event.sourceId, event.amount),
 		]);
 	});
@@ -626,29 +625,17 @@ export const setupAnimations = (controllers: Controllers) => {
 			})(),
 		]);
 
+		controllers.triggerCamera.shake(5, 3);
+		controllers.triggerVfx.groundBreak(target);
 		controllers.triggerVfx.bloodDrip(target);
+
 		await delay(1000);
-
-		await Promise.all([
-			controllers.triggerCamera.shake(5, 3),
-			controllers.triggerSpriteAnimation.abilityCast(
-				warriorId,
-				AnimationPhase.FOLLOW_THROUGH,
-			),
-			controllers.triggerVfx.groundBreak(target),
-		]);
-
 		skip();
 
-		await Promise.all([
-			controllers.triggerUnit.rotate(target, 0, 300),
-			controllers.triggerUnit.dashBy(target, 30, -5, 300),
-			controllers.triggerSpriteAnimation.idle(target),
-			controllers.triggerSpriteAnimation.idle(warriorId),
-			controllers.triggerCamera.reset(500),
-			controllers.triggerVfx.screenRestoreColor(500),
-			controllers.triggerVfx.ashSmokeAmbient(false),
-		]);
+		await controllers.triggerSpriteAnimation.abilityCast(
+			warriorId,
+			AnimationPhase.FOLLOW_THROUGH,
+		);
 	};
 
 	const rogueCast = async (
@@ -887,10 +874,18 @@ export const setupAnimations = (controllers: Controllers) => {
 			),
 		]);
 
-		skip();
 		await delay(400);
+		skip();
+		await delay(700);
 
 		await Promise.all([
+			controllers.triggerUnit.rotate(victim, 0, 300),
+			controllers.triggerUnit.dashBy(victim, 30, -5, 300),
+			controllers.triggerSpriteAnimation.idle(victim),
+			controllers.triggerSpriteAnimation.idle(warrior),
+			controllers.triggerCamera.reset(500),
+			controllers.triggerVfx.screenRestoreColor(500),
+			controllers.triggerVfx.ashSmokeAmbient(false),
 			controllers.triggerUnit.reset(warrior),
 			controllers.triggerHpBar.drainHp(victim),
 			controllers.triggerVfx.statDamage(victim, damageTaken),

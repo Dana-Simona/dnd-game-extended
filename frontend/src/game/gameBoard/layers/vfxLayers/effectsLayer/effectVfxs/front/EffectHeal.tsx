@@ -37,6 +37,6 @@ const Container = styled.div.attrs<{ $x: number; $y: number }>(
 	position: absolute;
 	pointer-events: none;
 	mix-blend-mode: screen;
-	filter: grayscale(1) sepia(1) hue-rotate(70deg) saturate(2.5) contrast(1.2);
+	filter: grayscale(1) sepia(1) hue-rotate(70deg) saturate(2.5) contrast(1.2) opacity(0.6);
 	z-index: 999;
 `;
