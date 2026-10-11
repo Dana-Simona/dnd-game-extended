@@ -34,6 +34,11 @@ export const SoundPreset = {
 	WARRIOR_MELEE_START: Symbol(),
 	WARRIOR_MELEE_END: Symbol(),
 	WARRIOR_TAKE_DAMAGE: Symbol(),
+	WARRIOR_SLAM: Symbol(),
+	WARRIOR_FIRE_TRANSITION: Symbol(),
+	WARRIOR_FIRE_AMBIANCE: Symbol(),
+	WARRIOR_STAB: Symbol(),
+	HEAL: Symbol(),
 } as const;
 
 export type SoundPreset = (typeof SoundPreset)[keyof typeof SoundPreset];

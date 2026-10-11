@@ -142,4 +142,29 @@ export const soundRegistry: Record<SoundPreset, SoundConfig> = {
 		volume: 0.8,
 		loop: false,
 	},
+	[SoundPreset.WARRIOR_SLAM]: {
+		files: ['/sfx/warrior/slam.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.WARRIOR_FIRE_TRANSITION]: {
+		files: ['/sfx/warrior/fireTransition.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.WARRIOR_FIRE_AMBIANCE]: {
+		files: ['/sfx/warrior/fireAmbiance.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.WARRIOR_STAB]: {
+		files: ['/sfx/warrior/stab.mp3'],
+		volume: 0.9,
+		loop: false,
+	},
+	[SoundPreset.HEAL]: {
+		files: ['/sfx/heal.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
 };

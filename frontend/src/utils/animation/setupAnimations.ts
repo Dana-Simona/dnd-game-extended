@@ -246,9 +246,7 @@ export const setupAnimations = (controllers: Controllers) => {
 
 			if (!player) {
 				controllers.triggerSound.play(SoundPreset.ENEMY_MELEE);
-			}
-
-			if (player) {
+			} else {
 				switch (player.class) {
 					case ClassTypes.MAGE:
 						controllers.triggerSound.play(SoundPreset.MAGE_MELEE);
@@ -467,6 +465,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		await Promise.all([
 			controllers.triggerVfx.effectHeal(event.sourceId),
 			controllers.triggerVfx.statHeal(event.sourceId, event.amount),
+			controllers.triggerSound.play(SoundPreset.HEAL),
 		]);
 	});
 
@@ -479,10 +478,9 @@ export const setupAnimations = (controllers: Controllers) => {
 	);
 
 	animationRegistry.register(ActionType.LOSE, async (event: GameEvent) => {
-		if (!event.sourceId || !event.amount) return;
 		await controllers.triggerCamera.zoomIn();
 		await controllers.triggerCamera.thump();
-		await controllers.triggerVfx.bannerLose(event.amount);
+		await controllers.triggerVfx.bannerLose(event.amount || 0);
 	});
 
 	animationRegistry.register(
@@ -604,6 +602,8 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerCamera.zoomIn(warriorId, 5),
 			controllers.triggerVfx.screenRedHue(500),
 			controllers.triggerVfx.ashSmokeAmbient(true),
+			controllers.triggerSound.play(SoundPreset.WARRIOR_FIRE_TRANSITION),
+			controllers.triggerSound.play(SoundPreset.WARRIOR_FIRE_AMBIANCE),
 		]);
 
 		await delay(500);
@@ -615,6 +615,7 @@ export const setupAnimations = (controllers: Controllers) => {
 				warriorId,
 				AnimationPhase.WINDUP,
 			),
+			controllers.triggerSound.play(SoundPreset.SWISH_BIG),
 			controllers.triggerVfx.dustLeap(warriorId),
 			controllers.triggerUnit.jump(warriorId, target, 50, 1000),
 			(async () => {
@@ -623,8 +624,14 @@ export const setupAnimations = (controllers: Controllers) => {
 				controllers.triggerUnit.rotate(target, 90, 150, warriorId);
 				controllers.triggerUnit.dashBy(target, -30, 0, 100);
 			})(),
+			(async () => {
+				await delay(1000);
+				controllers.triggerSound.play(SoundPreset.WARRIOR_STAB);
+			})(),
 		]);
 
+		controllers.triggerSound.play(SoundPreset.WARRIOR_SLAM);
+		await delay(100);
 		controllers.triggerCamera.shake(5, 3);
 		controllers.triggerVfx.groundBreak(target);
 		controllers.triggerVfx.bloodDrip(target);
@@ -876,7 +883,7 @@ export const setupAnimations = (controllers: Controllers) => {
 
 		await delay(400);
 		skip();
-		await delay(700);
+		await delay(1000);
 
 		await Promise.all([
 			controllers.triggerUnit.rotate(victim, 0, 300),
@@ -889,6 +896,7 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerUnit.reset(warrior),
 			controllers.triggerHpBar.drainHp(victim),
 			controllers.triggerVfx.statDamage(victim, damageTaken),
+			controllers.triggerSound.stopAll(),
 		]);
 	};
 

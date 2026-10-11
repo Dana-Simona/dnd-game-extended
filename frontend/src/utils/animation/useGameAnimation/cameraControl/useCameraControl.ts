@@ -151,7 +151,7 @@ export const useCameraControl = (
 			const targetPos = getUnitPos(targetId);
 			const { width, height } = getBoardViewportSize();
 			const calculatedZoom = calcRangeZoom(
-				range,
+				range - 2,
 				tileSize,
 				marginTiles,
 				width,

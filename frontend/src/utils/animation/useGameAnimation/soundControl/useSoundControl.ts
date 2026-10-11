@@ -115,7 +115,6 @@ export const useSoundControl = (
 			const allAudios: HTMLAudioElement[] = [];
 
 			activeAudios.current.forEach((audios, preset) => {
-				// background music keeps playing through fights
 				if (!includeMusic && isMusic(preset)) return;
 				audios.forEach((audio) => allAudios.push(audio));
 				audios.clear();
@@ -132,10 +131,8 @@ export const useSoundControl = (
 		async (preset: SoundPreset): Promise<void> => {
 			if (!enabled) return;
 
-			// already playing this track -> keep it going
 			if ((activeAudios.current.get(preset)?.size ?? 0) > 0) return;
 
-			// fade out the other background track, then start this one
 			MUSIC_PRESETS.filter((p) => p !== preset).forEach((other) => {
 				void stop(other);
 			});
