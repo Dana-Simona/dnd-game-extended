@@ -45,13 +45,14 @@ export const useGameAnimation = (
 	const { triggerCamera, resetCamera, panZoomMotion, effectMotion } =
 		useCameraControl(player, units, visualPositions, tileSize, zoom);
 
+	const { triggerUnit, unitTransforms, trapStates, resetAllTransforms } =
+		useUnitControl(visualPositions);
+
 	const { triggerVfx, activeVfxList } = useVfxControl(
 		visualPositions,
 		tileSize,
+		unitTransforms,
 	);
-
-	const { triggerUnit, unitTransforms, trapStates, resetAllTransforms } =
-		useUnitControl(visualPositions);
 
 	const {
 		hpStates,
@@ -83,9 +84,6 @@ export const useGameAnimation = (
 	const triggerSoundRef = useRef(triggerSound);
 	triggerSoundRef.current = triggerSound;
 
-	// Boss levels get the boss track, every other level the regular one.
-	// playMusic is a no-op when that track is already playing, so a regular
-	// level simply keeps the music going.
 	const startLevelMusic = useCallback((levelEnemies: Unit[]) => {
 		const hasBoss = levelEnemies.some((e) => e.unitType === UnitType.BOSS);
 		void triggerSoundRef.current.playMusic(
@@ -93,11 +91,11 @@ export const useGameAnimation = (
 		);
 	}, []);
 
-	// "Goal: kill all enemies" / "Goal: destroy <boss>" for a few seconds.
 	const announceLevelGoal = useCallback(
 		async (levelEnemies: Unit[], delayMs: number = 0) => {
 			if (delayMs > 0) await delay(delayMs);
 			const boss = levelEnemies.find((e) => e.unitType === UnitType.BOSS);
+			
 			await triggerVfxRef.current.bannerGoal(
 				boss ? `Destroy ${boss.name}` : 'Kill all enemies',
 				!!boss,
@@ -149,9 +147,6 @@ export const useGameAnimation = (
 		],
 	);
 
-	// The NEXT_LEVEL animation closes the screen. Once the new level has been
-	// swapped in underneath, hold for a moment (so its tiles can load) and open
-	// the screen again. Input stays blocked until the reveal is done.
 	const revealNewLevel = useCallback(async () => {
 		try {
 			await delay(LEVEL_TRANSITION_HOLD_MS);

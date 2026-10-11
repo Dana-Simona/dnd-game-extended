@@ -102,6 +102,8 @@ const ActiveLayer: React.FC<Props> = React.memo(
 					const targetOpacity = transform.opacity ?? 1;
 					const targetScale =
 						typeof transform.scale === 'number' ? transform.scale : 1;
+					const targetRotate =
+						typeof transform.rotate === 'number' ? transform.rotate : 0;
 
 					const moveDelay = isPlayer ? PLAYER_MOVEMENT_DELAY : 0;
 
@@ -146,12 +148,14 @@ const ActiveLayer: React.FC<Props> = React.memo(
 									: targetY,
 								opacity: targetOpacity,
 								scale: targetScale,
+								rotate: targetRotate,
 							}}
 							animate={{
 								x: targetX,
 								y: targetY,
 								opacity: targetOpacity,
 								scale: targetScale,
+								rotate: targetRotate,
 							}}
 							transition={transitionConfig}
 						>

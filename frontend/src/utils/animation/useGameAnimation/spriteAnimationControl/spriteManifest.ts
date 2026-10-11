@@ -40,7 +40,7 @@ export const SPRITE_MANIFEST: Record<
 			height: 100,
 			frameCount: 19,
 			fps: 4,
-			impactFrame: 8,
+			impactFrame: 7,
 		},
 		[SpritePresets.DIE]: {
 			width: 130,

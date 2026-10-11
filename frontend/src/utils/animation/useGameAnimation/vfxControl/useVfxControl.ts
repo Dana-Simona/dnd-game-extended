@@ -1,5 +1,9 @@
 import { useState, useCallback, useRef, useMemo } from 'react';
-import type { Position } from '../unitControl/unitCalculations';
+import {
+	getTransformOffset,
+	type Position,
+} from '../unitControl/unitCalculations';
+import type { UnitTransform } from '../../../../constants/animationStates/unitStates';
 import {
 	ARROW_FADE_MS,
 	ARROW_FLIGHT_MS,
@@ -23,6 +27,8 @@ const CATEGORY_DURATIONS: Record<VfxCategory, number> = {
 const TYPE_DURATIONS: Partial<Record<VfxTypes, number>> = {
 	[VfxTypes.EXP_ORBS]: 3200,
 	[VfxTypes.LIGHTNING_STRIKE]: 800,
+	[VfxTypes.BLOOD_DRIP]: 5000,
+	[VfxTypes.EFFECTS_HEAL]: 3000,
 	[VfxTypes.BANNER_LEVEL_UP]: 3000,
 	[VfxTypes.BANNER_NEXT_LEVEL]: NEXT_LEVEL_BANNER_MS,
 	[VfxTypes.BOSS_SPELL]: 3000,
@@ -48,9 +54,13 @@ export interface UseVfxControlReturn {
 export const useVfxControl = (
 	visualPositions: Record<string, Position> = {},
 	tileSize: number = 32,
+	unitTransforms: Record<string, UnitTransform> = {},
 ): UseVfxControlReturn => {
 	const [activeVfxList, setActiveVfxList] = useState<VfxItem[]>([]);
 	const nextIdRef = useRef(0);
+
+	const unitTransformsRef = useRef(unitTransforms);
+	unitTransformsRef.current = unitTransforms;
 
 	const spawnVFX = useCallback(
 		async (
@@ -138,6 +148,22 @@ export const useVfxControl = (
 				spawnVFX(VfxTypes.STAT_DAMAGE, [targetId], amount),
 			statHeal: (targetId, amount) =>
 				spawnVFX(VfxTypes.STAT_HEAL, [targetId], amount),
+			effectHeal: (targetId) => {
+				const tile = visualPositions[targetId] ?? { x: 0, y: 0 };
+				const offset = getTransformOffset(
+					unitTransformsRef.current[targetId],
+				);
+				return spawnVFX(
+					VfxTypes.EFFECTS_HEAL,
+					[targetId],
+					undefined,
+					undefined,
+					{
+						x: (tile.x + 0.5) * tileSize + offset.x,
+						y: (tile.y + 0.5) * tileSize + offset.y,
+					},
+				);
+			},
 			statExp: (targetId, amount) =>
 				spawnVFX(VfxTypes.STAT_EXP, [targetId], amount),
 			rollAttack: (targetId, amount) =>
@@ -315,6 +341,11 @@ export const useVfxControl = (
 					{ durationMs },
 					durationMs,
 				),
+			bannerGoal: (bossName, isBossLevel) =>
+				spawnVFX(VfxTypes.BANNER_GOAL, [], undefined, undefined, {
+					text: bossName,
+					isBoss: isBossLevel,
+				}),
 			letterbox: async (visible) => {
 				if (visible) {
 					await spawnVFX(
@@ -346,7 +377,7 @@ export const useVfxControl = (
 				}
 			},
 		}),
-		[spawnVFX, removeVfxType],
+		[spawnVFX, removeVfxType, visualPositions, tileSize],
 	);
 
 	return {

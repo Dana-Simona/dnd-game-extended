@@ -3,6 +3,7 @@ import type { Position } from './unitCalculations';
 import {
 	executeFaceTarget,
 	executeDash,
+	executeDashBy,
 	executeResetTransform,
 	executeFadeOut,
 	executeFadeIn,
@@ -86,8 +87,33 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 	}, []);
 
 	const rotate = useCallback(
-		async (unitId: string, degrees = 90, durationMs = 300) => {
-			await executeRotate(unitId, degrees, durationMs, setUnitTransforms);
+		async (
+			unitId: string,
+			degrees = 90,
+			durationMs = 300,
+			awayFromId?: string,
+		) => {
+			await executeRotate(
+				unitId,
+				degrees,
+				durationMs,
+				awayFromId,
+				visualPositionsRef.current,
+				setUnitTransforms,
+			);
+		},
+		[],
+	);
+
+	const dashBy = useCallback(
+		async (unitId: string, offsetX = 0, offsetY = 0, durationMs = 100) => {
+			await executeDashBy(
+				unitId,
+				offsetX,
+				offsetY,
+				durationMs,
+				setUnitTransforms,
+			);
 		},
 		[],
 	);
@@ -218,6 +244,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		() => ({
 			face: faceTarget,
 			dash,
+			dashBy,
 			fadeOut,
 			fadeIn,
 			reset: resetTransform,
@@ -234,6 +261,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		[
 			faceTarget,
 			dash,
+			dashBy,
 			fadeOut,
 			fadeIn,
 			resetTransform,
@@ -256,6 +284,7 @@ export const useUnitControl = (visualPositions: Record<string, Position>) => {
 		resetAllTransforms,
 		faceTarget,
 		dash,
+		dashBy,
 		fadeOut,
 		fadeIn,
 		resetTransform,

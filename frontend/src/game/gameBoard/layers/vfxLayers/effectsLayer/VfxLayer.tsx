@@ -1,17 +1,22 @@
 import React from 'react';
 
+import Ash from './effectVfxs/front/Ash';
 import Bleed from './effectVfxs/back/Bleed';
+import Slash from './effectVfxs/front/Slash';
 import { VfxViewportLayer } from './vfxStyles';
 import IceFeet from './effectVfxs/front/IceFeet';
 import ExpOrbs from './effectVfxs/front/ExpOrbs';
 import DustLeap from './effectVfxs/back/DustLeap';
 import DustLand from './effectVfxs/back/DustLand';
+import BossSpell from './effectVfxs/front/BossSpell';
 import IceGather from './effectVfxs/front/IceGather';
 import BloodDrip from './effectVfxs/front/BloodDrip';
 import IceExplode from './effectVfxs/front/IceExplode';
 import EffectHeal from './effectVfxs/front/EffectHeal';
 import GroundBreak from './effectVfxs/back/GroundBreak';
 import TargetSwirl from './effectVfxs/back/TargetSwirl';
+import { StatVfx } from './effectVfxs/front/statVfx/StatVfx';
+import { RollVfx } from './effectVfxs/front/rollVfx/RollVfx';
 import ArrowProjectile from './effectVfxs/front/ArrowProjectile';
 import LightningStrike from './effectVfxs/front/LightningStrike';
 import KnivesProjectile from './effectVfxs/front/KnivesProjectile';
@@ -19,10 +24,6 @@ import {
 	type VfxItem,
 	VfxTypes,
 } from '../../../../../constants/animationStates/vfxStates';
-import Slash from './effectVfxs/front/Slash';
-import { RollVfx } from './effectVfxs/front/rollVfx/RollVfx';
-import { StatVfx } from './effectVfxs/front/statVfx/StatVfx';
-import BossSpell from './effectVfxs/front/BossSpell';
 
 interface Props {
 	vfxList: VfxItem[];
@@ -53,6 +54,7 @@ const VFX_COMPONENTS: Partial<
 	[VfxTypes.ARROW_PROJECTILE]: ArrowProjectile,
 	[VfxTypes.EXP_ORBS]: ExpOrbs,
 	[VfxTypes.BOSS_SPELL]: BossSpell,
+	[VfxTypes.ASH_SMOKE_AMBIENT]: Ash,
 };
 
 export const VfxLayer: React.FC<Props> = ({ vfxList }) => {

@@ -65,22 +65,6 @@ export const PlayerStats: React.FC = () => {
 	const hasArrows = player.arrowCount !== undefined;
 
 	const primaryStats: PrimaryStat[] = [];
-	if (player.attack !== undefined) {
-		primaryStats.push({
-			label: 'Attack',
-			value: player.attack,
-			color: '#ff4d4d',
-			description: STAT_DESCRIPTIONS.attack,
-		});
-	}
-	if (player.defense !== undefined) {
-		primaryStats.push({
-			label: 'Defense',
-			value: player.defense,
-			color: '#00bfff',
-			description: STAT_DESCRIPTIONS.defense,
-		});
-	}
 	if (player.hitCount !== undefined) {
 		primaryStats.push({
 			label: 'Hit Count',
@@ -95,6 +79,22 @@ export const PlayerStats: React.FC = () => {
 			value: player.spellPower,
 			color: '#a855f7',
 			description: STAT_DESCRIPTIONS.spellPower,
+		});
+	}
+	if (player.attack !== undefined) {
+		primaryStats.push({
+			label: 'Attack',
+			value: player.attack,
+			color: '#ff4d4d',
+			description: STAT_DESCRIPTIONS.attack,
+		});
+	}
+	if (player.defense !== undefined) {
+		primaryStats.push({
+			label: 'Defense',
+			value: player.defense,
+			color: '#00bfff',
+			description: STAT_DESCRIPTIONS.defense,
 		});
 	}
 
@@ -122,19 +122,7 @@ export const PlayerStats: React.FC = () => {
 				color='#2ecc71'
 			/>
 
-			<PrimaryStatsGrid $columns={statColumns}>
-				{primaryStats.map((stat, index) => (
-					<StatItem
-						key={stat.label}
-						label={stat.label}
-						value={stat.value}
-						color={stat.color}
-						description={stat.description}
-						tooltipAlign={getTooltipAlign(index, statColumns)}
-					/>
-				))}
-			</PrimaryStatsGrid>
-
+			
 			{hasMana && (
 				<StatBar
 					label='Mana'
@@ -165,6 +153,19 @@ export const PlayerStats: React.FC = () => {
 			)}
 
 			{hasArrows && <Arrows arrowCount={player.arrowCount!} />}
+
+			<PrimaryStatsGrid $columns={statColumns}>
+				{primaryStats.map((stat, index) => (
+					<StatItem
+						key={stat.label}
+						label={stat.label}
+						value={stat.value}
+						color={stat.color}
+						description={stat.description}
+						tooltipAlign={getTooltipAlign(index, statColumns)}
+					/>
+				))}
+			</PrimaryStatsGrid>
 		</StatsContainer>
 	);
 };

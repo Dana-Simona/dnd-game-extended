@@ -13,11 +13,11 @@ const TEAL = '#00ffcc';
 const BLOOD = '#ef4444';
 const BONE = '#f5e6c8';
 
-const GOAL_BANNER_MS = 3000;
+const GOAL_BANNER_MS = 5000;
 
 const LevelGoal: React.FC<Props> = ({ item }) => {
 	const isBoss = !!item.isBoss;
-	const seconds = (item.durationMs ?? GOAL_BANNER_MS) / 1000;
+	const seconds =  GOAL_BANNER_MS / 1000;
 
 	return (
 		<Positioner>
@@ -91,7 +91,7 @@ const Label = styled.span<{ $boss: boolean }>`
 `;
 
 const Objective = styled.span<{ $boss: boolean }>`
-	font-size: 1.6rem;
+	font-size: 1rem;
 	font-weight: 900;
 	letter-spacing: 3px;
 	color: ${({ $boss }) => ($boss ? BONE : '#e0e0e0')};

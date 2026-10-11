@@ -80,7 +80,7 @@ export const StaticLayerWrapper = styled.div<StaticLayerWrapperProps>`
 	display: grid;
 	grid-template-areas: 'stack';
 	position: relative;
-	filter: brightness(1) saturate(100%) sepia(0) grayscale(0%) hue-rotate(0deg);
+	filter: sepia(0) hue-rotate(0deg) saturate(100%) brightness(1) grayscale(0%);
 	transition: filter 0.5s ease-in-out;
 
 	${({ $activeVfxTypes }) =>

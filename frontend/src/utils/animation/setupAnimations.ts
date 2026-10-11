@@ -463,9 +463,10 @@ export const setupAnimations = (controllers: Controllers) => {
 			event.amount === undefined
 		)
 			return;
-		controllers.triggerHpBar.drainHp(event.sourceId);
-		await controllers.triggerVfx.statHeal(event.sourceId, event.amount);
+
 		await Promise.all([
+			controllers.triggerVfx.effectHeal(event.sourceId),
+			controllers.triggerHpBar.drainHp(event.sourceId),
 			controllers.triggerVfx.statHeal(event.sourceId, event.amount),
 		]);
 	});
@@ -601,27 +602,35 @@ export const setupAnimations = (controllers: Controllers) => {
 		const warriorId = warrior.id;
 
 		await Promise.all([
-			controllers.triggerCamera.zoomIn(warriorId),
+			controllers.triggerCamera.zoomIn(warriorId, 5),
 			controllers.triggerVfx.screenRedHue(500),
 			controllers.triggerVfx.ashSmokeAmbient(true),
 		]);
 
+		await delay(500);
+
 		await Promise.all([
+			controllers.triggerCamera.zoomIn(warriorId, 3),
+			controllers.triggerCamera.focusTarget(target, 200),
 			controllers.triggerSpriteAnimation.abilityCast(
 				warriorId,
 				AnimationPhase.WINDUP,
 			),
 			controllers.triggerVfx.dustLeap(warriorId),
 			controllers.triggerUnit.jump(warriorId, target, 50, 1000),
+			(async () => {
+				await delay(500);
+				controllers.triggerCamera.zoomIn(warriorId, 5);
+				controllers.triggerUnit.rotate(target, 90, 150, warriorId);
+				controllers.triggerUnit.dashBy(target, -30, 0, 100);
+			})(),
 		]);
 
-		await delay(300);
-		await controllers.triggerCamera.focusTarget(target, 200);
+		controllers.triggerVfx.bloodDrip(target);
+		await delay(1000);
 
 		await Promise.all([
 			controllers.triggerCamera.shake(5, 3),
-			controllers.triggerUnit.rotate(target, 90, 150),
-			controllers.triggerUnit.dash(target, target, 10, 100),
 			controllers.triggerSpriteAnimation.abilityCast(
 				warriorId,
 				AnimationPhase.FOLLOW_THROUGH,
@@ -631,10 +640,9 @@ export const setupAnimations = (controllers: Controllers) => {
 
 		skip();
 
-		// target recovers and rotates back
-		// cleanup camera & environment
 		await Promise.all([
 			controllers.triggerUnit.rotate(target, 0, 300),
+			controllers.triggerUnit.dashBy(target, 30, -5, 300),
 			controllers.triggerSpriteAnimation.idle(target),
 			controllers.triggerSpriteAnimation.idle(warriorId),
 			controllers.triggerCamera.reset(500),
@@ -879,17 +887,14 @@ export const setupAnimations = (controllers: Controllers) => {
 			),
 		]);
 
+		skip();
 		await delay(400);
 
-		// blood particles drip for the target
 		await Promise.all([
 			controllers.triggerUnit.reset(warrior),
-			controllers.triggerVfx.bloodDrip(victim),
 			controllers.triggerHpBar.drainHp(victim),
 			controllers.triggerVfx.statDamage(victim, damageTaken),
 		]);
-
-		skip();
 	};
 
 	const takeDamageFromRogueCast = async (

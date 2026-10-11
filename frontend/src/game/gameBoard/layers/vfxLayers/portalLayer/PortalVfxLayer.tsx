@@ -1,21 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import Win from './portalVfxs/Win';
+import Lose from './portalVfxs/Lose';
+import Ravens from './portalVfxs/Ravens';
+import LevelGoal from './portalVfxs/LevelGoal';
+import NextLevel from './portalVfxs/NextLevel';
+import LetterBox from './portalVfxs/LetterBox';
 import { PortalOverlay } from './PortalVfxStyles';
+import LevelUp from './portalVfxs/levelup/LevelUp';
+import BlizzardClouds from './portalVfxs/BlizzardClouds';
+import LevelTransition from './portalVfxs/LevelTransition';
 import {
 	VfxTypes,
 	type VfxItem,
 } from '../../../../../constants/animationStates/vfxStates';
-import Win from './portalVfxs/Win';
-import LevelUp from './portalVfxs/levelup/LevelUp';
-import NextLevel from './portalVfxs/NextLevel';
-import LevelTransition from './portalVfxs/LevelTransition';
-import Lose from './portalVfxs/Lose';
-import LevelGoal from './portalVfxs/LevelGoal';
-import BlizzardClouds from './portalVfxs/BlizzardClouds';
-import Ravens from './portalVfxs/Ravens';
-import LetterBox from './portalVfxs/LetterBox';
-import Ash from './portalVfxs/Ash';
 
 interface Props {
 	vfxList: VfxItem[];
@@ -33,7 +32,6 @@ const PORTAL_COMPONENTS: Partial<
 	[VfxTypes.BLIZZARD_CLOUDS]: BlizzardClouds,
 	[VfxTypes.RAVENS_FLYING]: Ravens,
 	[VfxTypes.LETTERBOX]: LetterBox,
-	[VfxTypes.ASH_SMOKE_AMBIENT]: Ash,
 };
 
 export const PortalVfxLayer: React.FC<Props> = ({ vfxList }) => {

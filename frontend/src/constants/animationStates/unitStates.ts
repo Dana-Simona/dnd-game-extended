@@ -38,6 +38,12 @@ export interface TriggerUnitAPI {
 		distancePx?: number,
 		durationMs?: number,
 	) => Promise<void>;
+	dashBy: (
+		unitId: string,
+		offsetX?: number,
+		offsetY?: number,
+		durationMs?: number,
+	) => Promise<void>;
 	fadeOut: (
 		unitId: string,
 		delayMs?: number,
@@ -53,6 +59,7 @@ export interface TriggerUnitAPI {
 		unitId: string,
 		degrees?: number,
 		durationMs?: number,
+		awayFromId?: string,
 	) => Promise<void>;
 	jump: (
 		sourceId: string,

@@ -2,16 +2,16 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 import { ROUTES } from '../constants/routes';
+import { usePreloader } from '../utils/animation/usePreloader';
+import { UnitType, type Unit } from '../constants/interfaces/unit';
+import type { AllPlayerData } from '../constants/interfaces/player';
 import { ActionType, type GameEvent } from '../constants/gameEvent';
+import { useCharacter } from '../utils/characterContext/CharacterContext';
+import { useGameAnimation } from '../utils/animation/useGameAnimation/useGameAnimation';
 import {
 	LEVEL_TRANSITION_HOLD_MS,
 	LEVEL_TRANSITION_MS,
 } from '../constants/animationStates/vfxStates';
-import { usePreloader } from '../utils/animation/usePreloader';
-import { UnitType, type Unit } from '../constants/interfaces/unit';
-import type { AllPlayerData } from '../constants/interfaces/player';
-import { useCharacter } from '../utils/characterContext/CharacterContext';
-import { useGameAnimation } from '../utils/animation/useGameAnimation/useGameAnimation';
 
 interface BoardData {
 	grid: string[];
@@ -22,14 +22,11 @@ interface BoardData {
 }
 
 const VALID_KEYS = new Set(['w', 'a', 's', 'd', 'e', 'q']);
-
 const isValidKey = (key: string): boolean => VALID_KEYS.has(key.toLowerCase());
 
 const INTRO_EVENT_TYPES = new Set<string>([ActionType.BOSS_LEVEL]);
 
-// After NEXT_LEVEL the screen is re-opened (hold + door animation); wait for
-// that to finish before showing the new level's goal.
-const LEVEL_REVEAL_MS = LEVEL_TRANSITION_HOLD_MS + LEVEL_TRANSITION_MS + 200;
+const LEVEL_REVEAL_MS = LEVEL_TRANSITION_HOLD_MS + LEVEL_TRANSITION_MS + 5000;
 const BOSS_INTRO_GOAL_DELAY_MS = 300;
 
 export const splitIntroEvents = (events: GameEvent[] = []) => ({
@@ -147,7 +144,6 @@ export const useGame = () => {
 				applyBoardState(data);
 				applyUnitState(data, enemyList);
 
-				// a new level was just swapped in: pick its music
 				const enteredNewLevel = turnEvents.some(
 					(e) => e.type === ActionType.NEXT_LEVEL,
 				);
@@ -184,7 +180,6 @@ export const useGame = () => {
 
 		runTurn(events, character, enemies, () => {
 			isProcessingRef.current = false;
-			// boss level: the goal is shown once the boss intro has played
 			void announceLevelGoal(enemies, BOSS_INTRO_GOAL_DELAY_MS);
 		});
 	}, [pendingIntro, runTurn, character, enemies, announceLevelGoal]);

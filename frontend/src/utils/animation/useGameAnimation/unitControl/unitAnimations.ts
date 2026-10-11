@@ -1,17 +1,25 @@
-import type { TargetAndTransition } from 'framer-motion';
+import type { TargetAndTransition, Transition } from 'framer-motion';
 import type {
 	TrapVisualState,
 	UnitTransform,
 } from '../../../../constants/animationStates/unitStates';
 import {
 	calculateFacing,
+	calculateRotateAwayDirection,
 	calculateVectorOffset,
+	getTransformOffset,
 	type Position,
 } from './unitCalculations';
 
 type SetTransforms = React.Dispatch<
 	React.SetStateAction<Record<string, UnitTransform>>
 >;
+
+const withPropertyTransition = (
+	prev: UnitTransform['transition'],
+	property: string,
+	transition: Transition,
+): Transition => ({ ...(prev ?? {}), [property]: transition }) as Transition;
 
 export const executeFaceTarget = (
 	sourceId: string,
@@ -158,26 +166,65 @@ export const executeRotate = async (
 	unitId: string,
 	degrees = 90,
 	durationMs = 300,
+	awayFromId: string | undefined,
+	positions: Record<string, Position>,
 	setTransforms: SetTransforms,
 ) => {
-	let currentDegrees = 0;
+	const unitPos = positions[unitId];
+	const fromPos = awayFromId ? positions[awayFromId] : undefined;
+	const direction =
+		unitPos && fromPos ? calculateRotateAwayDirection(unitPos, fromPos) : 1;
 
 	setTransforms((prev) => {
-		const prevTransform = prev[unitId] as any;
-		currentDegrees = (prevTransform?.rotate || 0) + degrees;
-
-		const rotateVariant = {
-			rotate: currentDegrees,
-			transition: {
-				duration: durationMs / 1000,
-				ease: 'easeInOut',
-			},
-		};
+		const prevTransform = prev[unitId] ?? {};
 
 		return {
 			...prev,
-			[unitId]: { ...prevTransform, ...rotateVariant },
+			[unitId]: {
+				...prevTransform,
+				rotate: degrees * direction,
+				transition: withPropertyTransition(
+					prevTransform.transition,
+					'rotate',
+					{ duration: durationMs / 1000, ease: 'easeInOut' },
+				),
+			},
 		};
+	});
+
+	await new Promise((resolve) => setTimeout(resolve, durationMs));
+};
+
+export const executeDashBy = async (
+	unitId: string,
+	offsetX = 0,
+	offsetY = 0,
+	durationMs = 100,
+	setTransforms: SetTransforms,
+) => {
+	const dashTransition: Transition = {
+		duration: durationMs / 1000,
+		ease: [0, 0.85, 0.15, 1.0],
+	};
+
+	setTransforms((prev) => {
+		const prevTransform = prev[unitId] ?? {};
+		const current = getTransformOffset(prevTransform);
+
+		let transition = prevTransform.transition;
+		const next: UnitTransform = { ...prevTransform };
+
+		if (offsetX !== 0) {
+			next.x = current.x + offsetX;
+			transition = withPropertyTransition(transition, 'x', dashTransition);
+		}
+		if (offsetY !== 0) {
+			next.y = current.y + offsetY;
+			transition = withPropertyTransition(transition, 'y', dashTransition);
+		}
+		next.transition = transition;
+
+		return { ...prev, [unitId]: next };
 	});
 
 	await new Promise((resolve) => setTimeout(resolve, durationMs));

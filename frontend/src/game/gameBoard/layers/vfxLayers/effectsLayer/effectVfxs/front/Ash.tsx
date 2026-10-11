@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import Sprite from '../../../../../../../utils/sprite/Sprite';
+import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
+
+interface Props {
+	item: VfxItem;
+}
 
 interface ParticleData {
 	id: number;
@@ -17,7 +23,7 @@ interface ParticleData {
 	blur: number;
 }
 
-const Ash: React.FC = () => {
+const Ash: React.FC<Props> = ({ item }) => {
 	const [particles, setParticles] = useState<ParticleData[]>([]);
 
 	useEffect(() => {
@@ -26,7 +32,7 @@ const Ash: React.FC = () => {
 			const size = Math.random() * 20 + 10;
 			const startX = Math.random() * 120;
 			const endX = startX - (Math.random() * 60 + 60);
-			const startY = 70 - Math.random() * Math.random() * 50;
+			const startY = 100 - Math.random() * Math.random() * 80;
 			const yDrift = -(Math.random() * 35 + 10);
 			const duration = Math.random() * 12 + 8;
 			const delay = Math.random() * 10;
@@ -53,7 +59,19 @@ const Ash: React.FC = () => {
 	}, []);
 
 	return (
-		<Container>
+		<Container
+			$x={item.x}
+			$y={item.y}
+		>
+			<SpriteWrapper>
+				<Sprite
+					imagePath={'/vfx/portalVfxs/fireTransition.png'}
+					width={142}
+					height={80}
+					frameCount={15}
+				/>
+			</SpriteWrapper>
+
 			{particles.map((p) => (
 				<Particle
 					key={p.id}
@@ -86,14 +104,23 @@ const Ash: React.FC = () => {
 
 export default Ash;
 
-const Container = styled.div`
-	position: fixed;
+const Container = styled.div<{ $x: number; $y: number }>`
+	position: absolute;
+	left: ${(props) => props.$x - 100}px;
+	top: ${(props) => props.$y - 100}px;
+	pointer-events: none;
+	z-index: 100;
+`;
+
+const SpriteWrapper = styled.div`
+	position: absolute;
 	top: 0;
 	left: 0;
-	width: 100vw;
-	height: 70vh;
-	overflow: hidden;
-	pointer-events: none;
+	width: 142px;
+	height: 80px;
+	transform-origin: top left;
+	transform: scale(calc(45vh / 80px));
+	filter: blur(1px);
 `;
 
 const Particle = styled(motion.div)`

@@ -36,6 +36,7 @@ export const VfxTypes = {
 	BANNER_LEVEL_UP: 'LevelUp',
 	BANNER_NEXT_LEVEL: 'NextLevel',
 	BANNER_LOSE: 'Lose',
+	BANNER_GOAL: 'Goal',
 	LEVEL_TRANSITION: 'LevelTransition',
 	BLIZZARD_CLOUDS: 'BlizzardClouds',
 	RAVENS_FLYING: 'RavensFlying',
@@ -82,8 +83,10 @@ export const VfxTypeToCategoryMap: Record<VfxTypes, VfxCategory> = {
 	[VfxTypes.ARROW_PROJECTILE]: VfxCategory.FRONT,
 	[VfxTypes.EXP_ORBS]: VfxCategory.FRONT,
 	[VfxTypes.BOSS_SPELL]: VfxCategory.FRONT,
+	[VfxTypes.ASH_SMOKE_AMBIENT]: VfxCategory.FRONT,
 
 	[VfxTypes.BANNER_WIN]: VfxCategory.PORTAL,
+	[VfxTypes.BANNER_GOAL]: VfxCategory.PORTAL,
 	[VfxTypes.BANNER_LEVEL_UP]: VfxCategory.PORTAL,
 	[VfxTypes.BANNER_NEXT_LEVEL]: VfxCategory.PORTAL,
 	[VfxTypes.BANNER_LOSE]: VfxCategory.PORTAL,
@@ -91,7 +94,6 @@ export const VfxTypeToCategoryMap: Record<VfxTypes, VfxCategory> = {
 	[VfxTypes.BLIZZARD_CLOUDS]: VfxCategory.PORTAL,
 	[VfxTypes.RAVENS_FLYING]: VfxCategory.PORTAL,
 	[VfxTypes.LETTERBOX]: VfxCategory.PORTAL,
-	[VfxTypes.ASH_SMOKE_AMBIENT]: VfxCategory.PORTAL,
 } as const;
 
 export interface VfxItem {
@@ -129,6 +131,7 @@ export const ARROW_FADE_MS = 200;
 export interface TriggerVfxAPI {
 	statDamage: (targetId: string, amount: number) => Promise<void>;
 	statHeal: (targetId: string, amount: number) => Promise<void>;
+	effectHeal: (targetId: string) => Promise<void>;
 	statExp: (targetId: string, amount: number) => Promise<void>;
 	rollAttack: (targetId: string, amount: number) => Promise<void>;
 	rollDefense: (targetId: string, amount: number) => Promise<void>;
@@ -171,4 +174,5 @@ export interface TriggerVfxAPI {
 	ravensFlying: (durationMs?: number) => Promise<void>;
 	letterbox: (visible: boolean) => Promise<void>;
 	ashSmokeAmbient: (enabled: boolean) => Promise<void>;
+	bannerGoal: (text: string, isBossLevel: boolean) => Promise<void>;
 }

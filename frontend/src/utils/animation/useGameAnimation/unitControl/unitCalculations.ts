@@ -1,9 +1,30 @@
-import { UnitFacing } from '../../../../constants/animationStates/unitStates';
+import {
+	UnitFacing,
+	type UnitTransform,
+} from '../../../../constants/animationStates/unitStates';
 
 export interface Position {
 	x: number;
 	y: number;
 }
+
+const toNumber = (value: unknown): number => {
+	const num = typeof value === 'number' ? value : parseFloat(String(value));
+	return isNaN(num) ? 0 : num;
+};
+
+const settledValue = (value: unknown): number =>
+	Array.isArray(value) ? toNumber(value[value.length - 1]) : toNumber(value);
+
+export const getTransformOffset = (transform?: UnitTransform): Position => ({
+	x: settledValue(transform?.x ?? transform?.offset?.x ?? 0),
+	y: settledValue(transform?.y ?? transform?.offset?.y ?? 0),
+});
+
+export const calculateRotateAwayDirection = (
+	unitPos: Position,
+	fromPos: Position,
+): 1 | -1 => (fromPos.x > unitPos.x ? -1 : 1);
 
 export const calculateFacing = (
 	sourcePos: Position,
