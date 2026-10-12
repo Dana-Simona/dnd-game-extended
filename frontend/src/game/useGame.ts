@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 import { ROUTES } from '../constants/routes';
+import type { GameOutcome } from './endScreen/EndScreen';
 import { usePreloader } from '../utils/animation/usePreloader';
 import { UnitType, type Unit } from '../constants/interfaces/unit';
 import type { AllPlayerData } from '../constants/interfaces/player';
@@ -23,6 +24,16 @@ interface BoardData {
 
 const VALID_KEYS = new Set(['w', 'a', 's', 'd', 'e', 'q']);
 const isValidKey = (key: string): boolean => VALID_KEYS.has(key.toLowerCase());
+
+export const detectOutcome = (
+	events: GameEvent[] = [],
+	player?: AllPlayerData | null,
+): GameOutcome | null => {
+	if (events.some((e) => e.type === ActionType.LOSE)) return 'lose';
+	if (events.some((e) => e.type === ActionType.WIN)) return 'win';
+	if (player && player.currentHealth <= 0) return 'lose';
+	return null;
+};
 
 const INTRO_EVENT_TYPES = new Set<string>([ActionType.BOSS_LEVEL]);
 
@@ -67,9 +78,11 @@ export const useGame = () => {
 	const [enemies, setEnemies] = useState<Unit[]>([]);
 	const [isLevelLoaded, setIsLevelLoaded] = useState<boolean>(false);
 	const [pendingIntro, setPendingIntro] = useState<GameEvent[] | null>(null);
+	const [outcome, setOutcome] = useState<GameOutcome | null>(null);
 
 	const isProcessingRef = useRef<boolean>(false);
 	const isMountedRef = useRef<boolean>(true);
+	const outcomeRef = useRef<GameOutcome | null>(null);
 
 	useEffect(() => {
 		isMountedRef.current = true;
@@ -144,6 +157,14 @@ export const useGame = () => {
 				applyBoardState(data);
 				applyUnitState(data, enemyList);
 
+				const result = detectOutcome(turnEvents, data.player);
+				if (result) {
+					outcomeRef.current = result;
+					isProcessingRef.current = true;
+					setOutcome(result);
+					return;
+				}
+
 				const enteredNewLevel = turnEvents.some(
 					(e) => e.type === ActionType.NEXT_LEVEL,
 				);
@@ -186,7 +207,12 @@ export const useGame = () => {
 
 	const handleKeyPress = useCallback(
 		async (key: string) => {
-			if (isAnimating || isProcessingRef.current || !isValidKey(key))
+			if (
+				outcomeRef.current ||
+				isAnimating ||
+				isProcessingRef.current ||
+				!isValidKey(key)
+			)
 				return;
 
 			isProcessingRef.current = true;
@@ -254,7 +280,7 @@ export const useGame = () => {
 
 	useEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {
-			if (e.repeat) return;
+			if (e.repeat || outcomeRef.current) return;
 			handleKeyPress(e.key);
 		};
 		window.addEventListener('keydown', onKeyDown);
@@ -276,5 +302,6 @@ export const useGame = () => {
 		activeVfxList,
 		hpStates,
 		activeBossId,
+		outcome,
 	};
 };

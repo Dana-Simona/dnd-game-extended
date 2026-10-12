@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Win from './portalVfxs/Win';
-import Lose from './portalVfxs/Lose';
 import Ravens from './portalVfxs/Ravens';
 import LevelGoal from './portalVfxs/LevelGoal';
 import NextLevel from './portalVfxs/NextLevel';
@@ -23,10 +21,8 @@ interface Props {
 const PORTAL_COMPONENTS: Partial<
 	Record<VfxTypes, React.ComponentType<{ item: VfxItem }>>
 > = {
-	[VfxTypes.BANNER_WIN]: Win,
 	[VfxTypes.BANNER_LEVEL_UP]: LevelUp,
 	[VfxTypes.BANNER_NEXT_LEVEL]: NextLevel,
-	[VfxTypes.BANNER_LOSE]: Lose,
 	[VfxTypes.BANNER_GOAL]: LevelGoal,
 	[VfxTypes.LEVEL_TRANSITION]: LevelTransition,
 	[VfxTypes.BLIZZARD_CLOUDS]: BlizzardClouds,

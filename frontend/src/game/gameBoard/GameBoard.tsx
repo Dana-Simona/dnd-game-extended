@@ -7,6 +7,7 @@ import type { Unit } from '../../constants/interfaces/unit';
 import { VfxLayer } from './layers/vfxLayers/effectsLayer/VfxLayer';
 import type { VfxItem } from '../../constants/animationStates/vfxStates';
 import type { HpStateMap } from '../../constants/animationStates/hpStates';
+import AmbienceLayer from './layers/ambienceLayer/AmbienceLayer';
 import { PortalVfxLayer } from './layers/vfxLayers/portalLayer/PortalVfxLayer';
 import {
 	ViewportContainer,
@@ -114,6 +115,10 @@ export const GameBoard: React.FC<Props> = ({
 						/>
 
 						<VfxLayer vfxList={frontVfxs} />
+
+						<AmbienceLayer
+							dimmed={activeScreenVfxTypes.length > 0}
+						/>
 					</BoardCanvas>
 				</BoardEffectLayer>
 			</Board>
