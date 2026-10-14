@@ -28,9 +28,9 @@ public abstract class Player extends Unit {
         this.experience -= 50 * level;
         this.level++;
 
-        int overallAddedHealth = calculateSumToAdd(getAddedHealth(), 10 * level);
+        int overallAddedHealth = calculateSumToAdd(getAddedHealth(), 5 * level);
 
-        int overallAddedAttack = calculateSumToAdd(getAddedAttack(), 4 * level);
+        int overallAddedAttack = calculateSumToAdd(getAddedAttack(), 2 * level);
 
         int overallAddedDefense = calculateSumToAdd(getAddedDefense(), level);
 

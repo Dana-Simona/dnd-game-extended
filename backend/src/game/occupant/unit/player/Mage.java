@@ -101,9 +101,9 @@ public class Mage extends Player {
     @Override
     public void levelUp() {
         super.levelUp();
-        this.manaPool += 25 * getLevel();
+        this.manaPool += 5 * getLevel();
         this.currentMana = Math.min(this.currentMana + this.manaPool / 4, this.manaPool);
-        this.spellPower += 10 * getLevel();
+        this.spellPower += 2 * getLevel();
     }
 
     @Override
