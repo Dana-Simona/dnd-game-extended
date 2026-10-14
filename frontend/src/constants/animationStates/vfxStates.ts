@@ -1,4 +1,5 @@
 export const NEXT_LEVEL_BANNER_MS = 6000;
+export const GOAL_BANNER_MS = 5000;
 export const LEVEL_TRANSITION_MS = 900;
 export const LEVEL_TRANSITION_HOLD_MS = 450;
 
@@ -124,7 +125,7 @@ export interface ArrowProjectileOptions {
 	flightMs?: number;
 }
 
-export const ARROW_HOLD_MS = 2000;
+export const ARROW_HOLD_MS = 1800;
 export const ARROW_FLIGHT_MS = 350;
 export const ARROW_FADE_MS = 200;
 

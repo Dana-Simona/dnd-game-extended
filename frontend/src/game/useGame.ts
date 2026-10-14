@@ -37,7 +37,7 @@ export const detectOutcome = (
 
 const INTRO_EVENT_TYPES = new Set<string>([ActionType.BOSS_LEVEL]);
 
-const LEVEL_REVEAL_MS = LEVEL_TRANSITION_HOLD_MS + LEVEL_TRANSITION_MS + 5000;
+const LEVEL_REVEAL_MS = LEVEL_TRANSITION_HOLD_MS + LEVEL_TRANSITION_MS;
 const BOSS_INTRO_GOAL_DELAY_MS = 300;
 
 export const splitIntroEvents = (events: GameEvent[] = []) => ({

@@ -167,4 +167,24 @@ export const soundRegistry: Record<SoundPreset, SoundConfig> = {
 		volume: 0.8,
 		loop: false,
 	},
+	[SoundPreset.BOSS_SPAWN]: {
+		files: ['/sfx/boss/spawn.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.BOSS_SPELL]: {
+		files: ['/sfx/boss/spell.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.BOSS_STEP]: {
+		files: ['/sfx/boss/step.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
+	[SoundPreset.BOSS_SPELL_HIT]: {
+		files: ['/sfx/boss/spellHit.mp3'],
+		volume: 0.8,
+		loop: false,
+	},
 };

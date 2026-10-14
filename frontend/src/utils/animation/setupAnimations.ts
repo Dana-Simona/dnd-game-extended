@@ -77,6 +77,7 @@ export const setupAnimations = (controllers: Controllers) => {
 		if (!event.sourceId) return;
 		const unit = controllers.getUnitById(event.sourceId);
 		const player = unit?.unitType === UnitType.PLAYER && (unit as Player);
+		const boss = unit?.unitType === UnitType.BOSS && (unit as Boss);
 
 		await Promise.all([
 			controllers.triggerSpriteAnimation.move(event.sourceId),
@@ -85,6 +86,9 @@ export const setupAnimations = (controllers: Controllers) => {
 					await delay(350);
 					if (player.class === ClassTypes.WARRIOR) await delay(500);
 					controllers.triggerSound.play(SoundPreset.MOVE);
+				} else if (!!boss) {
+					controllers.triggerSound.play(SoundPreset.BOSS_STEP);
+					controllers.triggerCamera.thump(1);
 				}
 			})(),
 		]);
@@ -150,11 +154,17 @@ export const setupAnimations = (controllers: Controllers) => {
 									BOSS_SPAWN_FADE_MS,
 								),
 						controllers.triggerCamera.shake(16, 6, 3000),
+						controllers.triggerSound.play(SoundPreset.BOSS_SPAWN),
 
 						(async () => {
 							await delay(BOSS_SPAWN_SHAKE_DELAY_MS);
 							await Promise.all([
-								controllers.triggerUnit.shake(bossId, 4, 900),
+								controllers.triggerUnit.shake(
+									bossId,
+									4,
+									1,
+									900,
+								),
 							]);
 						})(),
 					]);
@@ -436,6 +446,8 @@ export const setupAnimations = (controllers: Controllers) => {
 						skip();
 						break;
 				}
+			} else if (caster?.unitType === UnitType.BOSS) {
+				takeDamageFromBoss(casterId, victimId, damageTaken);
 			} else {
 				skip();
 			}
@@ -608,7 +620,11 @@ export const setupAnimations = (controllers: Controllers) => {
 
 		await delay(500);
 
-		const castDuration = controllers.triggerSpriteAnimation.getDuration(warriorId, SpritePresets.ABILITY_CAST, AnimationPhase.WINDUP);
+		const castDuration = controllers.triggerSpriteAnimation.getDuration(
+			warriorId,
+			SpritePresets.ABILITY_CAST,
+			AnimationPhase.WINDUP,
+		);
 
 		await Promise.all([
 			controllers.triggerCamera.zoomIn(warriorId, 3),
@@ -619,8 +635,13 @@ export const setupAnimations = (controllers: Controllers) => {
 			),
 			controllers.triggerSound.play(SoundPreset.SWISH_BIG),
 			controllers.triggerVfx.dustLeap(warriorId),
-			
-			controllers.triggerUnit.jump(warriorId, target, 50, castDuration - 700),
+
+			controllers.triggerUnit.jump(
+				warriorId,
+				target,
+				50,
+				castDuration - 700,
+			),
 			(async () => {
 				await delay(500);
 				controllers.triggerCamera.zoomIn(warriorId, 5);
@@ -826,6 +847,8 @@ export const setupAnimations = (controllers: Controllers) => {
 		target: string,
 		skip: (steps?: number) => void,
 	) => {
+		controllers.triggerSound.play(SoundPreset.BOSS_SPELL);
+		controllers.triggerCamera.zoomTwoTargets(boss.id, target);
 		controllers.triggerSpriteAnimation.abilityCast(boss.id);
 		controllers.triggerVfx.bossSpell(target);
 	};
@@ -946,6 +969,29 @@ export const setupAnimations = (controllers: Controllers) => {
 			controllers.triggerVfx.landingDust(hunter),
 			controllers.triggerCamera.reset(400),
 			controllers.triggerVfx.letterbox(false),
+		]);
+	};
+
+	const takeDamageFromBoss = async (
+		boss: string,
+		victim: string,
+		damageTaken: number,
+	) => {
+		await Promise.all([
+			controllers.triggerSpriteAnimation.takeDamage(
+				victim,
+				AnimationPhase.WINDUP,
+			),
+			controllers.triggerUnit.dashBy(victim, 0, 50),
+			controllers.triggerSound.play(SoundPreset.BOSS_SPELL_HIT)
+		]);
+
+		await Promise.all([
+			controllers.triggerSpriteAnimation.takeDamage(
+				victim,
+				AnimationPhase.FOLLOW_THROUGH,
+			),
+			controllers.triggerUnit.reset(victim),
 		]);
 	};
 };

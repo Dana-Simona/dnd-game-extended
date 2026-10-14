@@ -69,3 +69,29 @@ export const BossHealthText = styled.span`
 	text-shadow: 0 1px 0 #000;
 	line-height: 1;
 `;
+
+export const CastTimer = styled.div`
+	display: flex;
+	justify-content: center;
+	gap: 5px;
+	margin-top: 2px;
+`;
+
+export const CastPip = styled.div<{ $active: boolean; $imminent: boolean }>`
+	width: 14px;
+	height: 6px;
+	border-radius: 1px;
+	border: 1px solid ${({ $active }) => ($active ? '#7c3aed' : '#2a2233')};
+	background-color: ${({ $active, $imminent }) =>
+		$imminent ? '#f87171' : $active ? '#a78bfa' : 'rgba(10, 10, 12, 0.85)'};
+	box-shadow: ${({ $active, $imminent }) =>
+		$imminent
+			? '0 0 8px rgba(248, 113, 113, 0.9)'
+			: $active
+				? '0 0 6px rgba(167, 139, 250, 0.6)'
+				: 'none'};
+	transition:
+		background-color 0.25s ease,
+		box-shadow 0.25s ease,
+		border-color 0.25s ease;
+`;

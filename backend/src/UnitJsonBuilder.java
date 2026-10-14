@@ -116,7 +116,8 @@ public class UnitJsonBuilder {
 
     private static void buildBossJson(StringBuilder json, Boss boss) {
         buildMonsterJson(json, boss);
-        json.append(",\"abilityFrequency\":").append(boss.getAbilityFrequency());
+        json.append(",\"abilityFrequency\":").append(boss.getAbilityFrequency())
+                .append(",\"combatTicks\":").append(boss.getCombatTicks());
     }
 
     private static void buildTrapJson(StringBuilder json, Trap trap) {

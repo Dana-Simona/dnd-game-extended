@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
 import {
+	GOAL_BANNER_MS,
 	type VfxItem,
 } from '../../../../../../constants/animationStates/vfxStates';
 
@@ -12,8 +13,6 @@ interface Props {
 const TEAL = '#00ffcc';
 const BLOOD = '#ef4444';
 const BONE = '#f5e6c8';
-
-const GOAL_BANNER_MS = 5000;
 
 const LevelGoal: React.FC<Props> = ({ item }) => {
 	const isBoss = !!item.isBoss;

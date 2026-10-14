@@ -48,15 +48,15 @@ public class LevelParser {
                     player.setMovementManager(new MovementManager(boardOutcome, player, callback));
                     return new Floor(player);
                 }),
-                monster('s', "Bone Ratchet", 40, 10, 1, 3, 12),
-                monster('k', "Hell Hound", 70, 12, 2, 4, 25),
-                monster('q', "Abyssal Sentinel", 120, 18, 4, 5, 40),
-                monster('z', "Soul-Eater", 180, 25, 6, 3, 60),
-                monster('b', "Void Monarch", 300, 35, 8, 4, 100),
+                monster('s', "Bone Ratchet", 30, 10, 1, 3, 60),
+                monster('k', "Hell Hound", 50, 12, 2, 4, 80),
+                monster('q', "Abyssal Sentinel", 90, 18, 4, 5, 90),
+                monster('z', "Soul-Eater", 160, 25, 6, 3, 100),
+                monster('b', "Void Monarch", 200, 35, 8, 4, 150),
                 boss('M', "Malakor the Unbroken", 1500, 80, 20, 6, 500, 5),
-                trap('B', "Bonus Trap", 1, 1, 1, 25, 1, 5),
-                trap('Q', "Queens Trap", 160, 36, 6, 40, 3, 7), 
-                trap('D', "Death Trap", 350, 60, 12, 50, 1, 10) 
+                trap('B', "Bonus Trap", 1, 1, 1, 50, 1, 5),
+                trap('Q', "Queens Trap", 160, 36, 6, 100, 3, 7), 
+                trap('D', "Death Trap", 250, 60, 12, 200, 1, 10) 
         );
     }
 

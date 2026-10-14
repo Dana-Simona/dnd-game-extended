@@ -14,4 +14,5 @@ export interface Monster extends Enemy {
 
 export interface Boss extends Monster {
 	abilityFrequency: number;
+	combatTicks: number;
 }

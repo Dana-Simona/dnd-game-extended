@@ -44,21 +44,21 @@ public final class Game {
     public List<Player> getAvailablePlayers() {
         List<Player> availablePlayers = new ArrayList<>();
 
-        availablePlayers.add(new Mage("Aurora", 120, 10, 2, new Position(0, 0), messageCallback, 90, 30, 30, 4, 5, null, stepCounter));
-        availablePlayers.add(new Mage("Kaeleen", 130, 13, 4, new Position(0, 0), messageCallback, 100, 25, 22, 5, 4, null, stepCounter));
-        availablePlayers.add(new Mage("Astria", 150, 17, 6, new Position(0, 0), messageCallback, 100, 20, 18, 3, 4, null, stepCounter));
+        availablePlayers.add(new Mage("Aurora", 120, 20, 2, new Position(0, 0), messageCallback, 90, 30, 30, 4, 5, null, stepCounter));
+        availablePlayers.add(new Mage("Kaeleen", 130, 25, 4, new Position(0, 0), messageCallback, 100, 25, 22, 5, 4, null, stepCounter));
+        availablePlayers.add(new Mage("Astria", 150, 30, 6, new Position(0, 0), messageCallback, 100, 20, 18, 3, 4, null, stepCounter));
 
-        availablePlayers.add(new Warrior("Valor", 260, 34, 4, 3, new Position(0, 0), messageCallback, null, stepCounter));
-        availablePlayers.add(new Warrior("Vane", 300, 30, 5, 4, new Position(0, 0), messageCallback, null, stepCounter));
-        availablePlayers.add(new Warrior("Orion", 340, 26, 6, 5, new Position(0, 0), messageCallback, null, stepCounter));
+        availablePlayers.add(new Warrior("Valor", 260, 50, 4, 3, new Position(0, 0), messageCallback, null, stepCounter));
+        availablePlayers.add(new Warrior("Vane", 300, 55, 5, 4, new Position(0, 0), messageCallback, null, stepCounter));
+        availablePlayers.add(new Warrior("Orion", 340, 60, 6, 5, new Position(0, 0), messageCallback, null, stepCounter));
 
         availablePlayers.add(new Rogue("Scythe", 180, 42, 2, new Position(0, 0), 20, messageCallback, null, stepCounter));
         availablePlayers.add(new Rogue("Vessel", 250, 35, 4, new Position(0, 0), 35, messageCallback, null, stepCounter));
         availablePlayers.add(new Rogue("Echo", 290, 30, 6, new Position(0, 0), 45, messageCallback, null, stepCounter));
 
-        availablePlayers.add(new Hunter("Vaskaara", 170, 26, 2, new Position(0, 0), 7, messageCallback, null, stepCounter));
-        availablePlayers.add(new Hunter("Blight", 200, 23, 3, new Position(0, 0), 5, messageCallback, null, stepCounter));
-        availablePlayers.add(new Hunter("Trakiraa", 230, 20, 4, new Position(0, 0), 4, messageCallback, null, stepCounter));
+        availablePlayers.add(new Hunter("Vaskaara", 170, 40, 2, new Position(0, 0), 7, messageCallback, null, stepCounter));
+        availablePlayers.add(new Hunter("Blight", 200, 45, 3, new Position(0, 0), 5, messageCallback, null, stepCounter));
+        availablePlayers.add(new Hunter("Trakiraa", 230, 50, 4, new Position(0, 0), 4, messageCallback, null, stepCounter));
 
         return availablePlayers;
     }

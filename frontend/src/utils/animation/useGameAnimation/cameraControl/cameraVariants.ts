@@ -108,8 +108,15 @@ export const cameraEffectVariants: Variants = {
 		};
 	},
 
-	thump: {
-		scale: [1, 1.1, 0.98, 1],
-		transition: { duration: 0.3, ease: 'easeOut' },
+	thump: ({ intensity = 1 } = {}) => {
+		const scaleDelta = 0.05 * Math.max(0, intensity);
+
+		return {
+			scale: [1, 1 + scaleDelta, 1 - scaleDelta * 0.4, 1],
+			transition: {
+				duration: 0.3,
+				ease: 'easeOut' as const,
+			},
+		};
 	},
 };

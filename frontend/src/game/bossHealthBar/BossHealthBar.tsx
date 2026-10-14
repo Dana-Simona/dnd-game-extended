@@ -9,6 +9,8 @@ import {
 	BossBarFill,
 	BossPreviewFill,
 	BossHealthText,
+	CastTimer,
+	CastPip,
 } from './BossHealthBarStyles';
 
 interface Props {
@@ -17,6 +19,8 @@ interface Props {
 	hpState?: HpState;
 	fallbackCurrentHp?: number;
 	fallbackMaxHp?: number;
+	abilityFrequency?: number;
+	combatTicks?: number;
 }
 
 const barTransition = {
@@ -31,6 +35,8 @@ export const BossHealthBar: React.FC<Props> = ({
 	hpState,
 	fallbackCurrentHp = 0,
 	fallbackMaxHp = 1,
+	abilityFrequency,
+	combatTicks = 0,
 }) => {
 	const maxHp = Math.max(1, hpState?.maxHp ?? fallbackMaxHp);
 	const currentHp = Math.max(
@@ -45,6 +51,14 @@ export const BossHealthBar: React.FC<Props> = ({
 	const mainPercentage = (previewHp / maxHp) * 100;
 	const previewPercentage = ((currentHp - previewHp) / maxHp) * 100;
 	const hasPreview = previewPercentage > 0;
+
+	// The boss chases for `abilityFrequency` moves, then casts on the next one,
+	// so there are (frequency - ticks + 1) moves left, the last being the cast.
+	const totalPips = abilityFrequency ? abilityFrequency + 1 : 0;
+	const remainingPips = Math.max(
+		0,
+		Math.min(totalPips, totalPips - combatTicks),
+	);
 
 	return (
 		<AnimatePresence>
@@ -78,6 +92,19 @@ export const BossHealthBar: React.FC<Props> = ({
 							{currentHp}/{maxHp}
 						</BossHealthText>
 					</BossBarContainer>
+					{totalPips > 0 && (
+						<CastTimer>
+							{Array.from({ length: totalPips }, (_, i) => (
+								<CastPip
+									key={i}
+									$active={i < remainingPips}
+									$imminent={
+										remainingPips === 1 && i === 0
+									}
+								/>
+							))}
+						</CastTimer>
+					)}
 				</BossBarWrapper>
 			)}
 		</AnimatePresence>

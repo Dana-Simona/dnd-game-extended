@@ -4,6 +4,7 @@ import type { MotionProps } from 'framer-motion';
 import ActiveLayer from './layers/activeLayer/ActiveLayer';
 import StaticLayer from './layers/staticLayer/StaticLayer';
 import type { Unit } from '../../constants/interfaces/unit';
+import type { Boss } from '../../constants/interfaces/monster';
 import { VfxLayer } from './layers/vfxLayers/effectsLayer/VfxLayer';
 import type { VfxItem } from '../../constants/animationStates/vfxStates';
 import type { HpStateMap } from '../../constants/animationStates/hpStates';
@@ -76,6 +77,8 @@ export const GameBoard: React.FC<Props> = ({
 		? enemies.find((e) => e.id === activeBossId)
 		: undefined;
 
+	const bossData = boss as Boss | undefined;
+
 	if (!character) {
 		return (
 			<ViewportContainer ref={viewportRef}>
@@ -129,6 +132,8 @@ export const GameBoard: React.FC<Props> = ({
 				hpState={boss ? hpStates[boss.id] : undefined}
 				fallbackCurrentHp={boss?.currentHealth}
 				fallbackMaxHp={boss?.health}
+				abilityFrequency={bossData?.abilityFrequency}
+				combatTicks={bossData?.combatTicks}
 			/>
 
 			<PortalVfxLayer vfxList={portalVfxs} />
