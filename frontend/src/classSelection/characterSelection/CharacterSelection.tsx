@@ -12,6 +12,7 @@ import { getUnitSpriteConfig } from '../../utils/animation/spriteAnimations';
 import { UnitType } from '../../constants/interfaces/unit';
 import { SpritePresets } from '../../constants/animationStates/spriteStates';
 import { ROUTES } from '../../constants/routes';
+import { API_BASE_URL } from '../../constants/apiUrl';
 
 export type Character = AllPlayerData & CharacterDisplayOptions;
 
@@ -27,7 +28,7 @@ export const CharacterSelection: React.FC = () => {
 		player: AllPlayerData,
 		playerIndex: number,
 	) => {
-		fetch('http://localhost:8080/api/select-player', {
+		fetch(`${API_BASE_URL}/api/select-player`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'text/plain' },
 			body: playerIndex.toString(),
@@ -53,7 +54,7 @@ export const CharacterSelection: React.FC = () => {
 	}, [classType]);
 
 	useEffect(() => {
-		fetch('http://localhost:8080/api/players')
+		fetch(`${API_BASE_URL}/api/players`)
 			.then((res) => res.json())
 			.then((data: AllPlayerData[]) => {
 				const enrichedCharacters: Character[] = data.map(

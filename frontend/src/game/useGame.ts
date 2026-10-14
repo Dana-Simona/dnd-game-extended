@@ -13,6 +13,7 @@ import {
 	LEVEL_TRANSITION_HOLD_MS,
 	LEVEL_TRANSITION_MS,
 } from '../constants/animationStates/vfxStates';
+import { API_BASE_URL } from '../constants/apiUrl';
 
 interface BoardData {
 	grid: string[];
@@ -53,7 +54,7 @@ export const postApi = async (
 	body: string,
 	signal?: AbortSignal,
 ): Promise<BoardData> => {
-	const res = await fetch(`http://localhost:8080/api/${path}`, {
+	const res = await fetch(`${API_BASE_URL}/api/${path}`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'text/plain' },
 		body,

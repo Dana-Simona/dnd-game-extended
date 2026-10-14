@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { API_BASE_URL } from '../../constants/apiUrl';
 
 export const parseJsonLogs = (data: any): string[] => {
 	if (Array.isArray(data)) return data;
@@ -16,7 +17,7 @@ export const parseLogsResponse = async (res: Response): Promise<string[]> => {
 };
 
 export const fetchGameLogsApi = async (): Promise<string[]> => {
-	const res = await fetch('http://localhost:8080/api/logs');
+	const res = await fetch(`${API_BASE_URL}/api/logs`);
 	if (!res.ok) throw new Error('Failed to fetch logs');
 	return parseLogsResponse(res);
 };
