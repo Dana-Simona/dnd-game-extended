@@ -81,29 +81,29 @@ const ClassSelection: React.FC = () => {
 				/>
 			),
 		},
-		{
-			title: ClassTypes.ROGUE,
-			spriteProps: {
-				...getUnitSpriteConfig(
-					{
-						name: 'scythe',
-						class: ClassTypes.ROGUE,
-						unitType: UnitType.PLAYER,
-					} as AllPlayerData,
-					SpritePresets.ABILITY_CAST,
-				),
-				loop: true,
-			},
-			onConfirm: () => {
-				sessionStorage.setItem('selectedClass', ClassTypes.ROGUE);
-				navigate(ClassTypes.ROGUE);
-			},
-			description: (
-				<AbilityDescription
-					description={ClassAbilityDescription.ROGUE}
-				/>
-			),
-		},
+		// {
+		// 	title: ClassTypes.ROGUE,
+		// 	spriteProps: {
+		// 		...getUnitSpriteConfig(
+		// 			{
+		// 				name: 'scythe',
+		// 				class: ClassTypes.ROGUE,
+		// 				unitType: UnitType.PLAYER,
+		// 			} as AllPlayerData,
+		// 			SpritePresets.ABILITY_CAST,
+		// 		),
+		// 		loop: true,
+		// 	},
+		// 	onConfirm: () => {
+		// 		sessionStorage.setItem('selectedClass', ClassTypes.ROGUE);
+		// 		navigate(ClassTypes.ROGUE);
+		// 	},
+		// 	description: (
+		// 		<AbilityDescription
+		// 			description={ClassAbilityDescription.ROGUE}
+		// 		/>
+		// 	),
+		// },
 		{
 			title: ClassTypes.HUNTER,
 			spriteProps: {

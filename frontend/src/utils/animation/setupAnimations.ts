@@ -608,6 +608,8 @@ export const setupAnimations = (controllers: Controllers) => {
 
 		await delay(500);
 
+		const castDuration = controllers.triggerSpriteAnimation.getDuration(warriorId, SpritePresets.ABILITY_CAST, AnimationPhase.WINDUP);
+
 		await Promise.all([
 			controllers.triggerCamera.zoomIn(warriorId, 3),
 			controllers.triggerCamera.focusTarget(target, 200),
@@ -617,7 +619,8 @@ export const setupAnimations = (controllers: Controllers) => {
 			),
 			controllers.triggerSound.play(SoundPreset.SWISH_BIG),
 			controllers.triggerVfx.dustLeap(warriorId),
-			controllers.triggerUnit.jump(warriorId, target, 50, 1000),
+			
+			controllers.triggerUnit.jump(warriorId, target, 50, castDuration - 700),
 			(async () => {
 				await delay(500);
 				controllers.triggerCamera.zoomIn(warriorId, 5);
@@ -641,7 +644,7 @@ export const setupAnimations = (controllers: Controllers) => {
 
 		await controllers.triggerSpriteAnimation.abilityCast(
 			warriorId,
-			AnimationPhase.FOLLOW_THROUGH,
+			AnimationPhase.FOLLOW_THROUGH, //loop only
 		);
 	};
 

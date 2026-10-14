@@ -8,11 +8,10 @@ export const ClassTypes = {
 export type ClassTypes = (typeof ClassTypes)[keyof typeof ClassTypes];
 
 export const ClassAbilityDescription = {
-	WARRIOR:
-		'Stabs a nearby enemy based on max health and restores health based on defense.',
-	MAGE: 'Rains damage on random enemies in range, scaling with spell power. Costs mana.',
-	ROGUE: 'Strikes all surrounding enemies based on attack power. Costs energy.',
-	HUNTER: 'Fires at the closest enemy based on attack power. Consumes an arrow.',
+	WARRIOR: 'Stabs a nearby enemy and restores health',
+	MAGE: 'Strikes random enemies in range',
+	ROGUE: 'Throws knives at all surrounding enemies',
+	HUNTER: 'Fires an arrow at the closest enemy',
 } as const;
 
 export type ClassAbilityDescription =
