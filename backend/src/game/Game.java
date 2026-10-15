@@ -39,6 +39,19 @@ public final class Game {
                 break;
             }
         }
+
+        if (this.levels.isEmpty()) {
+            System.err.println("WARNING: no level files found on the classpath at /game/levels_dir/level1.txt. "
+                    + "Make sure the level .txt files are copied into the build output / jar.");
+        }
+    }
+
+    private void requireBoard() {
+        if (currentGameBoard == null) {
+            throw new IllegalStateException("No level is loaded (" + levels.size()
+                    + " level files found on the classpath; expected /game/levels_dir/level1.txt). "
+                    + "The level .txt files are probably missing from the build output.");
+        }
     }
 
     public List<Player> getAvailablePlayers() {
@@ -90,7 +103,8 @@ public final class Game {
     }
 
     public void processTurn(char input) {
-        if (chosenPlayer == null || currentGameBoard == null || chosenPlayer.isDead()) {
+        requireBoard();
+        if (chosenPlayer == null || chosenPlayer.isDead()) {
             return;
         }
 
@@ -115,6 +129,7 @@ public final class Game {
     }
 
     public List<Enemy> getEnemies() {
+        requireBoard();
         return currentGameBoard.getEnemies();
     }
 

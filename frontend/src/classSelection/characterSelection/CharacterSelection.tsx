@@ -38,7 +38,7 @@ export const CharacterSelection: React.FC = () => {
 					throw new Error('Failed to select player on server');
 
 				selectCharacter(player);
-				navigate(ROUTES.GAME);
+				navigate(ROUTES.LEVEL_SELECTION);
 			})
 			.catch((err) => console.error('Error selecting player:', err));
 	};

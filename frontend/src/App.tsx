@@ -8,6 +8,7 @@ import ClassSelection from './classSelection/ClassSelection';
 import CharacterSelection from './classSelection/characterSelection/CharacterSelection';
 import { CharacterProvider } from './utils/characterContext/CharacterContext';
 import DevTools from './devTools/DevTools';
+import LevelSelection from './levelSelection/LevelSelection';
 
 const App: React.FC = () => {
 	return (
@@ -26,6 +27,11 @@ const App: React.FC = () => {
 				<Route
 					path={`${ROUTES.CHARACTER_SELECTION}/:classType?`}
 					element={<CharacterSelection />}
+				/>
+
+				<Route
+					path={ROUTES.LEVEL_SELECTION}
+					element={<LevelSelection />}
 				/>
 
 				<Route

@@ -1,5 +1,6 @@
 
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import game.Game;
 import game.GameEvent;
@@ -41,7 +42,7 @@ public class MainServer {
 
             HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
-            server.createContext("/api/players", exchange -> {
+            server.createContext("/api/players", safe(exchange -> {
                 addCorsHeaders(exchange);
                 if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                     exchange.sendResponseHeaders(204, -1);
@@ -52,9 +53,9 @@ public class MainServer {
                 } else {
                     exchange.sendResponseHeaders(405, -1);
                 }
-            });
+            }));
 
-            server.createContext("/api/select-player", exchange -> {
+            server.createContext("/api/select-player", safe(exchange -> {
                 addCorsHeaders(exchange);
                 if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                     exchange.sendResponseHeaders(204, -1);
@@ -74,9 +75,9 @@ public class MainServer {
                         sendJsonResponse(exchange, "{\"status\": \"error\", \"message\": \"Invalid index\"}");
                     }
                 }
-            });
+            }));
 
-            server.createContext("/api/select-level", exchange -> {
+            server.createContext("/api/select-level", safe(exchange -> {
                 addCorsHeaders(exchange);
                 if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                     exchange.sendResponseHeaders(204, -1);
@@ -109,9 +110,9 @@ public class MainServer {
                         }
                     }
                 }
-            });
+            }));
 
-            server.createContext("/api/board", exchange -> {
+            server.createContext("/api/board", safe(exchange -> {
                 addCorsHeaders(exchange);
                 if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                     exchange.sendResponseHeaders(204, -1);
@@ -120,9 +121,9 @@ public class MainServer {
                 if ("GET".equalsIgnoreCase(exchange.getRequestMethod())) {
                     sendJsonResponse(exchange, getGameStateJson());
                 }
-            });
+            }));
 
-            server.createContext("/api/action", exchange -> {
+            server.createContext("/api/action", safe(exchange -> {
                 addCorsHeaders(exchange);
                 if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                     exchange.sendResponseHeaders(204, -1);
@@ -140,9 +141,9 @@ public class MainServer {
 
                     sendJsonResponse(exchange, getGameStateJson());
                 }
-            });
+            }));
 
-            server.createContext("/api/logs", exchange -> {
+            server.createContext("/api/logs", safe(exchange -> {
                 addCorsHeaders(exchange);
                 if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
                     exchange.sendResponseHeaders(204, -1);
@@ -153,7 +154,7 @@ public class MainServer {
                 } else {
                     exchange.sendResponseHeaders(405, -1);
                 }
-            });
+            }));
 
             server.setExecutor(null);
             server.start();
@@ -162,6 +163,35 @@ public class MainServer {
         } catch (IOException e) {
             System.err.println("Server failed to start");
         }
+    }
+
+    /**
+     * Wraps a handler so an unexpected exception becomes a JSON 500 response
+     * (with CORS headers) instead of silently dropping the connection, which
+     * the browser reports as an opaque "Failed to fetch"/CORS error.
+     */
+    private static HttpHandler safe(HttpHandler inner) {
+        return exchange -> {
+            try {
+                inner.handle(exchange);
+            } catch (Throwable t) {
+                t.printStackTrace();
+                try {
+                    String msg = String.valueOf(t.getMessage()).replace("\\", "\\\\").replace("\"", "\\\"")
+                            .replace("\n", " ").replace("\r", " ");
+                    String json = "{\"status\": \"error\", \"message\": \"" + t.getClass().getSimpleName() + ": " + msg + "\"}";
+                    addCorsHeaders(exchange);
+                    exchange.getResponseHeaders().set("Content-Type", "application/json");
+                    byte[] bytes = json.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                    exchange.sendResponseHeaders(500, bytes.length);
+                    try (OutputStream os = exchange.getResponseBody()) {
+                        os.write(bytes);
+                    }
+                } catch (Throwable ignored) {
+                    exchange.close();
+                }
+            }
+        };
     }
 
     private static boolean isMovementLog(String msg) {
