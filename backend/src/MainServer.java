@@ -285,10 +285,11 @@ public class MainServer {
     }
 
     private static void addCorsHeaders(HttpExchange exchange) {
-        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "https://dana-simona.github.io");
-        exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "*");
-        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-        exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
+        com.sun.net.httpserver.Headers headers = exchange.getResponseHeaders();
+        headers.set("Access-Control-Allow-Origin", "https://dana-simona.github.io");
+        headers.set("Access-Control-Allow-Headers", "*");
+        headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        headers.set("Access-Control-Allow-Credentials", "true");
     }
 
     private static void sendJsonResponse(HttpExchange exchange, String json) throws IOException {
