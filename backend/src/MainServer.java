@@ -88,8 +88,6 @@ public class MainServer {
 
                     try {
                         int levelIndex = Integer.parseInt(indexStr);
-                        // only events produced by loading this level (e.g. BOSS_LEVEL)
-                        // should be sent back with the response
                         gameLogs.clear();
                         turnEvents.clear();
                         game.selectLevel(levelIndex);
@@ -287,12 +285,14 @@ public class MainServer {
     }
 
     private static void addCorsHeaders(HttpExchange exchange) {
-        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "https://dana-simona.github.io");
         exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "*");
         exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
     }
 
     private static void sendJsonResponse(HttpExchange exchange, String json) throws IOException {
+        addCorsHeaders(exchange);
         exchange.getResponseHeaders().add("Content-Type", "application/json");
         byte[] bytes = json.getBytes();
         exchange.sendResponseHeaders(200, bytes.length);
