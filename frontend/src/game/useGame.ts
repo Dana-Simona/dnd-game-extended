@@ -51,13 +51,13 @@ export const filterEnemies = (units: AllPlayerData[] = []): Unit[] =>
 
 export const postApi = async (
 	path: string,
-	body: string,
+	body: any,
 	signal?: AbortSignal,
 ): Promise<BoardData> => {
 	const res = await fetch(`${API_BASE_URL}/api/${path}`, {
 		method: 'POST',
-		headers: { 'Content-Type': 'text/plain' },
-		body,
+		headers: { 'Content-Type': 'application/json' },
+		body: typeof body === 'string' ? body : JSON.stringify(body),
 		signal,
 	});
 	if (!res.ok) throw new Error(`Server status: ${res.status}`);
