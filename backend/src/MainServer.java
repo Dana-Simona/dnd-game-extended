@@ -83,17 +83,20 @@ public class MainServer {
                     return;
                 }
                 if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-                    InputStream is = exchange.getRequestBody();
-                    String indexStr = new String(is.readAllBytes()).trim();
-
                     try {
+                        InputStream is = exchange.getRequestBody();
+                        String indexStr = new String(is.readAllBytes()).trim();
                         int levelIndex = Integer.parseInt(indexStr);
+
                         gameLogs.clear();
                         turnEvents.clear();
                         game.selectLevel(levelIndex);
+
                         sendJsonResponse(exchange, getGameStateJson());
-                    } catch (NumberFormatException e) {
-                        sendJsonResponse(exchange, "{\"status\": \"error\", \"message\": \"Invalid level index\"}");
+                    } catch (IOException | NumberFormatException e) {
+                        e.printStackTrace();
+                        String errorJson = "{\"status\": \"error\", \"message\": \"" + e.getMessage() + "\"}";
+                        sendJsonResponse(exchange, errorJson);
                     }
                 }
             });
