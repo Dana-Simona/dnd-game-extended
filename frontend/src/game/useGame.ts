@@ -57,7 +57,7 @@ export const postApi = async (
 	const res = await fetch(`${API_BASE_URL}/api/${path}`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: typeof body === 'string' ? body : JSON.stringify(body),
+		body: JSON.stringify(body),
 		signal,
 	});
 	if (!res.ok) throw new Error(`Server status: ${res.status}`);
