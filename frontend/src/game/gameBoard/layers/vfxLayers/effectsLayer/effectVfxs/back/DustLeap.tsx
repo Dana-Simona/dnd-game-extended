@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import Sprite from '../../../../../../../utils/sprite/Sprite';
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
@@ -13,7 +15,7 @@ const DustLeap: React.FC<Props> = ({ item }) => {
 			$y={item.y}
 		>
 			<Sprite
-				imagePath={'/vfx/effects/dustLeap.png'}
+				imagePath={assetUrl('/vfx/effects/dustLeap.png')}
 				width={480}
 				height={217}
 				frameCount={35}

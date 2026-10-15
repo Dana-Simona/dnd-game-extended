@@ -1,9 +1,11 @@
-const grassTileset = '/tiles/grass.png';
-const wallTileset = '/tiles/walls.png';
-const stoneTileset = '/tiles/stone.png';
-const stairsTileset = '/tiles/stairs.png';
-const propsTileset = '/tiles/props.png';
-const plantsTileset = '/tiles/plants.png';
+import { assetUrl } from '../assetUrl';
+
+const grassTileset = assetUrl('/tiles/grass.png');
+const wallTileset = assetUrl('/tiles/walls.png');
+const stoneTileset = assetUrl('/tiles/stone.png');
+const stairsTileset = assetUrl('/tiles/stairs.png');
+const propsTileset = assetUrl('/tiles/props.png');
+const plantsTileset = assetUrl('/tiles/plants.png');
 
 export interface ITile {
 	imageSrc: string;

@@ -5,12 +5,14 @@ import { motion } from 'framer-motion';
 
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 const EXP_SOUNDS = [
-	'/sfx/exp1.mp3',
-	'/sfx/exp2.mp3',
-	'/sfx/exp3.mp3',
-	'/sfx/exp4.mp3',
-	'/sfx/exp5.mp3',
+	assetUrl('/sfx/exp1.mp3'),
+	assetUrl('/sfx/exp2.mp3'),
+	assetUrl('/sfx/exp3.mp3'),
+	assetUrl('/sfx/exp4.mp3'),
+	assetUrl('/sfx/exp5.mp3'),
 ];
 
 interface Props {
@@ -151,7 +153,7 @@ const ExpOrbs: React.FC<Props> = ({ item }) => {
 
 	useEffect(() => {
 		if (typeof Audio !== 'undefined') {
-			const popAudio = new Audio('/sfx/expPop.mp3');
+			const popAudio = new Audio(assetUrl('/sfx/expPop.mp3'));
 			popAudio.volume = 0.5; 
 			popAudio.play().catch((err) => {
 				console.warn(

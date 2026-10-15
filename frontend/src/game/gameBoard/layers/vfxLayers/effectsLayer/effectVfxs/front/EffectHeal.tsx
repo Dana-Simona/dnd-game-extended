@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import Sprite from '../../../../../../../utils/sprite/Sprite';
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
@@ -13,7 +15,7 @@ const EffectHeal: React.FC<Props> = ({ item }) => {
 			$y={item.y}
 		>
 			<Sprite
-				imagePath={'/vfx/effects/heal.png'}
+				imagePath={assetUrl('/vfx/effects/heal.png')}
 				width={512}
 				height={512}
 				frameCount={57}

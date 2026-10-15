@@ -7,6 +7,8 @@ import {
 	type VfxItem,
 } from '../../../../../../../constants/animationStates/vfxStates';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
@@ -155,7 +157,7 @@ const ArrowProjectile: React.FC<Props> = ({ item }) => {
 						}}
 					>
 						<ArrowImage
-							src='/vfx/effects/arrow.png'
+							src={assetUrl('/vfx/effects/arrow.png')}
 							alt='Arrow Projectile'
 						/>
 					</WobbleContainer>

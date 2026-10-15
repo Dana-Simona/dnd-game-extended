@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 import Sprite from '../../../../../../../utils/sprite/Sprite';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
@@ -21,7 +23,7 @@ const IceExplode: React.FC<Props> = ({ item }) => {
 			}}
 		>
 			<Sprite
-				imagePath={'/vfx/effects/iceExplode.png'}
+				imagePath={assetUrl('/vfx/effects/iceExplode.png')}
 				width={640}
 				height={360}
 				frameCount={20}

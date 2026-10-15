@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import Sprite from '../../../../../../../utils/sprite/Sprite';
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
@@ -65,7 +67,7 @@ const Ash: React.FC<Props> = ({ item }) => {
 		>
 			<SpriteWrapper>
 				<Sprite
-					imagePath={'/vfx/portalVfxs/fireTransition.png'}
+					imagePath={assetUrl('/vfx/portalVfxs/fireTransition.png')}
 					width={142}
 					height={80}
 					frameCount={15}

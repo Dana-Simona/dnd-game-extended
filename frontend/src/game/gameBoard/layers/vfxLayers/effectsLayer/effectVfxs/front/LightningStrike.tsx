@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 import Sprite from '../../../../../../../utils/sprite/Sprite';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
@@ -14,7 +16,7 @@ const LightningStrike: React.FC<Props> = ({ item }) => {
 			$y={item.y}
 		>
 			<Sprite
-				imagePath={'/vfx/effects/lightning.png'}
+				imagePath={assetUrl('/vfx/effects/lightning.png')}
 				width={420}
 				height={288}
 				frameCount={12}

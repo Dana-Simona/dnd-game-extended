@@ -2,6 +2,8 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
+import { assetUrl } from '../../../../../../utils/assetUrl';
+
 const baseFilter = 'brightness(0.25) contrast(1.3)';
 
 const BlizzardClouds: React.FC = () => {
@@ -49,7 +51,7 @@ const BlizzardClouds: React.FC = () => {
 
 			<CloudImage
 				$topOffset='-150px'
-				src='/vfx/portalVfxs/blizzardCloud1.png'
+				src={assetUrl('/vfx/portalVfxs/blizzardCloud1.png')}
 				initial={{
 					right: '-70%',
 					filter: baseFilter,
@@ -77,7 +79,7 @@ const BlizzardClouds: React.FC = () => {
 			/>
 
 			<CloudImage
-				src='/vfx/portalVfxs/blizzardCloud2.png'
+				src={assetUrl('/vfx/portalVfxs/blizzardCloud2.png')}
 				$topOffset='-120px'
 				initial={{
 					right: '-50%',
@@ -105,7 +107,7 @@ const BlizzardClouds: React.FC = () => {
 			/>
 
 			<CloudImage
-				src='/vfx/portalVfxs/blizzardCloud3.png'
+				src={assetUrl('/vfx/portalVfxs/blizzardCloud3.png')}
 				$topOffset='-150px'
 				initial={{
 					left: '-70%',
@@ -137,7 +139,7 @@ const BlizzardClouds: React.FC = () => {
 			/>
 
 			<CloudImage
-				src='/vfx/portalVfxs/blizzardCloud4.png'
+				src={assetUrl('/vfx/portalVfxs/blizzardCloud4.png')}
 				$topOffset='-180px'
 				initial={{
 					left: '-50%',

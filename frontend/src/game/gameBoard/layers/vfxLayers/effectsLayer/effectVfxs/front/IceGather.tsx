@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 import Sprite from '../../../../../../../utils/sprite/Sprite';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
@@ -14,7 +16,7 @@ const IceGather: React.FC<Props> = ({ item }) => {
 			$y={item.y}
 		>
 			<Sprite
-				imagePath={'/vfx/effects/iceGather.png'}
+				imagePath={assetUrl('/vfx/effects/iceGather.png')}
 				width={512}
 				height={512}
 				frameCount={52}

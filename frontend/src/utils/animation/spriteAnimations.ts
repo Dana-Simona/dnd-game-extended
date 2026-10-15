@@ -7,6 +7,8 @@ import {
 	DEFAULT_ANIM_META,
 } from './useGameAnimation/spriteAnimationControl/spriteManifest';
 
+import { assetUrl } from '../assetUrl';
+
 export const sanitize = (str?: string, defaultValue = 'idle'): string => {
 	const words = str?.match(/[a-zA-Z]+/g) ?? defaultValue.match(/[a-zA-Z]+/g);
 	if (!words || words.length === 0) return defaultValue;
@@ -22,7 +24,7 @@ export const sanitize = (str?: string, defaultValue = 'idle'): string => {
 
 const getDefaultPlayerIdentity = (action: SpritePresets) => ({
 	manifestKey: 'player_mage_aurora',
-	imagePath: `/sprites/player/mage/aurora/${sanitize(action)}.png`,
+	imagePath: assetUrl(`/sprites/player/mage/aurora/${sanitize(action)}.png`),
 });
 
 const getPlayerIdentity = (player: Player, action: SpritePresets) => {
@@ -31,7 +33,7 @@ const getPlayerIdentity = (player: Player, action: SpritePresets) => {
 	const anim = sanitize(action);
 	return {
 		manifestKey: `player_${cls}_${name}`,
-		imagePath: `/sprites/player/${cls}/${name}/${anim}.png`,
+		imagePath: assetUrl(`/sprites/player/${cls}/${name}/${anim}.png`),
 	};
 };
 
@@ -44,7 +46,7 @@ const getEnemyIdentity = (
 
 	return {
 		manifestKey: `enemy_${name}`,
-		imagePath: `/sprites/enemies/${name}/${anim}.png`,
+		imagePath: assetUrl(`/sprites/enemies/${name}/${anim}.png`),
 	};
 };
 

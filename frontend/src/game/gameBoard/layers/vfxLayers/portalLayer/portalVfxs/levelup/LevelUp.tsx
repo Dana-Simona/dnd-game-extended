@@ -31,12 +31,14 @@ import {
 	LevelTextImg,
 } from './LevelUpStyles';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
 
-const ASSET_PATH = '/vfx/portalVfxs/levelUp/';
-const SOUND_PATH = '/sfx/levelUp';
+const ASSET_PATH = assetUrl('/vfx/portalVfxs/levelUp/');
+const SOUND_PATH = assetUrl('/sfx/levelUp');
 
 const LevelUp: React.FC<Props> = ({ item }) => {
 	const playLevelUp = useSound(`${SOUND_PATH}.mp3`);

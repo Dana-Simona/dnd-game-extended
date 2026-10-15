@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import Sprite from '../../../../../../../utils/sprite/Sprite';
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
@@ -13,7 +15,7 @@ const TargetSwirl: React.FC<Props> = ({ item }) => {
 			$y={item.y}
 		>
 			<Sprite
-				imagePath={'/vfx/effects/targetSwirl.png'}
+				imagePath={assetUrl('/vfx/effects/targetSwirl.png')}
 				width={178}
 				height={100}
 				frameCount={39}

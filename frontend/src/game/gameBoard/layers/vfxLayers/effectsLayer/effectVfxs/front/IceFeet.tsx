@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
@@ -20,7 +22,7 @@ const IceFeet: React.FC<Props> = ({ item }) => {
 			}}
 		>
 			<IceImage
-				src='/vfx/effects/iceFeet.png'
+				src={assetUrl('/vfx/effects/iceFeet.png')}
 				alt='Ice Feet'
 			/>
 		</IceContainer>

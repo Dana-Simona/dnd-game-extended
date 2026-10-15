@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
@@ -19,7 +21,7 @@ const GroundBreak: React.FC<Props> = ({ item }) => {
 				ease: [0.16, 0.5, 0.3, 1],
 			}}
 		>
-			<GroundImage src='/vfx/effects/groundBreak.jpeg' />
+			<GroundImage src={assetUrl('/vfx/effects/groundBreak.jpeg')} />
 		</Container>
 	);
 };

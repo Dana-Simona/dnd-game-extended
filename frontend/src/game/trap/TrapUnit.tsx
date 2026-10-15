@@ -2,6 +2,8 @@ import React from 'react';
 import { motion, type TargetAndTransition } from 'framer-motion';
 import type { Trap as TrapType } from '../../constants/interfaces/monster';
 
+import { assetUrl } from '../../utils/assetUrl';
+
 interface Props {
 	trap: TrapType;
 	sway?: TargetAndTransition;
@@ -29,7 +31,7 @@ const toCamelCase = (name: string) => {
 
 export const TrapUnit: React.FC<Props> = ({ trap, sway }) => {
 	const folderName = toCamelCase(trap.name);
-	const imageSrc = `/sprites/enemies/${folderName}/flower.png`;
+	const imageSrc = assetUrl(`/sprites/enemies/${folderName}/flower.png`);
 
 	return (
 		<motion.div

@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import Sprite from '../../../../../../../utils/sprite/Sprite';
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
@@ -15,7 +17,7 @@ const BossSpell: React.FC<Props> = ({ item }) => {
 			$y={item.y}
 		>
 			<Sprite
-				imagePath={'/sprites/enemies/malakorTheUnbroken/spell.png'}
+				imagePath={assetUrl('/sprites/enemies/malakorTheUnbroken/spell.png')}
 				width={140}
 				height={93}
 				frameCount={16}

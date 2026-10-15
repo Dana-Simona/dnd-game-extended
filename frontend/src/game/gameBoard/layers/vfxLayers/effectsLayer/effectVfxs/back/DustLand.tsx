@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import Sprite from '../../../../../../../utils/sprite/Sprite';
 import type { VfxItem } from '../../../../../../../constants/animationStates/vfxStates';
 
+import { assetUrl } from '../../../../../../../utils/assetUrl';
+
 interface Props {
 	item: VfxItem;
 }
@@ -13,7 +15,7 @@ const DustLand: React.FC<Props> = ({ item }) => {
 			$y={item.y}
 		>
 			<Sprite
-				imagePath={'/vfx/effects/dustLand.png'}
+				imagePath={assetUrl('/vfx/effects/dustLand.png')}
 				width={555}
 				height={130}
 				frameCount={35}
