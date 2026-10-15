@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 import { ROUTES } from '../constants/routes';
@@ -102,8 +102,6 @@ export const useAuthGuard = (character: unknown) => {
 
 export const useGame = () => {
 	const { character, updateCharacter } = useCharacter();
-	const { level: levelParam } = useParams<{ level?: string }>();
-	const initialLevel = Math.max(1, parseInt(levelParam ?? '', 10) || 1);
 	const [board, setBoard] = useState<string[]>([]);
 	const [level, setLevel] = useState<number>(1);
 	const [actionCount, setActionCount] = useState<number>(0);
@@ -294,7 +292,7 @@ export const useGame = () => {
 
 		const initLevel = async () => {
 			try {
-				await loadLevel(initialLevel, controller.signal);
+				await loadLevel(1, controller.signal);
 				if (!controller.signal.aborted) {
 					setIsLevelLoaded(true);
 				}
@@ -308,7 +306,7 @@ export const useGame = () => {
 		initLevel();
 
 		return () => controller.abort();
-	}, [character, isLevelLoaded, loadLevel, initialLevel]);
+	}, [character, isLevelLoaded, loadLevel]);
 
 	useEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {

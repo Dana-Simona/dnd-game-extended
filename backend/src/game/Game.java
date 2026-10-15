@@ -7,6 +7,12 @@ import java.util.*;
 
 public final class Game {
 
+    private static final String FILE_PREFIX = "file:";
+    private static final String[] LEVEL_DIR_CANDIDATES = {
+        "src/game/levels_dir", "backend/src/game/levels_dir", "game/levels_dir",
+        "../src/game/levels_dir", "../backend/src/game/levels_dir"
+    };
+
     private Player chosenPlayer;
     private List<String> levels;
     private Integer currentLevelIndex;
@@ -29,21 +35,38 @@ public final class Game {
     private void loadAllFiles() {
         this.levels = new ArrayList<>();
 
+        // Prefer the classpath; fall back to the source folder on disk so the
+        // game also works when the IDE/build doesn't copy the .txt files.
+        java.io.File fallbackDir = findLevelsDirOnDisk();
+
         int levelNumber = 1;
         while (true) {
-            String resourcePath = "/game/levels_dir/level" + levelNumber + ".txt";
+            String fileName = "level" + levelNumber + ".txt";
+            String resourcePath = "/game/levels_dir/" + fileName;
             if (getClass().getResource(resourcePath) != null) {
                 this.levels.add(resourcePath);
-                levelNumber++;
+            } else if (fallbackDir != null && new java.io.File(fallbackDir, fileName).isFile()) {
+                this.levels.add(FILE_PREFIX + new java.io.File(fallbackDir, fileName).getAbsolutePath());
             } else {
                 break;
             }
+            levelNumber++;
         }
 
         if (this.levels.isEmpty()) {
             System.err.println("WARNING: no level files found on the classpath at /game/levels_dir/level1.txt. "
                     + "Make sure the level .txt files are copied into the build output / jar.");
         }
+    }
+
+    private static java.io.File findLevelsDirOnDisk() {
+        for (String candidate : LEVEL_DIR_CANDIDATES) {
+            java.io.File dir = new java.io.File(candidate);
+            if (new java.io.File(dir, "level1.txt").isFile()) {
+                return dir;
+            }
+        }
+        return null;
     }
 
     private void requireBoard() {
@@ -98,7 +121,9 @@ public final class Game {
         if (!levels.isEmpty() && currentLevelIndex < levels.size()) {
             String resourcePath = levels.get(currentLevelIndex);
             LevelParser levelParser = new LevelParser(chosenPlayer, messageCallback, stepCounter);
-            this.currentGameBoard = levelParser.parseLevelFromResource(resourcePath);
+            this.currentGameBoard = resourcePath.startsWith(FILE_PREFIX)
+                    ? levelParser.parseLevel(new java.io.File(resourcePath.substring(FILE_PREFIX.length())))
+                    : levelParser.parseLevelFromResource(resourcePath);
         }
     }
 
