@@ -95,8 +95,18 @@ public class MainServer {
                         sendJsonResponse(exchange, getGameStateJson());
                     } catch (IOException | NumberFormatException e) {
                         e.printStackTrace();
-                        String errorJson = "{\"status\": \"error\", \"message\": \"" + e.getMessage() + "\"}";
-                        sendJsonResponse(exchange, errorJson);
+                        String sanitizedMsg = e.getMessage() != null
+                                ? e.getMessage().replace("\"", "\\\"")
+                                : "Invalid input";
+                        String errorJson = "{\"status\": \"error\", \"message\": \"" + sanitizedMsg + "\"}";
+
+                        addCorsHeaders(exchange);
+                        exchange.getResponseHeaders().add("Content-Type", "application/json");
+                        byte[] bytes = errorJson.getBytes();
+                        exchange.sendResponseHeaders(400, bytes.length);
+                        try (OutputStream os = exchange.getResponseBody()) {
+                            os.write(bytes);
+                        }
                     }
                 }
             });

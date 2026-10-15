@@ -252,7 +252,7 @@ export const useGame = () => {
 			setLevel(targetLevel);
 			const data = await postApi(
 				'select-level',
-				{ level: targetLevel },
+				targetLevel.toString(),
 				signal,
 			);
 			applyBoardState(data);
