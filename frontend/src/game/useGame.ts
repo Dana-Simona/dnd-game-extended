@@ -54,21 +54,32 @@ export const postApi = async (
 	body: any,
 	signal?: AbortSignal,
 ): Promise<BoardData> => {
-	const isString = typeof body === 'string';
+	let payload: string;
+	let isPlainText = false;
+
+	if (typeof body === 'string' || typeof body === 'number') {
+		payload = body.toString();
+		isPlainText = true;
+	} else if (body && typeof body === 'object' && 'level' in body) {
+		payload = body.level.toString();
+		isPlainText = true;
+	} else {
+		payload = JSON.stringify(body);
+	}
 
 	const res = await fetch(`${API_BASE_URL}/api/${path}`, {
 		method: 'POST',
 		headers: {
-			'Content-Type': isString ? 'text/plain' : 'application/json',
+			'Content-Type': isPlainText ? 'text/plain' : 'application/json',
 		},
-		body: isString ? body : JSON.stringify(body),
+		body: payload,
 		signal,
 	});
 
 	const text = await res.text();
 
 	if (!res.ok) {
-		throw new Error(`Server status: ${res.status}Response: \n${text}`);
+		throw new Error(`Server status: ${res.status} Response: \n${text}`);
 	}
 
 	try {
