@@ -57,11 +57,25 @@ export const postApi = async (
 	const res = await fetch(`${API_BASE_URL}/api/${path}`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body),
+		body: typeof body === 'string' ? body : JSON.stringify(body),
 		signal,
 	});
-	if (!res.ok) throw new Error(`Server status: ${res.status}`);
-	return res.json();
+
+	const text = await res.text();
+
+	if (!res.ok) {
+		throw new Error(`Server status: ${res.status} - Response: ${text}`);
+	}
+
+	try {
+		return JSON.parse(text);
+	} catch (err) {
+		console.error(
+			`[API Error] /api/${path} returned non-JSON response:`,
+			text,
+		);
+		throw new Error(`Server returned invalid JSON for /api/${path}`);
+	}
 };
 
 export const useAuthGuard = (character: unknown) => {
