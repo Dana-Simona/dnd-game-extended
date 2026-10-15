@@ -28,6 +28,10 @@ export const Game: React.FC = () => {
 			/>
 
 			<GameColumn>
+				<span>
+					controls: WASD to move, E to cast special ability, Q to skip
+					turn
+				</span>
 				<GameBoard
 					board={game.board}
 					level={game.level}
