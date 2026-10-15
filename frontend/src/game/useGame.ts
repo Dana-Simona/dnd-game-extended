@@ -54,17 +54,21 @@ export const postApi = async (
 	body: any,
 	signal?: AbortSignal,
 ): Promise<BoardData> => {
+	const isString = typeof body === 'string';
+
 	const res = await fetch(`${API_BASE_URL}/api/${path}`, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: typeof body === 'string' ? body : JSON.stringify(body),
+		headers: {
+			'Content-Type': isString ? 'text/plain' : 'application/json',
+		},
+		body: isString ? body : JSON.stringify(body),
 		signal,
 	});
 
 	const text = await res.text();
 
 	if (!res.ok) {
-		throw new Error(`Server status: ${res.status} - Response: ${text}`);
+		throw new Error(`Server status: ${res.status}Response: \n${text}`);
 	}
 
 	try {
