@@ -246,11 +246,7 @@ export const useGame = () => {
 	const loadLevel = useCallback(
 		async (targetLevel: number = 1, signal?: AbortSignal) => {
 			setLevel(targetLevel);
-			const data = await postApi(
-				'select-level',
-				targetLevel.toString(),
-				signal,
-			);
+			const data = await postApi('select-level', targetLevel, signal);
 			applyBoardState(data);
 			setActionCount((prev) => prev + 1);
 			const enemyList = filterEnemies(data.units);
