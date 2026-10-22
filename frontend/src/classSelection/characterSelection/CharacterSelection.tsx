@@ -13,6 +13,7 @@ import { UnitType } from '../../constants/interfaces/unit';
 import { SpritePresets } from '../../constants/animationStates/spriteStates';
 import { ROUTES } from '../../constants/routes';
 import { API_BASE_URL } from '../../constants/apiUrl';
+import LoadingScreen from './loadingScreen/LoadingScreen';
 
 export type Character = AllPlayerData & CharacterDisplayOptions;
 
@@ -147,7 +148,7 @@ export const CharacterSelection: React.FC = () => {
 	};
 
 	if (loading) {
-		return <DisplayContainer>Loading characters...</DisplayContainer>;
+		return <LoadingScreen />;
 	}
 
 	return (
