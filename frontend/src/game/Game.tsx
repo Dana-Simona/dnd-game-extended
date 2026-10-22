@@ -29,8 +29,8 @@ export const Game: React.FC = () => {
 
 			<GameColumn>
 				<span>
-					controls: WASD to move, E to cast special ability, Q to skip
-					turn
+					controls: WASD to move (walk into an enemy to melee attack it), E
+					to cast special ability, Q to skip turn
 				</span>
 				<GameBoard
 					board={game.board}

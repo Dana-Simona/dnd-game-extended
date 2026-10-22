@@ -36,29 +36,6 @@ const ClassSelection: React.FC = () => {
 
 	const characterClasses: CharacterDisplayOptions[] = [
 		{
-			title: ClassTypes.WARRIOR,
-			spriteProps: {
-				...getUnitSpriteConfig(
-					{
-						name: 'valor',
-						class: ClassTypes.WARRIOR,
-						unitType: UnitType.PLAYER,
-					} as AllPlayerData,
-					SpritePresets.ABILITY_CAST,
-				),
-				loop: true,
-			},
-			onConfirm: () => {
-				sessionStorage.setItem('selectedClass', ClassTypes.WARRIOR);
-				navigate(ClassTypes.WARRIOR);
-			},
-			description: (
-				<AbilityDescription
-					description={ClassAbilityDescription.WARRIOR}
-				/>
-			),
-		},
-		{
 			title: ClassTypes.MAGE,
 			spriteProps: {
 				...getUnitSpriteConfig(
@@ -78,6 +55,52 @@ const ClassSelection: React.FC = () => {
 			description: (
 				<AbilityDescription
 					description={ClassAbilityDescription.MAGE}
+				/>
+			),
+		},
+		{
+			title: ClassTypes.HUNTER,
+			spriteProps: {
+				...getUnitSpriteConfig(
+					{
+						name: 'vaskaara',
+						class: ClassTypes.HUNTER,
+						unitType: UnitType.PLAYER,
+					} as AllPlayerData,
+					SpritePresets.ABILITY_CAST,
+				),
+				loop: true,
+			},
+			onConfirm: () => {
+				sessionStorage.setItem('selectedClass', ClassTypes.HUNTER);
+				navigate(ClassTypes.HUNTER);
+			},
+			description: (
+				<AbilityDescription
+					description={ClassAbilityDescription.HUNTER}
+				/>
+			),
+		},
+		{
+			title: ClassTypes.WARRIOR,
+			spriteProps: {
+				...getUnitSpriteConfig(
+					{
+						name: 'valor',
+						class: ClassTypes.WARRIOR,
+						unitType: UnitType.PLAYER,
+					} as AllPlayerData,
+					SpritePresets.ABILITY_CAST,
+				),
+				loop: true,
+			},
+			onConfirm: () => {
+				sessionStorage.setItem('selectedClass', ClassTypes.WARRIOR);
+				navigate(ClassTypes.WARRIOR);
+			},
+			description: (
+				<AbilityDescription
+					description={ClassAbilityDescription.WARRIOR}
 				/>
 			),
 		},
@@ -104,29 +127,6 @@ const ClassSelection: React.FC = () => {
 		// 		/>
 		// 	),
 		// },
-		{
-			title: ClassTypes.HUNTER,
-			spriteProps: {
-				...getUnitSpriteConfig(
-					{
-						name: 'vaskaara',
-						class: ClassTypes.HUNTER,
-						unitType: UnitType.PLAYER,
-					} as AllPlayerData,
-					SpritePresets.ABILITY_CAST,
-				),
-				loop: true,
-			},
-			onConfirm: () => {
-				sessionStorage.setItem('selectedClass', ClassTypes.HUNTER);
-				navigate(ClassTypes.HUNTER);
-			},
-			description: (
-				<AbilityDescription
-					description={ClassAbilityDescription.HUNTER}
-				/>
-			),
-		},
 	];
 
 	const [selectedIndex, setSelectedIndex] = useState<number>(() =>

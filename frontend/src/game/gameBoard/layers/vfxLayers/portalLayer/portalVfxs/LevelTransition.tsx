@@ -45,7 +45,7 @@ const LevelTransition: React.FC<Props> = ({ item }) => {
 					ease: 'easeOut',
 				}}
 			>
-				<LevelName>Level {item.amount}</LevelName>
+				<LevelName>Level {item.amount}/3</LevelName>
 			</Label>
 		</Curtain>
 	);
