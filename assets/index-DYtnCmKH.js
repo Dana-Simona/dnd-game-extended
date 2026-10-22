@@ -1355,7 +1355,7 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 	letter-spacing: 4px;
 	text-shadow: 0 0 24px rgba(20, 184, 166, 0.45);
 	white-space: nowrap;
-`,Xw={[M.BANNER_LEVEL_UP]:Fw,[M.BANNER_NEXT_LEVEL]:YC,[M.BANNER_GOAL]:IC,[M.LEVEL_TRANSITION]:Gw,[M.BLIZZARD_CLOUDS]:Lw,[M.RAVENS_FLYING]:MC,[M.LETTERBOX]:nw},Zw=({vfxList:e})=>!e||e.length===0?null:y.createPortal((0,j.jsx)(j.Fragment,{children:e.map(e=>{let t=Xw[e.type];return t?(0,j.jsx)(cw,{children:(0,j.jsx)(t,{item:e})},e.id):(console.warn(`Missing portal component for VFX type: ${e.type}`),null)})}),document.body),Qw=(e,t=[])=>[e,...t.filter(e=>!!e)],$w=()=>{let e=(0,v.useRef)(null),[t,n]=(0,v.useState)({width:0,height:0}),r=(0,v.useCallback)(()=>{e.current&&n({width:e.current.clientWidth,height:e.current.clientHeight})},[]);return(0,v.useEffect)(()=>(r(),window.addEventListener(`resize`,r),()=>window.removeEventListener(`resize`,r)),[r]),{viewportRef:e,dimensions:t}},eT=Object.assign({"/public/levels/level1/2grass.ts":()=>w(()=>Promise.resolve().then(()=>oD),void 0),"/public/levels/level1/3walls.ts":()=>w(()=>Promise.resolve().then(()=>cD),void 0),"/public/levels/level1/4props.ts":()=>w(()=>Promise.resolve().then(()=>uD),void 0),"/public/levels/level1/5ascii.ts":()=>w(()=>Promise.resolve().then(()=>fD),void 0),"/public/levels/level2/2grass.ts":()=>w(()=>Promise.resolve().then(()=>mD),void 0),"/public/levels/level2/3walls.ts":()=>w(()=>Promise.resolve().then(()=>gD),void 0),"/public/levels/level2/4props.ts":()=>w(()=>Promise.resolve().then(()=>vD),void 0),"/public/levels/level2/5ascii.ts":()=>w(()=>Promise.resolve().then(()=>bD),void 0),"/public/levels/level3/2grass.ts":()=>w(()=>Promise.resolve().then(()=>SD),void 0),"/public/levels/level3/3walls.ts":()=>w(()=>Promise.resolve().then(()=>wD),void 0),"/public/levels/level3/4props.ts":()=>w(()=>Promise.resolve().then(()=>ED),void 0),"/public/levels/level3/5ascii.ts":()=>w(()=>Promise.resolve().then(()=>OD),void 0)}),tT=e=>Array.isArray(e)&&e.length>0&&Array.isArray(e[0])&&(e[0].length===0||typeof e[0][0]==`number`),nT=e=>{if(!e||typeof e!=`object`)return[];let t=`default`in e&&e.default!==void 0?e.default:e;if(!t)return[];if(Array.isArray(t))return t.length===0?[]:tT(t[0])?t:tT(t)?[t]:[];let n=[],r=[t,e],i=new Set;for(let e of r)if(!(!e||typeof e!=`object`||Array.isArray(e)))for(let t of Object.keys(e)){if(t==="default")continue;let r=e[t];tT(r)&&!i.has(r)&&(i.add(r),n.push(r))}return n},rT=(e,t,n=[])=>{let{character:r}=lr(),{viewportRef:i}=$w(),[a,o]=(0,v.useState)([]);(0,v.useEffect)(()=>{let t=!0,n=RegExp(`/level${e}/[^/]+$`),r=new Set,i=Object.entries(eT).filter(([e])=>n.test(e)).filter(([e])=>{let t=e.split(`/`).pop();return!t||r.has(t)?!1:(r.add(t),!0)});if(i.length===0){o([]);return}return i.sort(([e],[t])=>e.localeCompare(t,void 0,{numeric:!0,sensitivity:`base`})),Promise.all(i.map(async([e,t])=>{try{return{path:e,matrices:nT(await t())}}catch(t){return console.error(`Failed to load level layer file "${e}":`,t),{path:e,matrices:[]}}})).then(e=>{if(!t)return;let n=e.flatMap(e=>e.matrices);o(n)}).catch(e=>{console.error(`Error aggregating level layers:`,e),t&&o([])}),()=>{t=!1}},[e]);let{screenVfxs:s,backVfxs:c,frontVfxs:l,portalVfxs:u}=(0,v.useMemo)(()=>{let e=[],t=[],r=[],i=[];for(let a of n)switch(a.category){case N.SCREEN_COLOR:e.push(a);break;case N.BACK:t.push(a);break;case N.FRONT:r.push(a);break;case N.PORTAL:i.push(a)}return{screenVfxs:e,backVfxs:t,frontVfxs:r,portalVfxs:i}},[n]);return{character:r,viewportRef:i,layers:a,backVfxs:c,frontVfxs:l,portalVfxs:u,allUnits:r?Qw(r,t):[],activeScreenVfxTypes:s.map(e=>e.type)}},iT=Q(Y.div)`
+`,Xw={[M.BANNER_LEVEL_UP]:Fw,[M.BANNER_NEXT_LEVEL]:YC,[M.BANNER_GOAL]:IC,[M.LEVEL_TRANSITION]:Gw,[M.BLIZZARD_CLOUDS]:Lw,[M.RAVENS_FLYING]:MC,[M.LETTERBOX]:nw},Zw=({vfxList:e})=>!e||e.length===0?null:y.createPortal((0,j.jsx)(j.Fragment,{children:e.map(e=>{let t=Xw[e.type];return t?(0,j.jsx)(cw,{children:(0,j.jsx)(t,{item:e})},e.id):(console.warn(`Missing portal component for VFX type: ${e.type}`),null)})}),document.body),Qw=(e,t=[])=>[e,...t.filter(e=>!!e)],$w=()=>{let e=(0,v.useRef)(null),[t,n]=(0,v.useState)({width:0,height:0}),r=(0,v.useCallback)(()=>{e.current&&n({width:e.current.clientWidth,height:e.current.clientHeight})},[]);return(0,v.useEffect)(()=>(r(),window.addEventListener(`resize`,r),()=>window.removeEventListener(`resize`,r)),[r]),{viewportRef:e,dimensions:t}},eT=Object.assign({"/public/levels/level1/2grass.ts":()=>w(()=>Promise.resolve().then(()=>wD),void 0),"/public/levels/level1/3walls.ts":()=>w(()=>Promise.resolve().then(()=>ED),void 0),"/public/levels/level1/4props.ts":()=>w(()=>Promise.resolve().then(()=>OD),void 0),"/public/levels/level1/5ascii.ts":()=>w(()=>Promise.resolve().then(()=>AD),void 0),"/public/levels/level2/2grass.ts":()=>w(()=>Promise.resolve().then(()=>MD),void 0),"/public/levels/level2/3walls.ts":()=>w(()=>Promise.resolve().then(()=>PD),void 0),"/public/levels/level2/4props.ts":()=>w(()=>Promise.resolve().then(()=>ID),void 0),"/public/levels/level2/5ascii.ts":()=>w(()=>Promise.resolve().then(()=>RD),void 0),"/public/levels/level3/2grass.ts":()=>w(()=>Promise.resolve().then(()=>BD),void 0),"/public/levels/level3/3walls.ts":()=>w(()=>Promise.resolve().then(()=>HD),void 0),"/public/levels/level3/4props.ts":()=>w(()=>Promise.resolve().then(()=>WD),void 0),"/public/levels/level3/5ascii.ts":()=>w(()=>Promise.resolve().then(()=>KD),void 0)}),tT=e=>Array.isArray(e)&&e.length>0&&Array.isArray(e[0])&&(e[0].length===0||typeof e[0][0]==`number`),nT=e=>{if(!e||typeof e!=`object`)return[];let t=`default`in e&&e.default!==void 0?e.default:e;if(!t)return[];if(Array.isArray(t))return t.length===0?[]:tT(t[0])?t:tT(t)?[t]:[];let n=[],r=[t,e],i=new Set;for(let e of r)if(!(!e||typeof e!=`object`||Array.isArray(e)))for(let t of Object.keys(e)){if(t==="default")continue;let r=e[t];tT(r)&&!i.has(r)&&(i.add(r),n.push(r))}return n},rT=(e,t,n=[])=>{let{character:r}=lr(),{viewportRef:i}=$w(),[a,o]=(0,v.useState)([]);(0,v.useEffect)(()=>{let t=!0,n=RegExp(`/level${e}/[^/]+$`),r=new Set,i=Object.entries(eT).filter(([e])=>n.test(e)).filter(([e])=>{let t=e.split(`/`).pop();return!t||r.has(t)?!1:(r.add(t),!0)});if(i.length===0){o([]);return}return i.sort(([e],[t])=>e.localeCompare(t,void 0,{numeric:!0,sensitivity:`base`})),Promise.all(i.map(async([e,t])=>{try{return{path:e,matrices:nT(await t())}}catch(t){return console.error(`Failed to load level layer file "${e}":`,t),{path:e,matrices:[]}}})).then(e=>{if(!t)return;let n=e.flatMap(e=>e.matrices);o(n)}).catch(e=>{console.error(`Error aggregating level layers:`,e),t&&o([])}),()=>{t=!1}},[e]);let{screenVfxs:s,backVfxs:c,frontVfxs:l,portalVfxs:u}=(0,v.useMemo)(()=>{let e=[],t=[],r=[],i=[];for(let a of n)switch(a.category){case N.SCREEN_COLOR:e.push(a);break;case N.BACK:t.push(a);break;case N.FRONT:r.push(a);break;case N.PORTAL:i.push(a)}return{screenVfxs:e,backVfxs:t,frontVfxs:r,portalVfxs:i}},[n]);return{character:r,viewportRef:i,layers:a,backVfxs:c,frontVfxs:l,portalVfxs:u,allUnits:r?Qw(r,t):[],activeScreenVfxTypes:s.map(e=>e.type)}},iT=Q(Y.div)`
 	position: absolute;
 	top: 14px;
 	left: 50%;
@@ -2072,7 +2072,163 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 	height: 100%;
 	background-color: #00cea5;
 	box-shadow: 0 0 8px #00ffcc;
-`,nD={health:450,defense:10,attack:50,cooldown:10,manaPool:400,manacost:50,spellpower:20,hitcount:5,range:7,cost:50},rD=100,iD=({data:e})=>(0,j.jsx)(XE,{children:Object.entries(e).map(([e,t])=>{if(t===void 0)return null;let n=nD[e.toLowerCase()]??rD;return(0,j.jsxs)(ZE,{children:[(0,j.jsx)(QE,{children:e}),typeof t==`string`&&(0,j.jsx)($E,{children:t}),typeof t==`number`&&(0,j.jsx)(eD,{children:(0,j.jsx)(tD,{initial:{width:0},animate:{width:`${Math.min(Math.max(t,0),n)/n*100}%`},transition:{duration:1.2,ease:`easeOut`,delay:.2}})})]},e)})}),aD=()=>{let{classType:e}=Ct(),t=xt(),{selectCharacter:n,resetCharacter:r}=lr(),[i,a]=(0,v.useState)([]),[o,s]=(0,v.useState)(!0),c=(e,r)=>{fetch(`${Vv}/api/select-player`,{method:`POST`,headers:{"Content-Type":`text/plain`},body:r.toString()}).then(r=>{if(!r.ok)throw Error(`Failed to select player on server`);n(e),t(Wn.GAME)}).catch(e=>console.error(`Error selecting player:`,e))};(0,v.useEffect)(()=>{r()},[r]),(0,v.useEffect)(()=>{e&&sessionStorage.setItem(`selectedClass`,e)},[e]),(0,v.useEffect)(()=>{fetch(`${Vv}/api/players`).then(e=>e.json()).then(e=>{let t=e.map((e,t)=>{let n=rr({...e,unitType:Gn.PLAYER},O.IDLE);return{...e,spriteProps:n,title:e.name,onConfirm:()=>c(e,t),description:(0,j.jsx)(iD,{data:{health:e.health,defense:e.defense,attack:e.attack,cooldown:e.cooldown,manaPool:e.manaPool,manaCost:e.manaCost,spellPower:e.spellPower,hitCount:e.hitCount,range:e.range,cost:e.energyCost}})}});a(t),s(!1)}).catch(e=>{console.error(`Error fetching characters:`,e),s(!1)})},[]);let l=e?i.filter(t=>t.class.toLowerCase()===e.toLowerCase()):i,u=l.length>0?l:i,[d,f]=(0,v.useState)(0);return(0,v.useEffect)(()=>{f(0)},[e]),(0,v.useEffect)(()=>{if(!o&&u.length>0){let n=u[d].class.toLowerCase();e?.toLowerCase()!==n&&t(`/characterSelection/${n}`,{replace:!0})}},[o,u,d,e,t]),o?(0,j.jsx)(kE,{children:`Loading characters...`}):(0,j.jsxs)(kE,{children:[(0,j.jsx)(AE,{children:(0,j.jsx)(iy,{variant:`Secondary`,onClick:()=>{t(`..`,{relative:`path`})},children:`Back`})}),(0,j.jsx)(qE,{options:u,setSelectedIndex:n=>{let r=typeof n==`function`?n(d):n,i=u[r];if(f(r),i){let n=i.class.toLowerCase();e?.toLowerCase()!==n&&t(`/characterSelection/${n}`)}},selectedIndex:d})]})},oD=s({default:()=>sD}),sD=[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,14,14,14,14,14,14,14],[14,0,0,0,0,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14],[14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14]],cD=s({default:()=>lD}),lD=[[-1,-1,-1,5,6,7,7,7,7,7,7,7,7,8,9,13,10,10,13,10,11],[-1,-1,-1,5,9,10,10,10,10,10,10,10,10,11,-1,-1,-1,-1,-1,-1,-1],[3,12,7,8,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[5,13,10,11,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,2,2,2,2,2,2],[5,-1,-1,-1,-1,-1,-1,-1,1,2,2,2,2,2,2,2,2,3,-1,-1,-1],[2,2,2,2,2,2,2,3,4,-1,-1,-1,-1,-1,-1,-1,-1,5,-1,-1,-1]],uD=s({default:()=>dD}),dD=[[59,47,-1,23,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[60,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,18,-1,-1,-1,-1,-1,-1,-1,-1,37],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,29,-1,-1,-1,-1,-1,-1,42,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,26,-1,-1,-1,-1,-1,26,-1,-1,-1,43,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]],fD=s({default:()=>pD}),pD=[`#####################`,`#############>...q..#`,`####...s...>#>......#`,`####.....k.>#########`,`#...@...#############`,`#####################`],mD=s({default:()=>hD}),hD=[[14,14,14,14,14,14,14,14,14,14,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,0,0,0,0,0,0,0,0,0,0]],gD=s({default:()=>_D}),_D=[[54,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,2,2,2,2,2,2,2,2,2,2,2,2,3],[-1,1,2,2,2,2,2,2,2,2,2,74,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5],[-1,4,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5],[-1,1,2,2,3,-1,-1,1,2,2,3,78,73,-1,-1,-1,-1,45,-1,-1,-1,-1,-1,-1,5],[-1,6,7,12,8,-1,-1,6,12,7,8,77,4,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5],[-1,9,10,13,11,-1,-1,9,13,10,11,77,4,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,76,4,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5],[-1,1,2,2,2,2,2,2,2,2,2,3,72,7,7,7,7,7,7,7,7,7,7,7,7]],vD=s({default:()=>yD}),yD=[[43,-1,-1,-1,-1,-1,-1,-1,-1,-1,27,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[43,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,-1,65,-1,-1,-1,65,-1,-1],[43,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,-1,-1,-1,-1,-1,65,-1,-1,-1,-1],[43,-1,-1,-1,-1,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,37,-1,32,-1,38,-1,-1,65,-1],[43,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,-1,-1,-1,-1,-1,-1,-1,65,-1,-1,-1],[43,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[43,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,-1,-1,65,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]],bD=s({default:()=>xD}),xD=[`#########################`,`#.........#..k....Q...q.#`,`#.........Q.......Q.....#`,`#####^^#####....#.#.#...#`,`#####^^#####....#####...#`,`#####^^#####......#.....#`,`#....@.....#......B.....#`,`#########################`],SD=s({default:()=>CD}),CD=[[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,14,14,14,0,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,0,0,0,0,0,14,14,0,0,0,-1],[-1,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,0,0,0,0,0,14,14,0,0,0,-1],[-1,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,-1],[-1,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,-1],[-1,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]],wD=s({default:()=>TD}),TD=[[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,70,7,7,7,73,-1,-1,-1,70,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,73,-1,-1,-1,-1,-1,-1,70,15,-1,73,-1,-1,-1],[-1,-1,-1,5,10,10,10,6,7,7,7,8,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,4,-1,-1,-1,-1,-1,-1,5,-1,-1,4,-1,-1,-1],[-1,-1,-1,19,-1,-1,-1,9,10,10,10,11,-1,-1,-1,-1,-1,-1,-1,46,-1,-1,-1,-1,-1,-1,-1,-1,-1,6,7,7,7,7,7,7,8,-1,-1,4,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,9,10,10,10,10,10,10,11,-1,-1,4,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,4,-1,-1,-1],[-1,-1,-1,5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,4,-1,-1,-1],[-1,-1,-1,5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,4,-1,-1,-1],[-1,-1,-1,69,2,2,2,2,2,2,2,3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,2,2,2,2,2,2,2,2,2,2,2,74,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,69,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,74,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]],ED=s({default:()=>DD}),DD=[[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,65,-1,65,-1,-1,65,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,65,-1,65,-1,65,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,65,33,65,32,65,65,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,-1,32,-1,33,65,-1,65,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,65,-1,65,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,34,-1,65,32,-1,31,65,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,36,-1,36,-1,-1,25,-1,-1,-1,36,-1,36,-1,-1,-1,-1,-1,65,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,38,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,37,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,38,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,37,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]],OD=s({default:()=>kD}),kD=[`###########################################`,`#.........................................#`,`#....s.......k.......q.......z.......b.D..#`,`#.........#....................#..........#`,`#..##################################^^#..#`,`#BB##################################^^#..#`,`#...<#.######.####..#..####.#########^^#..#`,`#...<#<.....##......#......##########..#..#`,`#BB###<......#......M......#...........#..#`,`#..#...........@.......................#..#`,`#..#...................................#..#`,`#..#########...............#############..#`,`#..........#################..z.......g...#`,`#............k.......q....................#`,`###########################################`],AD=Q.div`
+`,nD={health:450,defense:10,attack:50,cooldown:10,manaPool:400,manacost:50,spellpower:20,hitcount:5,range:7,cost:50},rD=100,iD=({data:e})=>(0,j.jsx)(XE,{children:Object.entries(e).map(([e,t])=>{if(t===void 0)return null;let n=nD[e.toLowerCase()]??rD;return(0,j.jsxs)(ZE,{children:[(0,j.jsx)(QE,{children:e}),typeof t==`string`&&(0,j.jsx)($E,{children:t}),typeof t==`number`&&(0,j.jsx)(eD,{children:(0,j.jsx)(tD,{initial:{width:0},animate:{width:`${Math.min(Math.max(t,0),n)/n*100}%`},transition:{duration:1.2,ease:`easeOut`,delay:.2}})})]},e)})}),aD=`#00ffcc`,oD=Sv`
+	to { transform: rotate(360deg); }
+`,sD=Sv`
+	to { transform: rotate(-360deg); }
+`,cD=Sv`
+	0%, 100% { transform: scale(0.85) rotate(45deg); opacity: 0.6; }
+	50% { transform: scale(1.1) rotate(45deg); opacity: 1; }
+`,lD=Sv`
+	0% { transform: translateX(-100%); }
+	100% { transform: translateX(350%); }
+`,uD=Sv`
+	0% { content: ''; }
+	25% { content: '.'; }
+	50% { content: '..'; }
+	75%, 100% { content: '...'; }
+`,dD=Sv`
+	from { opacity: 0; transform: translateY(10px); }
+	to { opacity: 1; transform: translateY(0); }
+`,fD=Sv`
+	0%, 100% { opacity: 0.55; }
+	50% { opacity: 1; }
+`,pD=Q.div`
+	position: relative;
+	overflow: hidden;
+	min-height: 100vh;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: monospace;
+	color: ${aD};
+	background-color: #121212;
+	background-image:
+		radial-gradient(
+			ellipse at 50% 45%,
+			rgba(0, 255, 204, 0.14) 0%,
+			rgba(0, 255, 204, 0.04) 40%,
+			rgba(18, 18, 18, 0) 70%
+		),
+		linear-gradient(rgba(0, 255, 204, 0.045) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(0, 255, 204, 0.045) 1px, transparent 1px);
+	background-size:
+		100% 100%,
+		40px 40px,
+		40px 40px;
+
+	&::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: radial-gradient(
+			ellipse at center,
+			rgba(0, 0, 0, 0) 45%,
+			rgba(0, 0, 0, 0.75) 100%
+		);
+	}
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background: repeating-linear-gradient(
+			to bottom,
+			rgba(0, 0, 0, 0) 0px,
+			rgba(0, 0, 0, 0) 2px,
+			rgba(0, 0, 0, 0.14) 3px,
+			rgba(0, 0, 0, 0.14) 4px
+		);
+	}
+`,mD=Q.div`
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	animation: ${dD} 0.6s ease-out both;
+`,hD=Q.div`
+	position: relative;
+	width: 130px;
+	height: 130px;
+	margin-bottom: 2.2rem;
+`,gD=Q.div`
+	position: absolute;
+	inset: ${({$inset:e})=>e}px;
+	border-radius: 50%;
+	border: 2px solid rgba(0, 255, 204, 0.12);
+	border-top-color: ${aD};
+	border-right-color: ${({$reverse:e})=>e?`transparent`:`rgba(0, 255, 204, 0.5)`};
+	filter: drop-shadow(0 0 6px rgba(0, 255, 204, 0.7));
+	animation: ${({$reverse:e})=>e?sD:oD}
+		${({$reverse:e})=>e?`2.4s`:`1.4s`} linear infinite;
+`,_D=Q.div`
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 26px;
+	height: 26px;
+	margin: -13px 0 0 -13px;
+	background: ${aD};
+	box-shadow: 0 0 22px 4px rgba(0, 255, 204, 0.6);
+	animation: ${cD} 1.6s ease-in-out infinite;
+`,vD=Q.h2`
+	margin: 0;
+	font-size: 1.9rem;
+	font-weight: 900;
+	letter-spacing: 5px;
+	text-transform: uppercase;
+	color: ${aD};
+	text-shadow: 0 0 12px rgba(0, 255, 204, 0.55);
+
+	&::after {
+		content: '';
+		display: inline-block;
+		width: 1.4em;
+		text-align: left;
+		animation: ${uD} 1.6s steps(1) infinite;
+	}
+`,yD=Q.p`
+	margin: 12px 0 0;
+	font-size: 0.95rem;
+	letter-spacing: 2px;
+	color: #5fbfa8;
+	animation: ${fD} 2.4s ease-in-out infinite;
+`,bD=Q.div`
+	position: relative;
+	overflow: hidden;
+	width: 260px;
+	max-width: 70vw;
+	height: 4px;
+	margin-top: 1.8rem;
+	background: rgba(0, 255, 204, 0.1);
+	border: 1px solid rgba(0, 255, 204, 0.25);
+
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		width: 30%;
+		background: linear-gradient(
+			90deg,
+			rgba(0, 255, 204, 0),
+			${aD},
+			rgba(0, 255, 204, 0)
+		);
+		box-shadow: 0 0 10px ${aD};
+		animation: ${lD} 1.5s ease-in-out infinite;
+	}
+`,xD=Q.p`
+	margin: 1rem 0 0;
+	font-size: 0.75rem;
+	letter-spacing: 1px;
+	color: rgba(95, 191, 168, 0.6);
+`,SD=()=>(0,j.jsx)(pD,{role:`status`,"aria-live":`polite`,children:(0,j.jsxs)(mD,{children:[(0,j.jsxs)(hD,{"aria-hidden":!0,children:[(0,j.jsx)(gD,{$inset:0}),(0,j.jsx)(gD,{$inset:18,$reverse:!0}),(0,j.jsx)(_D,{})]}),(0,j.jsx)(vD,{children:`Loading characters`}),(0,j.jsx)(yD,{children:`this may take a few seconds`}),(0,j.jsx)(bD,{"aria-hidden":!0}),(0,j.jsx)(xD,{children:`waking up the dungeon server`})]})}),CD=()=>{let{classType:e}=Ct(),t=xt(),{selectCharacter:n,resetCharacter:r}=lr(),[i,a]=(0,v.useState)([]),[o,s]=(0,v.useState)(!0),c=(e,r)=>{fetch(`${Vv}/api/select-player`,{method:`POST`,headers:{"Content-Type":`text/plain`},body:r.toString()}).then(r=>{if(!r.ok)throw Error(`Failed to select player on server`);n(e),t(Wn.GAME)}).catch(e=>console.error(`Error selecting player:`,e))};(0,v.useEffect)(()=>{r()},[r]),(0,v.useEffect)(()=>{e&&sessionStorage.setItem(`selectedClass`,e)},[e]),(0,v.useEffect)(()=>{fetch(`${Vv}/api/players`).then(e=>e.json()).then(e=>{let t=e.map((e,t)=>{let n=rr({...e,unitType:Gn.PLAYER},O.IDLE);return{...e,spriteProps:n,title:e.name,onConfirm:()=>c(e,t),description:(0,j.jsx)(iD,{data:{health:e.health,defense:e.defense,attack:e.attack,cooldown:e.cooldown,manaPool:e.manaPool,manaCost:e.manaCost,spellPower:e.spellPower,hitCount:e.hitCount,range:e.range,cost:e.energyCost}})}});a(t),s(!1)}).catch(e=>{console.error(`Error fetching characters:`,e),s(!1)})},[]);let l=e?i.filter(t=>t.class.toLowerCase()===e.toLowerCase()):i,u=l.length>0?l:i,[d,f]=(0,v.useState)(0);return(0,v.useEffect)(()=>{f(0)},[e]),(0,v.useEffect)(()=>{if(!o&&u.length>0){let n=u[d].class.toLowerCase();e?.toLowerCase()!==n&&t(`/characterSelection/${n}`,{replace:!0})}},[o,u,d,e,t]),o?(0,j.jsx)(SD,{}):(0,j.jsxs)(kE,{children:[(0,j.jsx)(AE,{children:(0,j.jsx)(iy,{variant:`Secondary`,onClick:()=>{t(`..`,{relative:`path`})},children:`Back`})}),(0,j.jsx)(qE,{options:u,setSelectedIndex:n=>{let r=typeof n==`function`?n(d):n,i=u[r];if(f(r),i){let n=i.class.toLowerCase();e?.toLowerCase()!==n&&t(`/characterSelection/${n}`)}},selectedIndex:d})]})},wD=s({default:()=>TD}),TD=[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,14,14,14,14,14,14,14],[14,0,0,0,0,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14],[14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14]],ED=s({default:()=>DD}),DD=[[-1,-1,-1,5,6,7,7,7,7,7,7,7,7,8,9,13,10,10,13,10,11],[-1,-1,-1,5,9,10,10,10,10,10,10,10,10,11,-1,-1,-1,-1,-1,-1,-1],[3,12,7,8,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[5,13,10,11,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,2,2,2,2,2,2],[5,-1,-1,-1,-1,-1,-1,-1,1,2,2,2,2,2,2,2,2,3,-1,-1,-1],[2,2,2,2,2,2,2,3,4,-1,-1,-1,-1,-1,-1,-1,-1,5,-1,-1,-1]],OD=s({default:()=>kD}),kD=[[59,47,-1,23,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[60,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,18,-1,-1,-1,-1,-1,-1,-1,-1,37],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,29,-1,-1,-1,-1,-1,-1,42,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,26,-1,-1,-1,-1,-1,26,-1,-1,-1,43,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]],AD=s({default:()=>jD}),jD=[`#####################`,`#############>...q..#`,`####...s...>#>......#`,`####.....k.>#########`,`#...@...#############`,`#####################`],MD=s({default:()=>ND}),ND=[[14,14,14,14,14,14,14,14,14,14,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,0,0,0,0,0,0,0,0,0,0]],PD=s({default:()=>FD}),FD=[[54,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,2,2,2,2,2,2,2,2,2,2,2,2,3],[-1,1,2,2,2,2,2,2,2,2,2,74,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5],[-1,4,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5],[-1,1,2,2,3,-1,-1,1,2,2,3,78,73,-1,-1,-1,-1,45,-1,-1,-1,-1,-1,-1,5],[-1,6,7,12,8,-1,-1,6,12,7,8,77,4,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5],[-1,9,10,13,11,-1,-1,9,13,10,11,77,4,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,76,4,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,5],[-1,1,2,2,2,2,2,2,2,2,2,3,72,7,7,7,7,7,7,7,7,7,7,7,7]],ID=s({default:()=>LD}),LD=[[43,-1,-1,-1,-1,-1,-1,-1,-1,-1,27,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[43,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,-1,65,-1,-1,-1,65,-1,-1],[43,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,-1,-1,-1,-1,-1,65,-1,-1,-1,-1],[43,-1,-1,-1,-1,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,37,-1,32,-1,38,-1,-1,65,-1],[43,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,-1,-1,-1,-1,-1,-1,-1,65,-1,-1,-1],[43,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[43,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,-1,-1,65,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]],RD=s({default:()=>zD}),zD=[`#########################`,`#.........#..k....Q...q.#`,`#.........Q.......Q.....#`,`#####^^#####....#.#.#...#`,`#####^^#####....#####...#`,`#####^^#####......#.....#`,`#....@.....#......B.....#`,`#########################`],BD=s({default:()=>VD}),VD=[[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,14,14,14,0,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,0,0,0,0,0,14,14,0,0,0,-1],[-1,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,0,0,0,0,0,14,14,0,0,0,-1],[-1,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,-1],[-1,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,-1],[-1,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]],HD=s({default:()=>UD}),UD=[[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,70,7,7,7,73,-1,-1,-1,70,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,73,-1,-1,-1,-1,-1,-1,70,15,-1,73,-1,-1,-1],[-1,-1,-1,5,10,10,10,6,7,7,7,8,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,4,-1,-1,-1,-1,-1,-1,5,-1,-1,4,-1,-1,-1],[-1,-1,-1,19,-1,-1,-1,9,10,10,10,11,-1,-1,-1,-1,-1,-1,-1,46,-1,-1,-1,-1,-1,-1,-1,-1,-1,6,7,7,7,7,7,7,8,-1,-1,4,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,9,10,10,10,10,10,10,11,-1,-1,4,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,4,-1,-1,-1],[-1,-1,-1,5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,4,-1,-1,-1],[-1,-1,-1,5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,4,-1,-1,-1],[-1,-1,-1,69,2,2,2,2,2,2,2,3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,1,2,2,2,2,2,2,2,2,2,2,2,74,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,69,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,74,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]],WD=s({default:()=>GD}),GD=[[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,65,-1,65,-1,-1,65,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,65,-1,65,-1,65,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,65,33,65,32,65,65,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,-1,32,-1,33,65,-1,65,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,65,-1,65,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,65,34,-1,65,32,-1,31,65,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,36,-1,36,-1,-1,25,-1,-1,-1,36,-1,36,-1,-1,-1,-1,-1,65,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,38,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,37,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,38,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,37,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]],KD=s({default:()=>qD}),qD=[`###########################################`,`#.........................................#`,`#....s.......k.......q.......z.......b.D..#`,`#.........#....................#..........#`,`#..##################################^^#..#`,`#BB##################################^^#..#`,`#...<#.######.####..#..####.#########^^#..#`,`#...<#<.....##......#......##########..#..#`,`#BB###<......#......M......#...........#..#`,`#..#...........@.......................#..#`,`#..#...................................#..#`,`#..#########...............#############..#`,`#..........#################..z.......g...#`,`#............k.......q....................#`,`###########################################`],JD=Q.div`
 	display: flex;
 	width: 100vw;
 	height: 100vh;
@@ -2080,18 +2236,18 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 	color: #ffffff;
 	font-family: sans-serif;
 	overflow: hidden;
-`,jD=Q.div`
+`,YD=Q.div`
 	flex: 1;
 	height: 100%;
 	position: relative;
 	background-color: #1e1e1e;
 	overflow: hidden;
-`,MD=Q.canvas`
+`,XD=Q.canvas`
 	width: 100%;
 	height: 100%;
 	display: block;
 	cursor: ${e=>e.$cursor};
-`,ND=Q.div`
+`,ZD=Q.div`
 	width: 320px;
 	height: 100%;
 	background-color: #252526;
@@ -2101,7 +2257,7 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 	flex-direction: column;
 	box-sizing: border-box;
 	overflow-y: auto;
-`,PD=Q.h3`
+`,QD=Q.h3`
 	font-size: 14px;
 	text-transform: uppercase;
 	letter-spacing: 1px;
@@ -2112,7 +2268,7 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 	&:first-of-type {
 		margin-top: 0;
 	}
-`,FD=Q.select`
+`,$D=Q.select`
 	width: 100%;
 	padding: 8px;
 	margin-bottom: 16px;
@@ -2128,11 +2284,11 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 	&:focus {
 		border-color: #007acc;
 	}
-`,ID=Q.div`
+`,eO=Q.div`
 	display: flex;
 	gap: 8px;
 	margin-bottom: 16px;
-`,LD=Q.button`
+`,tO=Q.button`
 	flex: 1;
 	padding: 8px;
 	background-color: ${e=>e.$active?`#444444`:`#222222`};
@@ -2146,7 +2302,7 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 	&:hover {
 		background-color: ${e=>e.$active?`#555555`:`#333333`};
 	}
-`,RD=Q.div`
+`,nO=Q.div`
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
@@ -2154,18 +2310,18 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 	max-height: 150px;
 	overflow-y: auto;
 	min-height: 100px;
-`,zD=Q.div`
+`,rO=Q.div`
 	display: flex;
 	align-items: center;
 	gap: 8px;
 	padding: 4px;
 	background-color: #1e1e1e;
 	border-radius: 3px;
-`,BD=Q.span`
+`,iO=Q.span`
 	font-weight: ${e=>e.$active?`bold`:`normal`};
 	color: ${e=>e.$active?`#00ffcc`:`#ffffff`};
 	font-size: 13px;
-`,VD=Q.div`
+`,aO=Q.div`
 	background-color: #1a1a1a;
 	border: 1px solid #333333;
 	padding: 10px;
@@ -2184,14 +2340,14 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 	p:last-of-type {
 		margin-bottom: 0;
 	}
-`,HD=Q.p`
+`,oO=Q.p`
 	color: #666666;
 	margin: 0;
-`,UD=Q.div`
+`,sO=Q.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-`,WD=Q.button`
+`,cO=Q.button`
 	padding: 4px 8px;
 	font-size: 11px;
 	background-color: ${e=>e.$copied?`#28a745`:`#333333`};
@@ -2204,7 +2360,7 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 	&:hover {
 		background-color: ${e=>e.$copied?`#218838`:`#444444`};
 	}
-`,GD=Q.textarea`
+`,lO=Q.textarea`
 	width: 100%;
 	height: 150px;
 	background-color: #1a1a1a;
@@ -2224,12 +2380,12 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 		outline: none;
 		border-color: #007acc;
 	}
-`,KD=Q.div`
+`,uO=Q.div`
 	display: flex;
 	flex-wrap: wrap;
 	gap: 4px;
 	margin-bottom: 20px;
-`,qD=Q.div`
+`,dO=Q.div`
 	width: 32px;
 	height: 32px;
 	border: ${e=>e.$selected?`2px solid #ff0000`:`1px solid #444444`};
@@ -2241,7 +2397,7 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 	cursor: pointer;
 	font-weight: bold;
 	box-sizing: border-box;
-`,JD=Q.div`
+`,fO=Q.div`
 	width: 32px;
 	height: 32px;
 	border: ${e=>e.$selected?`2px solid #00ffcc`:`1px solid #444444`};
@@ -2250,6 +2406,6 @@ Please change the parent <Route path="${e}"> to <Route path="${e===`/`?`*`:`${e}
 	background-color: #000000;
 	cursor: pointer;
 	box-sizing: border-box;
-`,YD=32,XD=Object.assign({"/public/levels/level1/2grass.ts":oD,"/public/levels/level1/3walls.ts":cD,"/public/levels/level1/4props.ts":uD,"/public/levels/level1/5ascii.ts":fD,"/public/levels/level2/2grass.ts":mD,"/public/levels/level2/3walls.ts":gD,"/public/levels/level2/4props.ts":vD,"/public/levels/level2/5ascii.ts":bD,"/public/levels/level3/2grass.ts":SD,"/public/levels/level3/3walls.ts":wD,"/public/levels/level3/4props.ts":ED,"/public/levels/level3/5ascii.ts":OD}),ZD=()=>{let e=(0,v.useRef)(null),t=(0,v.useRef)({}),[n,r]=(0,v.useState)([]),[i,a]=(0,v.useState)(``),[o,s]=(0,v.useState)(!1),[c,l]=(0,v.useState)([]),[u,d]=(0,v.useState)(new Set),[f,p]=(0,v.useState)(null),[m,h]=(0,v.useState)(-1),[g,_]=(0,v.useState)(`pan`),[y,b]=(0,v.useState)(!1),[x,S]=(0,v.useState)(1),[C,w]=(0,v.useState)({x:50,y:50}),[ee,te]=(0,v.useState)(!1),[ne,re]=(0,v.useState)({x:0,y:0}),[ie,ae]=(0,v.useState)(null);(0,v.useEffect)(()=>{let e=Object.keys(XD),t=new Set;e.forEach(e=>{let n=e.split(`/`),r=n.indexOf(`levels`);r!==-1&&n[r+1]&&t.add(n[r+1])});let n=Array.from(t).sort();r(n),n.length>0&&a(n[0])},[]),(0,v.useEffect)(()=>{if(!Ub||Ub.length===0){s(!0);return}let e=Array.from(new Set(Ub.map(e=>e.imageSrc))),n=0;e.forEach(r=>{let i=new Image;i.src=r,i.onload=()=>{t.current[r]=i,n++,n===e.length&&s(!0)},i.onerror=()=>{n++,n===e.length&&s(!0)}})},[]),(0,v.useEffect)(()=>{if(!i)return;let e=[];Object.keys(XD).filter(e=>e.includes(`/levels/${i}/`)).sort().forEach((t,n)=>{let r=t.split(`/`).pop()||`layer_${n}`,i=r.substring(0,r.lastIndexOf(`.`))||r,a=XD[t],o=a.default===void 0?a:a.default,s=Array.isArray(o)&&typeof o[0]==`string`,c=JSON.parse(JSON.stringify(o));e.push({id:`layer-${n}`,name:i,type:s?`ascii`:`data`,data:c,zIndex:n})}),l(e),d(new Set(e.map(e=>e.id)));let t=[...e].reverse().find(e=>e.type===`data`);t&&p(t.id)},[i]),(0,v.useEffect)(()=>{let n=e.current;if(!n||!o)return;let r=n.getContext(`2d`);if(r){n.width=n.parentElement?.clientWidth||800,n.height=n.parentElement?.clientHeight||600,r.clearRect(0,0,n.width,n.height),r.imageSmoothingEnabled=!1,r.save(),r.translate(C.x,C.y),r.scale(x,x),c.forEach(e=>{if(u.has(e.id)){if(r.globalAlpha=f&&e.id!==f?.7:1,e.type===`data`)e.data.forEach((e,n)=>{e.forEach((e,i)=>{if(e===-1)return;let a=Ub[e];if(a){let e=t.current[a.imageSrc];if(e){let t=a.coordinates.x[0]*YD,o=a.coordinates.y[0]*YD,s=a.size?.horizontalTiles??1,c=a.size?.verticalTiles??1,l=s*YD,u=c*YD,d=i*YD,f=n*YD;r.drawImage(e,t,o,l,u,d,f,l,u)}}})});else if(e.type===`ascii`){let t=e.data;r.font=`24px monospace`,r.textBaseline=`top`,t.forEach((e,t)=>{for(let n=0;n<e.length;n++){let i=e[n];i!==` `&&(r.fillStyle=i===`@`?`#00ff00`:`#6acec6`,r.shadowColor=`black`,r.shadowBlur=4,r.fillText(i,n*YD+8,t*YD+4),r.shadowBlur=0)}})}r.globalAlpha=1}}),r.strokeStyle=`rgba(255, 255, 255, 0.15)`,r.lineWidth=1/x;for(let e=0;e<50;e++)r.beginPath(),r.moveTo(e*YD,0),r.lineTo(e*YD,1600),r.stroke(),r.beginPath(),r.moveTo(0,e*YD),r.lineTo(1600,e*YD),r.stroke();r.restore()}},[c,u,C,x,o,f]);let T=(t,n)=>{if(!f)return;let r=e.current;if(!r)return;let i=r.getBoundingClientRect(),a=(t-i.left-C.x)/x,o=(n-i.top-C.y)/x,s=Math.floor(a/YD),c=Math.floor(o/YD);l(e=>e.map(e=>{if(e.id===f&&e.type===`data`&&c>=0&&c<e.data.length&&s>=0&&s<e.data[c].length&&e.data[c][s]!==m){let t=[...e.data];return t[c]=[...t[c]],t[c][s]=m,{...e,data:t}}return e}))},oe=e=>{let t=-e.deltaY*.001;S(e=>Math.min(Math.max(.5,e+t),5))},se=e=>{te(!0),g===`pan`?re({x:e.clientX-C.x,y:e.clientY-C.y}):g===`paint`&&T(e.clientX,e.clientY)},ce=t=>{if(ee){g===`pan`?w({x:t.clientX-ne.x,y:t.clientY-ne.y}):g===`paint`&&T(t.clientX,t.clientY);return}let n=e.current;if(!n)return;let r=n.getBoundingClientRect(),i=(t.clientX-r.left-C.x)/x,a=(t.clientY-r.top-C.y)/x,o=Math.floor(i/YD),s=Math.floor(a/YD);if(o<0||s<0){ae(null);return}let l=null;for(let e=c.length-1;e>=0;e--){let t=c[e];if(u.has(t.id)){if(t.type===`data`){let e=t.data[s]?.[o];if(e!==void 0&&e!==-1){l={layerName:t.name,tileIndex:e,col:o,row:s};break}}else if(t.type===`ascii`){let e=t.data[s]?.[o];if(e&&e!==` `&&e!==`#`){l={layerName:t.name,tileIndex:`'${e}'`,col:o,row:s};break}}}}ae(l)},le=()=>te(!1),E=e=>{let t=new Set(u);t.has(e)?t.delete(e):t.add(e),d(t)},D=()=>{let e=c.find(e=>e.id===f);return e?e.type===`data`?`[\n${e.data.map(e=>`    [${e.map(e=>e.toString().padStart(2,` `)).join(`, `)}]`).join(`,
+`,pO=32,mO=Object.assign({"/public/levels/level1/2grass.ts":wD,"/public/levels/level1/3walls.ts":ED,"/public/levels/level1/4props.ts":OD,"/public/levels/level1/5ascii.ts":AD,"/public/levels/level2/2grass.ts":MD,"/public/levels/level2/3walls.ts":PD,"/public/levels/level2/4props.ts":ID,"/public/levels/level2/5ascii.ts":RD,"/public/levels/level3/2grass.ts":BD,"/public/levels/level3/3walls.ts":HD,"/public/levels/level3/4props.ts":WD,"/public/levels/level3/5ascii.ts":KD}),hO=()=>{let e=(0,v.useRef)(null),t=(0,v.useRef)({}),[n,r]=(0,v.useState)([]),[i,a]=(0,v.useState)(``),[o,s]=(0,v.useState)(!1),[c,l]=(0,v.useState)([]),[u,d]=(0,v.useState)(new Set),[f,p]=(0,v.useState)(null),[m,h]=(0,v.useState)(-1),[g,_]=(0,v.useState)(`pan`),[y,b]=(0,v.useState)(!1),[x,S]=(0,v.useState)(1),[C,w]=(0,v.useState)({x:50,y:50}),[ee,te]=(0,v.useState)(!1),[ne,re]=(0,v.useState)({x:0,y:0}),[ie,ae]=(0,v.useState)(null);(0,v.useEffect)(()=>{let e=Object.keys(mO),t=new Set;e.forEach(e=>{let n=e.split(`/`),r=n.indexOf(`levels`);r!==-1&&n[r+1]&&t.add(n[r+1])});let n=Array.from(t).sort();r(n),n.length>0&&a(n[0])},[]),(0,v.useEffect)(()=>{if(!Ub||Ub.length===0){s(!0);return}let e=Array.from(new Set(Ub.map(e=>e.imageSrc))),n=0;e.forEach(r=>{let i=new Image;i.src=r,i.onload=()=>{t.current[r]=i,n++,n===e.length&&s(!0)},i.onerror=()=>{n++,n===e.length&&s(!0)}})},[]),(0,v.useEffect)(()=>{if(!i)return;let e=[];Object.keys(mO).filter(e=>e.includes(`/levels/${i}/`)).sort().forEach((t,n)=>{let r=t.split(`/`).pop()||`layer_${n}`,i=r.substring(0,r.lastIndexOf(`.`))||r,a=mO[t],o=a.default===void 0?a:a.default,s=Array.isArray(o)&&typeof o[0]==`string`,c=JSON.parse(JSON.stringify(o));e.push({id:`layer-${n}`,name:i,type:s?`ascii`:`data`,data:c,zIndex:n})}),l(e),d(new Set(e.map(e=>e.id)));let t=[...e].reverse().find(e=>e.type===`data`);t&&p(t.id)},[i]),(0,v.useEffect)(()=>{let n=e.current;if(!n||!o)return;let r=n.getContext(`2d`);if(r){n.width=n.parentElement?.clientWidth||800,n.height=n.parentElement?.clientHeight||600,r.clearRect(0,0,n.width,n.height),r.imageSmoothingEnabled=!1,r.save(),r.translate(C.x,C.y),r.scale(x,x),c.forEach(e=>{if(u.has(e.id)){if(r.globalAlpha=f&&e.id!==f?.7:1,e.type===`data`)e.data.forEach((e,n)=>{e.forEach((e,i)=>{if(e===-1)return;let a=Ub[e];if(a){let e=t.current[a.imageSrc];if(e){let t=a.coordinates.x[0]*pO,o=a.coordinates.y[0]*pO,s=a.size?.horizontalTiles??1,c=a.size?.verticalTiles??1,l=s*pO,u=c*pO,d=i*pO,f=n*pO;r.drawImage(e,t,o,l,u,d,f,l,u)}}})});else if(e.type===`ascii`){let t=e.data;r.font=`24px monospace`,r.textBaseline=`top`,t.forEach((e,t)=>{for(let n=0;n<e.length;n++){let i=e[n];i!==` `&&(r.fillStyle=i===`@`?`#00ff00`:`#6acec6`,r.shadowColor=`black`,r.shadowBlur=4,r.fillText(i,n*pO+8,t*pO+4),r.shadowBlur=0)}})}r.globalAlpha=1}}),r.strokeStyle=`rgba(255, 255, 255, 0.15)`,r.lineWidth=1/x;for(let e=0;e<50;e++)r.beginPath(),r.moveTo(e*pO,0),r.lineTo(e*pO,1600),r.stroke(),r.beginPath(),r.moveTo(0,e*pO),r.lineTo(1600,e*pO),r.stroke();r.restore()}},[c,u,C,x,o,f]);let T=(t,n)=>{if(!f)return;let r=e.current;if(!r)return;let i=r.getBoundingClientRect(),a=(t-i.left-C.x)/x,o=(n-i.top-C.y)/x,s=Math.floor(a/pO),c=Math.floor(o/pO);l(e=>e.map(e=>{if(e.id===f&&e.type===`data`&&c>=0&&c<e.data.length&&s>=0&&s<e.data[c].length&&e.data[c][s]!==m){let t=[...e.data];return t[c]=[...t[c]],t[c][s]=m,{...e,data:t}}return e}))},oe=e=>{let t=-e.deltaY*.001;S(e=>Math.min(Math.max(.5,e+t),5))},se=e=>{te(!0),g===`pan`?re({x:e.clientX-C.x,y:e.clientY-C.y}):g===`paint`&&T(e.clientX,e.clientY)},ce=t=>{if(ee){g===`pan`?w({x:t.clientX-ne.x,y:t.clientY-ne.y}):g===`paint`&&T(t.clientX,t.clientY);return}let n=e.current;if(!n)return;let r=n.getBoundingClientRect(),i=(t.clientX-r.left-C.x)/x,a=(t.clientY-r.top-C.y)/x,o=Math.floor(i/pO),s=Math.floor(a/pO);if(o<0||s<0){ae(null);return}let l=null;for(let e=c.length-1;e>=0;e--){let t=c[e];if(u.has(t.id)){if(t.type===`data`){let e=t.data[s]?.[o];if(e!==void 0&&e!==-1){l={layerName:t.name,tileIndex:e,col:o,row:s};break}}else if(t.type===`ascii`){let e=t.data[s]?.[o];if(e&&e!==` `&&e!==`#`){l={layerName:t.name,tileIndex:`'${e}'`,col:o,row:s};break}}}}ae(l)},le=()=>te(!1),E=e=>{let t=new Set(u);t.has(e)?t.delete(e):t.add(e),d(t)},D=()=>{let e=c.find(e=>e.id===f);return e?e.type===`data`?`[\n${e.data.map(e=>`    [${e.map(e=>e.toString().padStart(2,` `)).join(`, `)}]`).join(`,
 `)}\n];`:e.type===`ascii`?`[\n${e.data.map(e=>`    "${e}"`).join(`,
-`)}\n];`:``:`// No active layer selected`},ue=()=>{let e=D();navigator.clipboard.writeText(e).then(()=>{b(!0),setTimeout(()=>b(!1),2e3)})};return(0,j.jsxs)(AD,{children:[(0,j.jsx)(jD,{onWheel:oe,children:(0,j.jsx)(MD,{ref:e,onMouseDown:se,onMouseMove:ce,onMouseUp:le,onMouseLeave:le,$cursor:g===`paint`?`crosshair`:ee?`grabbing`:`grab`})}),(0,j.jsxs)(ND,{children:[(0,j.jsx)(PD,{children:`Select Level`}),(0,j.jsx)(FD,{value:i,onChange:e=>a(e.target.value),children:n.map(e=>(0,j.jsxs)(`option`,{value:e,children:[`📁 `,e]},e))}),(0,j.jsx)(PD,{children:`Tools`}),(0,j.jsxs)(ID,{children:[(0,j.jsx)(LD,{$active:g===`pan`,onClick:()=>_(`pan`),children:`✋ Pan`}),(0,j.jsx)(LD,{$active:g===`paint`,onClick:()=>_(`paint`),children:`🖌️ Paint`})]}),(0,j.jsx)(PD,{children:`Layers (Active / Visible)`}),(0,j.jsx)(RD,{children:[...c].reverse().map(e=>(0,j.jsxs)(zD,{children:[(0,j.jsx)(`input`,{type:`radio`,name:`activeLayer`,checked:f===e.id,onChange:()=>p(e.id),title:`Set as Active Layer for Painting`}),(0,j.jsx)(`input`,{type:`checkbox`,checked:u.has(e.id),onChange:()=>E(e.id),title:`Toggle Visibility`}),(0,j.jsxs)(BD,{$active:f===e.id,children:[e.name,` `,e.type===`ascii`&&`(ASCII)`]})]},e.id))}),(0,j.jsx)(PD,{children:`Inspector`}),(0,j.jsx)(VD,{children:ie?(0,j.jsxs)(j.Fragment,{children:[(0,j.jsxs)(`p`,{children:[(0,j.jsx)(`strong`,{children:`Layer:`}),` `,ie.layerName]}),(0,j.jsxs)(`p`,{children:[(0,j.jsx)(`strong`,{children:`Tile Index:`}),` `,ie.tileIndex]}),(0,j.jsxs)(`p`,{children:[(0,j.jsx)(`strong`,{children:`Grid [X,Y]:`}),` [`,ie.col,`,`,` `,ie.row,`]`]})]}):(0,j.jsx)(HD,{children:`Hover over a tile...`})}),(0,j.jsxs)(UD,{children:[(0,j.jsx)(PD,{$noMarginBottom:!0,children:`Layer Output`}),(0,j.jsx)(WD,{$copied:y,onClick:ue,children:y?`✓ Copied!`:`📋 Copy`})]}),(0,j.jsx)(GD,{readOnly:!0,value:D()}),(0,j.jsx)(PD,{children:`Tiles Palette`}),(0,j.jsxs)(KD,{children:[(0,j.jsx)(qD,{$selected:m===-1,onClick:()=>{h(-1),_(`paint`)},title:`Eraser (Index: -1)`,children:`X`}),Ub.map((e,t)=>{let n=e.size?.horizontalTiles??1,r=e.size?.verticalTiles??1;return(0,j.jsx)(JD,{$selected:m===t,$imageSrc:e.imageSrc,$posX:e.coordinates.x[0]*YD,$posY:e.coordinates.y[0]*YD,$hTiles:n,$vTiles:r,onClick:()=>{h(t),_(`paint`)},title:`Index: ${t} | ${e.name||`Unnamed tile`} (${n}x${r})`},t)})]})]})]})},QD=()=>(0,j.jsx)(cr,{children:(0,j.jsxs)(qt,{children:[(0,j.jsx)(Gt,{path:Wn.MAIN_MENU,element:(0,j.jsx)(yE,{})}),(0,j.jsx)(Gt,{path:Wn.CHARACTER_SELECTION,element:(0,j.jsx)(YE,{})}),(0,j.jsx)(Gt,{path:`${Wn.CHARACTER_SELECTION}/:classType?`,element:(0,j.jsx)(aD,{})}),(0,j.jsx)(Gt,{path:Wn.GAME,element:(0,j.jsx)(eE,{})}),(0,j.jsx)(Gt,{path:`*`,element:(0,j.jsx)(TE,{})}),(0,j.jsx)(Gt,{path:Wn.DEV_TOOLS,element:(0,j.jsx)(ZD,{})})]})}),$D=`/dnd-game-extended/`;{let e=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,`src`);Object.defineProperty(HTMLImageElement.prototype,"src",{set(t){t&&t.startsWith(`/`)&&!t.startsWith($D)&&(t=$D+t.slice(1)),e?.set?.call(this,t)}});let t=window.Audio;window.Audio=function(e){return e&&e.startsWith(`/`)&&!e.startsWith($D)&&(e=$D+e.slice(1)),new t(e)}}(0,b.createRoot)(document.getElementById(`root`)).render((0,j.jsx)(v.StrictMode,{children:(0,j.jsx)(Mn,{children:(0,j.jsx)(QD,{})})}));
+`)}\n];`:``:`// No active layer selected`},ue=()=>{let e=D();navigator.clipboard.writeText(e).then(()=>{b(!0),setTimeout(()=>b(!1),2e3)})};return(0,j.jsxs)(JD,{children:[(0,j.jsx)(YD,{onWheel:oe,children:(0,j.jsx)(XD,{ref:e,onMouseDown:se,onMouseMove:ce,onMouseUp:le,onMouseLeave:le,$cursor:g===`paint`?`crosshair`:ee?`grabbing`:`grab`})}),(0,j.jsxs)(ZD,{children:[(0,j.jsx)(QD,{children:`Select Level`}),(0,j.jsx)($D,{value:i,onChange:e=>a(e.target.value),children:n.map(e=>(0,j.jsxs)(`option`,{value:e,children:[`📁 `,e]},e))}),(0,j.jsx)(QD,{children:`Tools`}),(0,j.jsxs)(eO,{children:[(0,j.jsx)(tO,{$active:g===`pan`,onClick:()=>_(`pan`),children:`✋ Pan`}),(0,j.jsx)(tO,{$active:g===`paint`,onClick:()=>_(`paint`),children:`🖌️ Paint`})]}),(0,j.jsx)(QD,{children:`Layers (Active / Visible)`}),(0,j.jsx)(nO,{children:[...c].reverse().map(e=>(0,j.jsxs)(rO,{children:[(0,j.jsx)(`input`,{type:`radio`,name:`activeLayer`,checked:f===e.id,onChange:()=>p(e.id),title:`Set as Active Layer for Painting`}),(0,j.jsx)(`input`,{type:`checkbox`,checked:u.has(e.id),onChange:()=>E(e.id),title:`Toggle Visibility`}),(0,j.jsxs)(iO,{$active:f===e.id,children:[e.name,` `,e.type===`ascii`&&`(ASCII)`]})]},e.id))}),(0,j.jsx)(QD,{children:`Inspector`}),(0,j.jsx)(aO,{children:ie?(0,j.jsxs)(j.Fragment,{children:[(0,j.jsxs)(`p`,{children:[(0,j.jsx)(`strong`,{children:`Layer:`}),` `,ie.layerName]}),(0,j.jsxs)(`p`,{children:[(0,j.jsx)(`strong`,{children:`Tile Index:`}),` `,ie.tileIndex]}),(0,j.jsxs)(`p`,{children:[(0,j.jsx)(`strong`,{children:`Grid [X,Y]:`}),` [`,ie.col,`,`,` `,ie.row,`]`]})]}):(0,j.jsx)(oO,{children:`Hover over a tile...`})}),(0,j.jsxs)(sO,{children:[(0,j.jsx)(QD,{$noMarginBottom:!0,children:`Layer Output`}),(0,j.jsx)(cO,{$copied:y,onClick:ue,children:y?`✓ Copied!`:`📋 Copy`})]}),(0,j.jsx)(lO,{readOnly:!0,value:D()}),(0,j.jsx)(QD,{children:`Tiles Palette`}),(0,j.jsxs)(uO,{children:[(0,j.jsx)(dO,{$selected:m===-1,onClick:()=>{h(-1),_(`paint`)},title:`Eraser (Index: -1)`,children:`X`}),Ub.map((e,t)=>{let n=e.size?.horizontalTiles??1,r=e.size?.verticalTiles??1;return(0,j.jsx)(fO,{$selected:m===t,$imageSrc:e.imageSrc,$posX:e.coordinates.x[0]*pO,$posY:e.coordinates.y[0]*pO,$hTiles:n,$vTiles:r,onClick:()=>{h(t),_(`paint`)},title:`Index: ${t} | ${e.name||`Unnamed tile`} (${n}x${r})`},t)})]})]})]})},gO=()=>(0,j.jsx)(cr,{children:(0,j.jsxs)(qt,{children:[(0,j.jsx)(Gt,{path:Wn.MAIN_MENU,element:(0,j.jsx)(yE,{})}),(0,j.jsx)(Gt,{path:Wn.CHARACTER_SELECTION,element:(0,j.jsx)(YE,{})}),(0,j.jsx)(Gt,{path:`${Wn.CHARACTER_SELECTION}/:classType?`,element:(0,j.jsx)(CD,{})}),(0,j.jsx)(Gt,{path:Wn.GAME,element:(0,j.jsx)(eE,{})}),(0,j.jsx)(Gt,{path:`*`,element:(0,j.jsx)(TE,{})}),(0,j.jsx)(Gt,{path:Wn.DEV_TOOLS,element:(0,j.jsx)(hO,{})})]})}),_O=`/dnd-game-extended/`;{let e=Object.getOwnPropertyDescriptor(HTMLImageElement.prototype,`src`);Object.defineProperty(HTMLImageElement.prototype,"src",{set(t){t&&t.startsWith(`/`)&&!t.startsWith(_O)&&(t=_O+t.slice(1)),e?.set?.call(this,t)}});let t=window.Audio;window.Audio=function(e){return e&&e.startsWith(`/`)&&!e.startsWith(_O)&&(e=_O+e.slice(1)),new t(e)}}(0,b.createRoot)(document.getElementById(`root`)).render((0,j.jsx)(v.StrictMode,{children:(0,j.jsx)(Mn,{children:(0,j.jsx)(gO,{})})}));
